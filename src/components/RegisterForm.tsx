@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdBadge, MdLock, MdArrowForward, MdCheckCircle, MdClose, MdPerson } from "react-icons/md";
-import { authService, masterlistService, MasterlistRecord } from "../lib/auth";
+import { authService, masterlistService } from "../lib/auth";
+import type { MasterlistRecord } from "../lib/auth";
 
 type Step = "regNumber" | "verifying" | "confirm" | "password";
 
@@ -227,7 +228,7 @@ export function RegisterForm() {
                       <p className="text-white">
                         {typeof masterlistRecord.class.faculty === 'string' 
                           ? masterlistRecord.class.faculty 
-                          : masterlistRecord.class.faculty.name}
+                          : masterlistRecord.class.faculty as string}
                       </p>
                     </div>
                   )}

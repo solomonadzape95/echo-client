@@ -22,8 +22,8 @@ export function AuthPage() {
 
       {/* Header */}
       <header className="flex justify-between items-center px-10 py-4 fixed top-0 left-0 right-0 z-50 bg-[#102222]">
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-8 rounded bg-[#234848] flex items-center justify-center">
+        <div className="flex items-center gap-1">
+          <div className="w-8 h-8 rounded flex items-center justify-center">
             <MdFingerprint className="w-5 h-5 text-[#13ecec]" />
           </div>
           <h1 className="text-white text-lg font-bold tracking-tight uppercase">

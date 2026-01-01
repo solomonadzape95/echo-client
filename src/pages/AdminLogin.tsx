@@ -47,8 +47,8 @@ export function AdminLogin() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-[#13ecec] rounded-full mb-4">
-            <MdFingerprint className="w-10 h-10 text-[#112222]" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-1">
+            <MdFingerprint className="w-10 h-10 text-[#13ecec]" />
           </div>
           <h1 className="text-4xl font-bold text-white mb-2">echo</h1>
           <p className="text-[#13ecec] text-sm uppercase tracking-wider">ADMIN CONSOLE</p>
