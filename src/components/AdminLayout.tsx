@@ -43,23 +43,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         {/* Top Bar */}
         <header className="h-16 bg-[#142828] border-b border-[#234848] flex items-center justify-between px-6">
           {/* Left side - Title */}
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-white">Admin Dashboard</h1>
-          </div>
+          <div className="text-[#92c9c9] text-lg">
+              <span>Logged in as </span>
+              <span className="font-bold text-white uppercase">Admin</span>
+            </div>  
 
           {/* Right side - User and Logout */}
           <div className="flex items-center gap-4">
-            {/* User */}
-            <div className="flex items-center gap-2 px-3 py-1 bg-[#102222] border border-[#234848] rounded-lg">
-              <div className="w-8 h-8 bg-[#13ecec] rounded-full flex items-center justify-center text-[#112222] font-bold text-xs">
-                AD
-              </div>
-              <div className="text-xs">
-                <div className="text-white font-medium">Logged in as Admin</div>
-                <div className="text-[#568888]">System Administrator</div>
-              </div>
-            </div>
-            
             {/* Logout Button */}
             <button
               onClick={() => navigate("/admin/login")}

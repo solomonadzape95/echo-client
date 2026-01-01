@@ -15,7 +15,7 @@ export function Profile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState("security");
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const { data: profileResponse, isLoading, error } = useProfile();
+  const { data: profileResponse, isLoading, error, refetch } = useProfile();
   
   // Set profile image from API response
   useEffect(() => {
@@ -120,31 +120,51 @@ export function Profile() {
       formData.append('folder', 'profile-images');
 
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      console.log('[PROFILE] Uploading image to:', `${API_BASE_URL}/storage/upload`);
+      
       const response = await fetch(`${API_BASE_URL}/storage/upload`, {
         method: 'POST',
         body: formData,
         credentials: 'include',
       });
 
+      console.log('[PROFILE] Upload response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[PROFILE] Upload error response:', errorText);
+        throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+      }
+
       const result = await response.json();
+      console.log('[PROFILE] Upload result:', result);
 
       if (!result.success || !result.data?.url) {
         throw new Error(result.message || 'Failed to upload image');
       }
 
       // Update profile picture in database
+      console.log('[PROFILE] Updating profile picture with URL:', result.data.url);
       const updateResponse = await authService.updateProfilePicture(result.data.url);
+      console.log('[PROFILE] Update response:', updateResponse);
       
       if (updateResponse.success) {
         setProfileImage(result.data.url);
+        // Refetch profile data to get updated information
+        await refetch();
         showToast("Profile picture updated successfully", "success");
       } else {
         throw new Error(updateResponse.message || 'Failed to update profile picture');
       }
     } catch (err) {
+      console.error('[PROFILE] Error uploading image:', err);
       showToast(err instanceof Error ? err.message : "Failed to upload image", "error");
     } finally {
       setIsUploadingImage(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
