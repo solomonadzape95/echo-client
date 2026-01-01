@@ -3,10 +3,13 @@
   "buildCommand": "bun run build.ts",
   "outputDirectory": "dist",
   "installCommand": "bun install",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/((?!.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json|map|webp|avif)).*)",
-      "destination": "/index.html"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
