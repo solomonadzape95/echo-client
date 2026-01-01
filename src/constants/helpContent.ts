@@ -1,4 +1,4 @@
-import { HelpStep } from "../components/HelpModal";
+import type { HelpStep } from "../components/HelpModal";
 
 export const authHelpSteps: HelpStep[] = [
   {
