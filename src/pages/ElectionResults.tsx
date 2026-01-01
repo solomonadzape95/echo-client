@@ -2,10 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { MdArrowBack, MdBarChart, MdTrendingUp, MdHowToVote, MdPerson, MdVerified, MdRefresh } from "react-icons/md";
 import { FloatingMenu } from "../components/FloatingMenu";
+import { FloatingHelpButton } from "../components/FloatingHelpButton";
+import { Footer } from "../components/Footer";
 import { AdminLayout } from "../components/AdminLayout";
 import { authService } from "../lib/auth";
 import { useElectionResults, useCalculateResults } from "../hooks/useAdmin";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "../hooks/useToast";
+import { dashboardHelpSteps } from "../constants/helpContent";
 import { api } from "../lib/api";
 import type { ApiResponse } from "../lib/api";
 
@@ -33,6 +37,7 @@ export function ElectionResults() {
   const location = useLocation();
   const { id: electionId } = useParams();
   const [officeFilter, setOfficeFilter] = useState<OfficeFilter>("all");
+  const { showToast, ToastContainer } = useToast();
   
   // Check if this is an admin view
   const isAdminView = location.pathname.startsWith("/admin");
