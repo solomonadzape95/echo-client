@@ -89,6 +89,27 @@ export const authService = {
   async refreshToken(): Promise<ApiResponse<{ message: string }>> {
     return api.post<ApiResponse<{ message: string }>>("/auth/refresh", {});
   },
+
+  async forgotPassword(regNumber: string, email: string): Promise<ApiResponse<{ message: string; token?: string }>> {
+    return api.post<ApiResponse<{ message: string; token?: string }>>("/auth/forgot-password", {
+      regNumber,
+      email,
+    });
+  },
+
+  async resetPassword(token: string, password: string): Promise<ApiResponse<{ message: string }>> {
+    return api.post<ApiResponse<{ message: string }>>("/auth/reset-password", {
+      token,
+      password,
+    });
+  },
+
+  async changePassword(currentPassword: string, newPassword: string): Promise<ApiResponse<{ message: string }>> {
+    return api.post<ApiResponse<{ message: string }>>("/auth/change-password", {
+      currentPassword,
+      newPassword,
+    });
+  },
 };
 
 export const masterlistService = {

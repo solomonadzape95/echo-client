@@ -11,6 +11,8 @@ import { Ballot } from "./pages/Ballot";
 import { VoteVerification } from "./pages/VoteVerification";
 import { Stats } from "./pages/Stats";
 import { Profile } from "./pages/Profile";
+import { ForgotPassword } from "./pages/ForgotPassword";
+import { ResetPassword } from "./pages/ResetPassword";
 import { AdminLogin } from "./pages/AdminLogin";
 import { AdminDashboard } from "./pages/AdminDashboard";
 import { AdminVoters, AdminVoterDetail } from "./pages/AdminVoters";
@@ -75,6 +77,8 @@ export function App() {
         <Routes>
           {/* Public routes */}
           <Route path="/login" element={<AuthPage />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           
           {/* User routes */}
