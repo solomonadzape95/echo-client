@@ -112,7 +112,23 @@ export function AdminVoters() {
                     >
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-[#13ecec] rounded-full flex items-center justify-center text-[#112222] font-bold">
+                          {voter.profilePicture ? (
+                            <img
+                              src={voter.profilePicture}
+                              alt={voter.username}
+                              className="w-10 h-10 rounded-full object-cover border-2 border-[#13ecec]"
+                              onError={(e) => {
+                                // Fallback to initials if image fails to load
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                const fallback = target.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          <div
+                            className={`w-10 h-10 bg-[#13ecec] rounded-full flex items-center justify-center text-[#112222] font-bold ${voter.profilePicture ? 'hidden' : ''}`}
+                          >
                             {voter.username.substring(0, 2).toUpperCase()}
                           </div>
                           <div>
@@ -276,7 +292,23 @@ export function AdminVoterDetail() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-20 h-20 bg-[#13ecec] rounded-full flex items-center justify-center text-[#112222] font-bold text-2xl">
+            {voter.profilePicture ? (
+              <img
+                src={voter.profilePicture}
+                alt={voter.username}
+                className="w-20 h-20 rounded-full object-cover border-2 border-[#13ecec]"
+                onError={(e) => {
+                  // Fallback to initials if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const fallback = target.nextElementSibling as HTMLElement;
+                  if (fallback) fallback.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <div
+              className={`w-20 h-20 bg-[#13ecec] rounded-full flex items-center justify-center text-[#112222] font-bold text-2xl ${voter.profilePicture ? 'hidden' : ''}`}
+            >
               {voter.username.substring(0, 2).toUpperCase()}
             </div>
             <div>
@@ -301,6 +333,12 @@ export function AdminVoterDetail() {
             <div>
               <div className="text-[#568888] text-sm uppercase tracking-wider mb-2">Class</div>
               <div className="text-white">{voter.class || "Not assigned"}</div>
+              {voter.classDetails && (
+                <div className="text-[#92c9c9] text-sm mt-1">
+                  {voter.classDetails.department && `Dept: ${voter.classDetails.department} • `}
+                  {voter.classDetails.faculty && `Faculty: ${voter.classDetails.faculty}`}
+                </div>
+              )}
             </div>
             <div>
               <div className="text-[#568888] text-sm uppercase tracking-wider mb-2">Registered</div>

@@ -36,7 +36,14 @@ export interface AdminVoter {
   id: string;
   username: string;
   regNumber: string;
-  class: string;
+  profilePicture: string | null;
+  class: string | null;
+  classId: string | null;
+  classDetails: {
+    level: string;
+    department: number;
+    faculty: number;
+  } | null;
   createdAt: string;
 }
 
