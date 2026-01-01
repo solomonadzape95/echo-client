@@ -17,6 +17,9 @@ function getApiBaseUrl(): string {
 
 const API_BASE_URL = getApiBaseUrl();
 console.log(API_BASE_URL);
+
+// Export API_BASE_URL for use in file uploads
+export { API_BASE_URL };
 export interface ApiError {
   success: false;
   message: string;
@@ -37,68 +40,39 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
   if (!response.ok) {
     if (isJson) {
-      const error: ApiError = await response.json();
-      throw new Error(error.message || `API Error: ${response.statusText}`);
+      try {
+        const error: ApiError = await response.json();
+        // Format validation errors if present
+        if (error.errors && error.errors.length > 0) {
+          const errorMessages = error.errors.map(e => 
+            `${e.path.join('.')}: ${e.message}`
+          ).join(', ');
+          throw new Error(error.message ? `${error.message} - ${errorMessages}` : errorMessages);
+        }
+        throw new Error(error.message || `API Error: ${response.statusText}`);
+      } catch (parseError) {
+        // If JSON parsing fails, throw a generic error
+        throw new Error(`API Error: ${response.statusText} (${response.status})`);
+      }
     }
-    throw new Error(`API Error: ${response.statusText}`);
+    throw new Error(`API Error: ${response.statusText} (${response.status})`);
   }
 
   if (isJson) {
-    return response.json();
+    try {
+      return await response.json();
+    } catch (parseError) {
+      throw new Error('Failed to parse JSON response');
+    }
   }
 
   return response.text() as unknown as T;
 }
 
-export const api = {
-  get: async <T>(endpoint: string): Promise<T> => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include", // Include cookies
-    });
+// Import the intercepted API for automatic token refresh
+import { interceptedApi } from "./apiInterceptor";
 
-    return handleResponse<T>(response);
-  },
-
-  post: async <T>(endpoint: string, data: unknown): Promise<T> => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include", // Include cookies
-      body: JSON.stringify(data),
-    });
-
-    return handleResponse<T>(response);
-  },
-
-  put: async <T>(endpoint: string, data: unknown): Promise<T> => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include", // Include cookies
-      body: JSON.stringify(data),
-    });
-
-    return handleResponse<T>(response);
-  },
-
-  delete: async <T>(endpoint: string): Promise<T> => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include", // Include cookies
-    });
-
-    return handleResponse<T>(response);
-  },
-};
+// Export the intercepted API as the main API
+// This automatically handles token refresh on 401 errors
+export const api = interceptedApi;
 

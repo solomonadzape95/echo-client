@@ -12,6 +12,20 @@ export interface LoginResponse {
   user: User;
 }
 
+export interface Admin {
+  id: string;
+  username: string;
+  email: string;
+  role: "super_admin" | "admin" | "moderator";
+  fullName?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminLoginResponse {
+  admin: Admin;
+}
+
 export interface RegisterResponse {
   user: User;
 }
@@ -41,6 +55,14 @@ export const authService = {
   async login(regNumber: string, password: string): Promise<ApiResponse<LoginResponse>> {
     return api.post<ApiResponse<LoginResponse>>("/auth/login", {
       regNumber,
+      password,
+    });
+  },
+
+  async adminLogin(username: string, password: string): Promise<ApiResponse<AdminLoginResponse>> {
+    // Admin login uses a separate endpoint
+    return api.post<ApiResponse<AdminLoginResponse>>("/admin/auth/login", {
+      username,
       password,
     });
   },
