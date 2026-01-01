@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AdminLayout } from "../components/AdminLayout";
-import { useAdminOffice, useAdminOffices, useUpdateOffice } from "../hooks/useAdmin";
+import { useAdminOffice, useAdminOffices, useUpdateOffice, useAdminElection } from "../hooks/useAdmin";
 import { MdArrowBack, MdSave } from "react-icons/md";
 import { useToast } from "../hooks/useToast";
 
@@ -23,7 +23,6 @@ export function EditOffice() {
   const office = officeResponse?.success ? officeResponse.data : null;
   const offices = officesResponse?.success ? officesResponse.data : [];
 
-  const office = officeResponse?.success ? officeResponse.data : null;
   // Filter out current office from dependsOn options
   const availableOffices = offices.filter((o) => o.id !== office?.id);
 

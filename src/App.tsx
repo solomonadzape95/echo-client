@@ -84,9 +84,9 @@ export function App() {
           {/* User routes */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/elections" element={<Elections />} />
-          <Route path="/elections/:id" element={<ElectionDetail />} />
-          <Route path="/elections/:id/ballot" element={<Ballot />} />
-          <Route path="/elections/:id/results" element={<ElectionResults />} />
+          <Route path="/elections/:slug" element={<ElectionDetail />} />
+          <Route path="/elections/:slug/ballot" element={<Ballot />} />
+          <Route path="/elections/:slug/results" element={<ElectionResults />} />
           <Route path="/verify" element={<VoteVerification />} />
           <Route path="/vote-verification" element={<VoteVerification />} />
           <Route path="/stats" element={<Stats />} />
@@ -99,13 +99,13 @@ export function App() {
           <Route path="/admin/elections" element={<AdminElections />} />
           <Route path="/admin/elections/create" element={<CreateElection />} />
           {/* More specific routes must come before less specific ones */}
-          <Route path="/admin/elections/:id/offices/:officeId/candidates/create" element={<AddCandidate />} />
-          <Route path="/admin/elections/:id/offices/:officeId/edit" element={<EditOffice />} />
-          <Route path="/admin/elections/:id/offices/:officeId" element={<OfficeDetail />} />
-          <Route path="/admin/elections/:id/offices/create" element={<CreateOffice />} />
-          <Route path="/admin/elections/:id/results" element={<ElectionResults />} />
-          <Route path="/admin/elections/:id/edit" element={<EditElection />} />
-          <Route path="/admin/elections/:id" element={<AdminElectionDetail />} />
+          <Route path="/admin/elections/:slug/offices/:officeSlug/candidates/create" element={<AddCandidate />} />
+          <Route path="/admin/elections/:slug/offices/:officeSlug/edit" element={<EditOffice />} />
+          <Route path="/admin/elections/:slug/offices/:officeSlug" element={<OfficeDetail />} />
+          <Route path="/admin/elections/:slug/offices/create" element={<CreateOffice />} />
+          <Route path="/admin/elections/:slug/results" element={<ElectionResults />} />
+          <Route path="/admin/elections/:slug/edit" element={<EditElection />} />
+          <Route path="/admin/elections/:slug" element={<AdminElectionDetail />} />
           <Route path="/admin/stats" element={<AdminStats />} />
           <Route path="/admin/admins" element={<AdminManagement />} />
           <Route path="/admin/classes" element={<AdminClasses />} />

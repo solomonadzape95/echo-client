@@ -115,7 +115,7 @@ export function Dashboard() {
                 title={activeElection.name}
                 description={activeElection.description}
                 endTime={new Date(activeElection.endDate)}
-                onVote={() => navigate(`/elections/${activeElection.slug || activeElection.id}`)}
+                onVote={() => navigate(`/elections/${activeElection.slug ?? activeElection.id}`)}
               />
             </div>
           )}

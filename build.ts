@@ -33,7 +33,10 @@ Example:
   process.exit(0);
 }
 
-const toCamelCase = (str: string): string => str.replace(/-([a-z])/g, g => g[1].toUpperCase());
+const toCamelCase = (str: string): string => {
+  if (!str) return "";
+  return str.replace(/-([a-z])/g, (g) => g[1]?.toUpperCase() ?? g);
+};
 
 const parseValue = (value: string): any => {
   if (value === "true") return true;
@@ -58,13 +61,17 @@ function parseArgs(): Partial<Bun.BuildConfig> {
 
     if (arg.startsWith("--no-")) {
       const key = toCamelCase(arg.slice(5));
-      config[key] = false;
+      if (key) {
+        (config as Record<string, any>)[key] = false;
+      }
       continue;
     }
 
     if (!arg.includes("=") && (i === args.length - 1 || args[i + 1]?.startsWith("--"))) {
       const key = toCamelCase(arg.slice(2));
-      config[key] = true;
+      if (key) {
+        (config as Record<string, any>)[key] = true;
+      }
       continue;
     }
 
@@ -81,25 +88,25 @@ function parseArgs(): Partial<Bun.BuildConfig> {
     key = toCamelCase(key);
 
     if (key.includes(".")) {
-      const [parentKey, childKey] = key.split(".");
-      if (
-        typeof config[parentKey as keyof Bun.BuildConfig] !== "object" ||
-        config[parentKey as keyof Bun.BuildConfig] == null
-      ) {
-        const parentKeyTyped = parentKey as keyof Bun.BuildConfig;
+      const parts = key.split(".");
+      const parentKey = parts[0];
+      const childKey = parts[1];
+      if (parentKey && childKey) {
+        const configRecord = config as Record<string, any>;
         if (
-          typeof config[parentKeyTyped] !== "object" ||
-          config[parentKeyTyped] == null
+          typeof configRecord[parentKey] !== "object" ||
+          configRecord[parentKey] == null
         ) {
-          config[parentKeyTyped] = {} as any;
+          configRecord[parentKey] = {};
         }
         // Assign childKey only if parentKey is not undefined/null
-        if (typeof config[parentKeyTyped] === "object" && config[parentKeyTyped] !== null) {
-          (config[parentKeyTyped] as any)[childKey] = parseValue(value);
+        const parentValue = configRecord[parentKey];
+        if (typeof parentValue === "object" && parentValue !== null) {
+          (parentValue as Record<string, any>)[childKey] = parseValue(value);
         }
       }
     } else {
-      config[key as keyof Bun.BuildConfig] = parseValue(value);
+      (config as Record<string, any>)[key] = parseValue(value);
     }
   }
 

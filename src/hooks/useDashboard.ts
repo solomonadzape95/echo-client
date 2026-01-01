@@ -24,6 +24,7 @@ export interface DashboardData {
   };
   activeElection: {
     id: string;
+    slug: string;
     name: string;
     description: string;
     startDate: string;
@@ -33,6 +34,7 @@ export interface DashboardData {
   } | null;
   upcomingElection: {
     id: string;
+    slug: string;
     name: string;
     description: string;
     startDate: string;
