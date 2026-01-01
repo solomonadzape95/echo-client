@@ -1,13 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { MdFingerprint } from "react-icons/md";
 import { LoginForm } from "./components/LoginForm";
 import { RegisterForm } from "./components/RegisterForm";
 import { FloatingHelpButton } from "./components/FloatingHelpButton";
 import { Footer } from "./components/Footer";
 import { authHelpSteps } from "./constants/helpContent";
+import { authService } from "./lib/auth";
 
 export function AuthPage() {
+  const navigate = useNavigate();
   const [isRegister, setIsRegister] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // Check if user is already authenticated and redirect
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // Try to refresh token to check if user is authenticated
+        const response = await authService.refreshToken();
+        if (response.success) {
+          // User is authenticated, redirect to dashboard
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+      } catch (error) {
+        // User is not authenticated, stay on login page
+        // This is expected for unauthenticated users
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
+
+  // Show loading state while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="fixed inset-0 bg-[#102222] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-transparent flex flex-col relative h-screen">

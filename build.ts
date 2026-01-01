@@ -142,7 +142,7 @@ const result = await Bun.build({
   plugins: [plugin],
   minify: true,
   target: "browser",
-  sourcemap: "linked",
+  sourcemap: "none",
   publicPath: "/", // 🔥 THIS IS THE KEY FIX - ensures absolute paths for assets
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),
