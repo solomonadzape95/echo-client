@@ -13,7 +13,7 @@ Usage: bun run build.ts [options]
 Common Options:
   --outdir <path>          Output directory (default: "dist")
   --minify                 Enable minification (or --minify.whitespace, --minify.syntax, etc)
-  --sourcemap <type>      Sourcemap type: none|linked|inline|external
+  --sourcemap <type>       Sourcemap type: none|linked|inline|external
   --target <target>        Build target: browser|bun|node
   --format <format>        Output format: esm|cjs|iife
   --splitting              Enable code splitting
@@ -82,10 +82,24 @@ function parseArgs(): Partial<Bun.BuildConfig> {
 
     if (key.includes(".")) {
       const [parentKey, childKey] = key.split(".");
-      config[parentKey] = config[parentKey] || {};
-      config[parentKey][childKey] = parseValue(value);
+      if (
+        typeof config[parentKey as keyof Bun.BuildConfig] !== "object" ||
+        config[parentKey as keyof Bun.BuildConfig] == null
+      ) {
+        const parentKeyTyped = parentKey as keyof Bun.BuildConfig;
+        if (
+          typeof config[parentKeyTyped] !== "object" ||
+          config[parentKeyTyped] == null
+        ) {
+          config[parentKeyTyped] = {} as any;
+        }
+        // Assign childKey only if parentKey is not undefined/null
+        if (typeof config[parentKeyTyped] === "object" && config[parentKeyTyped] !== null) {
+          (config[parentKeyTyped] as any)[childKey] = parseValue(value);
+        }
+      }
     } else {
-      config[key] = parseValue(value);
+      config[key as keyof Bun.BuildConfig] = parseValue(value);
     }
   }
 
@@ -129,6 +143,7 @@ const result = await Bun.build({
   minify: true,
   target: "browser",
   sourcemap: "linked",
+  publicPath: "/", // 🔥 THIS IS THE KEY FIX - ensures absolute paths for assets
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),
   },
