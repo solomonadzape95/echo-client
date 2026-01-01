@@ -15,16 +15,25 @@ export function RegisterForm() {
   const [masterlistRecord, setMasterlistRecord] = useState<MasterlistRecord | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [accountExists, setAccountExists] = useState(false);
 
   const handleRegNumberSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setAccountExists(false);
     setStep("verifying");
 
     try {
       const response = await masterlistService.verifyRegNumber(regNumber);
-      if (response.success) {
+      // Check if account already exists (activated = true)
+      if (response.success === false && (response as any).alreadyExists) {
+        // Account exists - show the record but indicate it's already activated
+        setMasterlistRecord((response as any).data);
+        setAccountExists(true);
+        setStep("confirm");
+      } else if (response.success) {
         setMasterlistRecord(response.data);
+        setAccountExists(false);
         setStep("confirm");
       } else {
         setError(response.message || "Registration number not found in masterlist");
@@ -43,6 +52,7 @@ export function RegisterForm() {
   const handleReject = () => {
     setMasterlistRecord(null);
     setRegNumber("");
+    setAccountExists(false);
     setStep("regNumber");
   };
 
@@ -159,12 +169,26 @@ export function RegisterForm() {
           <div className="space-y-6">
             <div className="text-center">
               <h3 className="text-white text-xl font-bold uppercase tracking-wider mb-2">
-                Verify Your Identity
+                {accountExists ? "Account Already Exists" : "Verify Your Identity"}
               </h3>
               <p className="text-[#92c9c9] text-sm">
-                We found a record in the masterlist. Is this you?
+                {accountExists 
+                  ? "An account has already been created for this registration number."
+                  : "We found a record in the masterlist. Is this you?"}
               </p>
             </div>
+
+            {/* Account Exists Warning */}
+            {accountExists && (
+              <div className="bg-orange-900/20 border border-orange-500/50 p-4 rounded-lg">
+                <p className="text-orange-400 text-sm font-medium mb-2">
+                  This registration number is already registered.
+                </p>
+                <p className="text-[#92c9c9] text-xs">
+                  If this is you, please use the login page to access your account.
+                </p>
+              </div>
+            )}
 
             <div className="bg-[#102222] border border-[#234848] p-6 rounded-lg space-y-4">
               <div className="flex items-center gap-3">
@@ -189,14 +213,22 @@ export function RegisterForm() {
                   {masterlistRecord.class.department && (
                     <div>
                       <p className="text-[#568888] text-xs uppercase tracking-wider mb-1">Department</p>
-                      <p className="text-white">{masterlistRecord.class.department.name}</p>
+                      <p className="text-white">
+                        {typeof masterlistRecord.class.department === 'string' 
+                          ? masterlistRecord.class.department 
+                          : masterlistRecord.class.department.name}
+                      </p>
                     </div>
                   )}
 
-                  {masterlistRecord.class.department?.faculty && (
+                  {masterlistRecord.class.faculty && (
                     <div>
                       <p className="text-[#568888] text-xs uppercase tracking-wider mb-1">Faculty</p>
-                      <p className="text-white">{masterlistRecord.class.department.faculty.name}</p>
+                      <p className="text-white">
+                        {typeof masterlistRecord.class.faculty === 'string' 
+                          ? masterlistRecord.class.faculty 
+                          : masterlistRecord.class.faculty.name}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -204,20 +236,41 @@ export function RegisterForm() {
             </div>
 
             <div className="flex gap-4">
-              <button
-                onClick={handleReject}
-                className="flex-1 h-12 bg-[#234848] hover:bg-[#2a5050] text-white rounded font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
-              >
-                <MdClose className="w-5 h-5" />
-                <span>No, Try Again</span>
-              </button>
-              <button
-                onClick={handleConfirm}
-                className="flex-1 h-12 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] rounded font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
-              >
-                <MdCheckCircle className="w-5 h-5" />
-                <span>Yes, Continue</span>
-              </button>
+              {accountExists ? (
+                <>
+                  <button
+                    onClick={handleReject}
+                    className="flex-1 h-12 bg-[#234848] hover:bg-[#2a5050] text-white rounded font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
+                  >
+                    <MdClose className="w-5 h-5" />
+                    <span>Edit Reg. Number</span>
+                  </button>
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="flex-1 h-12 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] rounded font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
+                  >
+                    <MdCheckCircle className="w-5 h-5" />
+                    <span>Go to Login</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={handleReject}
+                    className="flex-1 h-12 bg-[#234848] hover:bg-[#2a5050] text-white rounded font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
+                  >
+                    <MdClose className="w-5 h-5" />
+                    <span>No, Try Again</span>
+                  </button>
+                  <button
+                    onClick={handleConfirm}
+                    className="flex-1 h-12 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] rounded font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
+                  >
+                    <MdCheckCircle className="w-5 h-5" />
+                    <span>Yes, Continue</span>
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

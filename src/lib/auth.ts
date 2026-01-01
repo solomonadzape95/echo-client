@@ -39,7 +39,7 @@ export interface MasterlistRecord {
   class?: {
     id: string;
     name: string;
-    department?: {
+    department?: string | {
       id: string;
       name: string;
       faculty?: {
@@ -47,6 +47,7 @@ export interface MasterlistRecord {
         name: string;
       };
     };
+    faculty?: string;
   };
   activated: boolean;
 }
@@ -91,10 +92,10 @@ export const authService = {
 };
 
 export const masterlistService = {
-  async verifyRegNumber(regNumber: string): Promise<ApiResponse<MasterlistRecord>> {
+  async verifyRegNumber(regNumber: string): Promise<ApiResponse<MasterlistRecord> & { alreadyExists?: boolean }> {
     // Use the public verification endpoint which returns the masterlist record
     // with populated class, department, and faculty
-    return api.get<ApiResponse<MasterlistRecord>>(`/masterlist/verify?regNumber=${encodeURIComponent(regNumber)}`);
+    return api.get<ApiResponse<MasterlistRecord> & { alreadyExists?: boolean }>(`/masterlist/verify?regNumber=${encodeURIComponent(regNumber)}`);
   },
 };
 
