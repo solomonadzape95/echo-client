@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { MdPerson } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { useDashboard } from "../hooks/useDashboard";
 
 export function ProfileCard() {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
+  const { data: dashboardResponse } = useDashboard();
+  const profile = dashboardResponse?.success ? dashboardResponse.data.profile : null;
 
   return (
     <div 
       onClick={() => navigate("/profile")}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-[#142828] border border-[#234848] cursor-pointer relative group overflow-hidden flex flex-col items-center justify-center h-[20vh] lg:h-full"
+      className="bg-[#142828] border border-[#234848] cursor-pointer relative group overflow-hidden flex flex-col items-center justify-center lg:min-h-[300px]"
     >
       {/* Icon - large, moves up and shrinks on hover */}
       <div 
@@ -29,6 +32,11 @@ export function ProfileCard() {
         }`}
       >
         <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Profile</h3>
+        {profile && (
+          <p className="text-[#92c9c9] text-xs sm:text-sm text-center mb-1">
+            {profile.name}
+          </p>
+        )}
         <p className="text-[#92c9c9] text-xs sm:text-sm text-center">View and manage your account</p>
       </div>
     </div>

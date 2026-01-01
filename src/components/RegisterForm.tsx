@@ -69,9 +69,11 @@ export function RegisterForm() {
     setIsSubmitting(true);
 
     try {
+      // The backend will use the name from masterlist automatically
+      // We just need to pass a username (it will be overridden by backend)
       const response = await authService.register(
         regNumber,
-        username || regNumber, // Use regNumber as username if not provided
+        masterlistRecord.regNumber, // This will be overridden by backend with masterlist name
         password,
         masterlistRecord.classId
       );
