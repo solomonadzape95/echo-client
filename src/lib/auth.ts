@@ -110,6 +110,12 @@ export const authService = {
       newPassword,
     });
   },
+
+  async updateProfilePicture(profilePictureUrl: string): Promise<ApiResponse<{ message: string }>> {
+    return api.put<ApiResponse<{ message: string }>>("/profile/picture", {
+      profilePicture: profilePictureUrl,
+    });
+  },
 };
 
 export const masterlistService = {

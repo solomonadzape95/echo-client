@@ -74,7 +74,7 @@ export function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#102222] p-4 md:p-8 relative">
+    <div className="min-h-screen bg-[#102222] p-4 md:p-8 pb-20 relative">
       {/* Grid pattern overlay */}
       <div
         className="fixed inset-0 opacity-10 pointer-events-none"
@@ -115,7 +115,7 @@ export function Dashboard() {
                 title={activeElection.name}
                 description={activeElection.description}
                 endTime={new Date(activeElection.endDate)}
-                onVote={() => navigate(`/elections/${activeElection.id}`)}
+                onVote={() => navigate(`/elections/${activeElection.slug || activeElection.id}`)}
               />
             </div>
           )}
@@ -140,7 +140,7 @@ export function Dashboard() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Total Elections */}
-              <div className="bg-[#102222] border border-[#234848] p-6 rounded-lg">
+              <div className="bg-[#102222] border border-[#234848] p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-full bg-[#234848] flex items-center justify-center">
                     <MdHowToVote className="w-5 h-5 text-[#13ecec]" />
@@ -154,7 +154,7 @@ export function Dashboard() {
               </div>
 
               {/* Eligible Elections */}
-              <div className="bg-[#102222] border border-[#234848] p-6 rounded-lg">
+              <div className="bg-[#102222] border border-[#234848] p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-full bg-[#234848] flex items-center justify-center">
                     <MdCheckCircle className="w-5 h-5 text-[#13ecec]" />
@@ -168,7 +168,7 @@ export function Dashboard() {
               </div>
 
               {/* Elections Voted In */}
-              <div className="bg-[#102222] border border-[#234848] p-6 rounded-lg">
+              <div className="bg-[#102222] border border-[#234848] p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-full bg-[#234848] flex items-center justify-center">
                     <MdPerson className="w-5 h-5 text-[#13ecec]" />
@@ -182,7 +182,7 @@ export function Dashboard() {
               </div>
 
               {/* Votes Cast */}
-              <div className="bg-[#102222] border border-[#234848] p-6 rounded-lg">
+              <div className="bg-[#102222] border border-[#234848] p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-full bg-[#234848] flex items-center justify-center">
                     <MdBarChart className="w-5 h-5 text-[#13ecec]" />
@@ -241,7 +241,9 @@ export function Dashboard() {
       />
 
       {/* Footer */}
-      <Footer />
+      <div className="absolute bottom-0 left-0 right-0 mt-4">
+        <Footer  />
+      </div>
     </div>
   );
 }

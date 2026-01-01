@@ -27,7 +27,6 @@ export function VoteVerification() {
     { path: "/dashboard", label: "Dashboard", icon: MdBarChart },
     { path: "/elections", label: "Elections", icon: MdHowToVote },
     { path: "/profile", label: "Profile", icon: MdPerson },
-    { path: "/stats", label: "Stats", icon: MdBarChart },
     { path: "/verify", label: "Verify Receipt", icon: MdVerified },
   ];
 
@@ -60,7 +59,7 @@ export function VoteVerification() {
         }}
       />
 
-      <div className="max-w-7xl mx-auto relative z-10 p-4 md:p-8 pb-12">
+      <div className="max-w-7xl mx-auto relative z-10 p-4 md:p-8 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Panel - Vote Verification Ledger */}
           <div className="lg:col-span-2 space-y-6">
@@ -245,7 +244,7 @@ export function VoteVerification() {
 
                   {/* View Election Button */}
                   <button
-                    onClick={() => navigate(`/elections/${verificationData.election.id}`)}
+                    onClick={() => navigate(`/elections/${verificationData.election.slug || verificationData.election.id}`)}
                     className="w-full bg-[#234848] hover:bg-[#2a5555] text-white font-bold px-6 py-3 flex items-center justify-center gap-2 transition-colors uppercase tracking-wider"
                   >
                     <MdHowToVote className="w-5 h-5" />

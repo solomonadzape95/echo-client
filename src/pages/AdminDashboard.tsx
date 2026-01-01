@@ -70,7 +70,7 @@ export function AdminDashboard() {
         {/* Quick Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Elections */}
-          <div className="bg-[#142828] border border-[#234848] p-6 rounded-lg">
+          <div className="bg-[#142828] border border-[#234848] p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center">
                 <MdHowToVote className="w-6 h-6 text-[#13ecec]" />
@@ -93,7 +93,7 @@ export function AdminDashboard() {
           </div>
 
           {/* Total Voters */}
-          <div className="bg-[#142828] border border-[#234848] p-6 rounded-lg">
+          <div className="bg-[#142828] border border-[#234848] p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center">
                 <MdPeople className="w-6 h-6 text-[#13ecec]" />
@@ -109,7 +109,7 @@ export function AdminDashboard() {
           </div>
 
           {/* Total Votes Cast */}
-          <div className="bg-[#142828] border border-[#234848] p-6 rounded-lg">
+          <div className="bg-[#142828] border border-[#234848] p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center">
                 <MdCheckCircle className="w-6 h-6 text-[#13ecec]" />
@@ -125,7 +125,7 @@ export function AdminDashboard() {
           </div>
 
           {/* Overall Turnout */}
-          <div className="bg-[#142828] border border-[#234848] p-6 rounded-lg">
+          <div className="bg-[#142828] border border-[#234848] p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center">
                 <MdBarChart className="w-6 h-6 text-[#13ecec]" />
@@ -146,17 +146,17 @@ export function AdminDashboard() {
 
         {/* Elections by Type */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-[#142828] border border-[#234848] p-6 rounded-lg">
+          <div className="bg-[#142828] border border-[#234848] p-6">
             <div className="text-[#568888] text-sm uppercase tracking-wider mb-2">Class Elections</div>
             <div className="text-3xl font-bold text-white mb-2">{stats.summary.electionsByType.class}</div>
             <div className="text-xs text-[#92c9c9]">Department-level voting</div>
           </div>
-          <div className="bg-[#142828] border border-[#234848] p-6 rounded-lg">
+          <div className="bg-[#142828] border border-[#234848] p-6">
             <div className="text-[#568888] text-sm uppercase tracking-wider mb-2">Department Elections</div>
             <div className="text-3xl font-bold text-white mb-2">{stats.summary.electionsByType.department}</div>
             <div className="text-xs text-[#92c9c9]">Department-level voting</div>
           </div>
-          <div className="bg-[#142828] border border-[#234848] p-6 rounded-lg">
+          <div className="bg-[#142828] border border-[#234848] p-6">
             <div className="text-[#568888] text-sm uppercase tracking-wider mb-2">Faculty Elections</div>
             <div className="text-3xl font-bold text-white mb-2">{stats.summary.electionsByType.faculty}</div>
             <div className="text-xs text-[#92c9c9]">Campus-wide voting</div>

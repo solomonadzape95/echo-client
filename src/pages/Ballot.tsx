@@ -38,7 +38,6 @@ export function Ballot() {
     { path: "/dashboard", label: "Dashboard", icon: MdBarChart },
     { path: "/elections", label: "Elections", icon: MdHowToVote },
     { path: "/profile", label: "Profile", icon: MdPerson },
-    { path: "/stats", label: "Stats", icon: MdBarChart },
     { path: "/verify", label: "Verify Receipt", icon: MdVerified },
   ];
 

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdCheckCircle, MdLock, MdHistory, MdArrowBack, MdCameraAlt, MdBarChart, MdHowToVote, MdPerson, MdVerified } from "react-icons/md";
 import { useProfile } from "../hooks/useProfile";
@@ -16,6 +16,13 @@ export function Profile() {
   const [activeTab, setActiveTab] = useState("security");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const { data: profileResponse, isLoading, error } = useProfile();
+  
+  // Set profile image from API response
+  useEffect(() => {
+    if (profileResponse?.success && profileResponse.data.profile.profilePicture) {
+      setProfileImage(profileResponse.data.profile.profilePicture);
+    }
+  }, [profileResponse]);
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -37,7 +44,6 @@ export function Profile() {
     { path: "/dashboard", label: "Dashboard", icon: MdBarChart },
     { path: "/elections", label: "Elections", icon: MdHowToVote },
     { path: "/profile", label: "Profile", icon: MdPerson },
-    { path: "/stats", label: "Stats", icon: MdBarChart },
     { path: "/verify", label: "Verify Receipt", icon: MdVerified },
   ];
 
@@ -86,14 +92,59 @@ export function Profile() {
     fileInputRef.current?.click();
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showToast("Please select an image file", "error");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      showToast("Image size must be less than 5MB", "error");
+      return;
+    }
+
+    setIsUploadingImage(true);
+
+    try {
+      // Upload image to storage
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'profile-images');
+
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${API_BASE_URL}/storage/upload`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+
+      const result = await response.json();
+
+      if (!result.success || !result.data?.url) {
+        throw new Error(result.message || 'Failed to upload image');
+      }
+
+      // Update profile picture in database
+      const updateResponse = await authService.updateProfilePicture(result.data.url);
+      
+      if (updateResponse.success) {
+        setProfileImage(result.data.url);
+        showToast("Profile picture updated successfully", "success");
+      } else {
+        throw new Error(updateResponse.message || 'Failed to update profile picture');
+      }
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Failed to upload image", "error");
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -158,7 +209,7 @@ export function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-[#102222] p-4 md:p-8 pb-16 relative">
+    <div className="min-h-screen bg-[#102222] p-4 md:p-8 pb-20 relative">
       {/* Grid pattern overlay */}
       <div
         className="absolute inset-0 opacity-10 pointer-events-none"
@@ -201,20 +252,28 @@ export function Profile() {
                   accept="image/*"
                   className="hidden"
                 />
-                <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-[#234848] flex items-center justify-center overflow-hidden relative">
-                  {profileImage ? (
+                <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-[#234848] flex items-center justify-center overflow-hidden relative rounded-full">
+                  {profileImage || profile?.profilePicture ? (
                     <img
-                      src={profileImage}
+                      src={profileImage || profile?.profilePicture || ''}
                       alt="Profile"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover rounded-full"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                      }}
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-[#13ecec]/20 to-[#234848] flex items-center justify-center text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+                    <div className="w-full h-full bg-gradient-to-br from-[#13ecec]/20 to-[#234848] flex items-center justify-center text-2xl sm:text-3xl md:text-4xl font-bold text-white rounded-full">
                       {profile ? getInitials(profile.name) : "U"}
                     </div>
                   )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                    <MdCameraAlt className="w-6 h-6 sm:w-8 sm:h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {isUploadingImage ? (
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <MdCameraAlt className="w-6 h-6 sm:w-8 sm:h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    )}
                   </div>
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-[#13ecec] flex items-center justify-center">
@@ -233,17 +292,17 @@ export function Profile() {
                   )}
                 </div>
                 <p className="text-[#92c9c9] text-sm mb-3">
-                  {profile.class?.department?.name || "N/A"} • {profile.class?.name || "N/A"}
+                  {profile.class?.department || "N/A"} • {profile.class?.name || "N/A"}
                 </p>
                 <div className="space-y-1 text-sm text-[#92c9c9]">
                   <div className="flex items-center gap-2">
                     <span className="w-4 h-4 flex items-center justify-center">ID</span>
                     <span>Reg. Number: {profile.regNumber}</span>
                   </div>
-                  {profile.class?.department?.faculty && (
+                  {profile.class?.faculty && (
                   <div className="flex items-center gap-2">
                     <span className="w-4 h-4 flex items-center justify-center">🏛️</span>
-                      <span>Faculty: {profile.class.department.faculty.name}</span>
+                      <span>Faculty: {profile.class.faculty}</span>
                   </div>
                   )}
                 </div>

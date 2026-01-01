@@ -6,7 +6,8 @@ import {
   MdHowToVote, 
   MdAdminPanelSettings,
   MdSearch,
-  MdSchool
+  MdSchool,
+  MdLogout
 } from "react-icons/md";
 import { FloatingMenu } from "./FloatingMenu";
 
@@ -41,29 +42,32 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <div className="flex-1 flex flex-col">
         {/* Top Bar */}
         <header className="h-16 bg-[#142828] border-b border-[#234848] flex items-center justify-between px-6">
-          {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 text-sm text-[#92c9c9]">
-            {location.pathname.split("/").filter(Boolean).map((segment, index, arr) => (
-              <span key={index} className="flex items-center gap-2">
-                <span className="capitalize">{segment === "admin" ? "Admin" : segment}</span>
-                {index < arr.length - 1 && <span className="text-[#568888]">/</span>}
-              </span>
-            ))}
+          {/* Left side - Title */}
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-bold text-white">Admin Dashboard</h1>
           </div>
 
-          {/* Right side - Search and User */}
+          {/* Right side - User and Logout */}
           <div className="flex items-center gap-4">
-          
             {/* User */}
             <div className="flex items-center gap-2 px-3 py-1 bg-[#102222] border border-[#234848] rounded-lg">
               <div className="w-8 h-8 bg-[#13ecec] rounded-full flex items-center justify-center text-[#112222] font-bold text-xs">
                 AD
               </div>
               <div className="text-xs">
-                <div className="text-white font-medium">Logged in as Admin User</div>
+                <div className="text-white font-medium">Logged in as Admin</div>
                 <div className="text-[#568888]">System Administrator</div>
               </div>
             </div>
+            
+            {/* Logout Button */}
+            <button
+              onClick={() => navigate("/admin/login")}
+              className="flex items-center gap-2 px-4 py-2 bg-red-900/20 hover:bg-red-900/30 border border-red-500/50 text-red-400 hover:text-red-300 rounded-lg transition-all"
+            >
+              <MdLogout className="w-4 h-4" />
+              <span className="text-sm font-medium">Logout</span>
+            </button>
           </div>
         </header>
 

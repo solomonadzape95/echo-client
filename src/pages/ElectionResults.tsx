@@ -83,7 +83,6 @@ export function ElectionResults() {
     { path: "/dashboard", label: "Dashboard", icon: MdBarChart },
     { path: "/elections", label: "Elections", icon: MdHowToVote },
     { path: "/profile", label: "Profile", icon: MdPerson },
-    { path: "/stats", label: "Stats", icon: MdBarChart },
     { path: "/verify", label: "Verify Receipt", icon: MdVerified },
   ];
 
@@ -244,7 +243,7 @@ export function ElectionResults() {
         }}
       />
 
-      <div className="max-w-7xl mx-auto relative z-10 p-4 md:p-8 pb-12">
+      <div className="max-w-7xl mx-auto relative z-10 p-4 md:p-8 pb-20">
         {/* Header with Back Button */}
         <div className="mb-6">
           <button
@@ -347,6 +346,10 @@ export function ElectionResults() {
             filteredResults.map((officeResult) => {
               const sortedCandidates = [...officeResult.candidates].sort((a, b) => b.voteCount - a.voteCount);
             const leadingCandidate = sortedCandidates[0];
+            const maxVotes = leadingCandidate?.voteCount || 0;
+            // Check for ties - multiple candidates with the same highest vote count
+            const tiedCandidates = sortedCandidates.filter(c => c.voteCount === maxVotes && maxVotes > 0);
+            const isTie = tiedCandidates.length > 1;
 
             return (
                 <div key={officeResult.officeId} className="bg-[#142828] border border-[#234848] p-6 rounded-lg">
@@ -359,6 +362,9 @@ export function ElectionResults() {
                       {officeResult.officeDescription && (
                         <p className="text-[#92c9c9] text-sm">{officeResult.officeDescription}</p>
                       )}
+                      {isTie && (
+                        <p className="text-[#13ecec] text-sm font-bold mt-2">⚠️ TIE - Multiple candidates tied for first place</p>
+                      )}
                     </div>
                     <div className="bg-[#234848] text-[#92c9c9] text-xs font-bold px-3 py-1 uppercase tracking-wider rounded">
                       {officeResult.totalVotes} TOTAL VOTES
@@ -368,12 +374,13 @@ export function ElectionResults() {
                 {/* Candidates List */}
                 <div className="space-y-3">
                   {sortedCandidates.map((candidate, candidateIndex) => {
-                      const isLeading = candidate.isWinner || candidateIndex === 0;
+                      const isLeading = candidate.isWinner || (candidateIndex === 0 && !isTie);
+                      const isTied = isTie && candidate.voteCount === maxVotes;
                     return (
                       <div
                           key={candidate.candidateId}
                           className={`bg-[#1a2a2a] border p-4 rounded ${
-                            isLeading ? "border-[#13ecec]" : "border-[#234848]"
+                            isTied ? "border-yellow-500" : isLeading ? "border-[#13ecec]" : "border-[#234848]"
                           }`}
                       >
                         <div className="flex items-center gap-4">
@@ -381,7 +388,12 @@ export function ElectionResults() {
                             <div className="flex-1 min-w-[220px]">
                               <div className="flex items-center gap-2 mb-1">
                                 <h3 className="text-xl font-bold text-white">{candidate.candidateName}</h3>
-                                {candidate.isWinner && (
+                                {isTied && (
+                                  <span className="px-2 py-0.5 bg-yellow-500 text-[#112222] text-xs font-bold rounded">
+                                    TIE
+                                  </span>
+                                )}
+                                {candidate.isWinner && !isTied && (
                                   <span className="px-2 py-0.5 bg-[#13ecec] text-[#112222] text-xs font-bold rounded">
                                     WINNER
                                   </span>
@@ -394,11 +406,11 @@ export function ElectionResults() {
                             <div className="absolute inset-0 flex items-center">
                               <div
                                 className={`h-full flex items-center ${
-                                  isLeading ? "bg-[#13ecec]" : "bg-[#234848]"
+                                  isTied ? "bg-yellow-500" : isLeading ? "bg-[#13ecec]" : "bg-[#234848]"
                                 }`}
                                   style={{ width: `${Math.min(candidate.percentage, 100)}%` }}
                               >
-                                {isLeading && (
+                                {(isLeading || isTied) && (
                                   <MdBarChart className="w-5 h-5 text-[#112222] ml-2" />
                                 )}
                               </div>
@@ -407,7 +419,7 @@ export function ElectionResults() {
 
                             {/* Vote Stats */}
                           <div className="flex-shrink-0 text-right min-w-[140px]">
-                            <div className={`text-2xl font-bold mb-1 ${isLeading ? "text-[#13ecec]" : "text-[#92c9c9]"}`}>
+                            <div className={`text-2xl font-bold mb-1 ${isTied ? "text-yellow-500" : isLeading ? "text-[#13ecec]" : "text-[#92c9c9]"}`}>
                               {candidate.percentage.toFixed(1)}%
                             </div>
                               <div className="text-white text-xl font-bold">{formatNumber(candidate.voteCount)}</div>

@@ -8,17 +8,12 @@ export interface ProfileData {
     username: string;
     regNumber: string;
     name: string;
+    profilePicture?: string | null;
     class?: {
       id: string;
       name: string;
-      department?: {
-        id: string;
-        name: string;
-        faculty?: {
-          id: string;
-          name: string;
-        };
-      };
+      department?: string;
+      faculty?: string;
     };
     createdAt: string;
     isVerified: boolean;

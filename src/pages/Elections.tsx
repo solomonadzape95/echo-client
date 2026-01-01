@@ -29,7 +29,6 @@ export function Elections() {
     { path: "/dashboard", label: "Dashboard", icon: MdBarChart },
     { path: "/elections", label: "Elections", icon: MdHowToVote },
     { path: "/profile", label: "Profile", icon: MdPerson },
-    { path: "/stats", label: "Stats", icon: MdBarChart },
     { path: "/verify", label: "Verify Receipt", icon: MdVerified },
   ];
 
@@ -104,7 +103,7 @@ export function Elections() {
   }
 
   return (
-    <div className="min-h-screen bg-[#102222] p-4 md:p-8 pb-16 relative">
+    <div className="min-h-screen bg-[#102222] p-4 md:p-8 pb-20 relative">
       {/* Grid pattern overlay */}
       <div
         className="absolute inset-0 opacity-10 pointer-events-none"
@@ -190,7 +189,7 @@ export function Elections() {
                 key={election.id}
                 className="bg-[#142828] border border-[#234848] p-6 hover:border-[#13ecec] transition-colors cursor-pointer"
                 onClick={() => {
-                  navigate(`/elections/${election.id}`);
+                  navigate(`/elections/${election.slug || election.id}`);
                 }}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

@@ -58,7 +58,6 @@ export function ElectionDetail() {
     { path: "/dashboard", label: "Dashboard", icon: MdBarChart },
     { path: "/elections", label: "Elections", icon: MdHowToVote },
     { path: "/profile", label: "Profile", icon: MdPerson },
-    { path: "/stats", label: "Stats", icon: MdBarChart },
     { path: "/verify", label: "Verify Receipt", icon: MdVerified },
   ];
 
@@ -412,7 +411,7 @@ export function ElectionDetail() {
         }}
       />
 
-      <div className="max-w-7xl mx-auto relative z-10 p-4 md:p-8 pb-12">
+      <div className="max-w-7xl mx-auto relative z-10 p-4 md:p-8 pb-20">
         {/* Header with Back Button */}
         <div className="mb-6">
           <button
