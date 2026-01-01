@@ -2,7 +2,7 @@ import { MdFavorite } from "react-icons/md";
 
 export function Footer() {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-transparent py-3 px-4 z-30 mb-4">
+    <footer className="bottom-0 left-0 right-0 bg-transparent py-3 px-4 z-30 mt-4">
       <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-xs sm:text-sm text-[#92c9c9]">
         <span>built with</span>
         <span className="inline-flex items-center">

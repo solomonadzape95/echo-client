@@ -8,6 +8,7 @@ import { Footer } from "../components/Footer";
 import { authService } from "../lib/auth";
 import { useToast } from "../hooks/useToast";
 import { dashboardHelpSteps } from "../constants/helpContent";
+import { API_BASE_URL } from "../lib/api";
 
 export function Profile() {
   const navigate = useNavigate();
@@ -119,7 +120,6 @@ export function Profile() {
       formData.append('file', file);
       formData.append('folder', 'profile-images');
 
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
       console.log('[PROFILE] Uploading image to:', `${API_BASE_URL}/storage/upload`);
       
       const response = await fetch(`${API_BASE_URL}/storage/upload`, {
@@ -205,7 +205,11 @@ export function Profile() {
   const getInitials = (name: string) => {
     const parts = name.trim().split(/\s+/);
     if (parts.length >= 2) {
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      const first = parts[0];
+      const last = parts[parts.length - 1];
+      if (first && last && first[0] && last[0]) {
+        return (first[0] + last[0]).toUpperCase();
+      }
     }
     return name.substring(0, 2).toUpperCase();
   };
@@ -272,7 +276,7 @@ export function Profile() {
                   accept="image/*"
                   className="hidden"
                 />
-                <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-[#234848] flex items-center justify-center overflow-hidden relative rounded-full">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-[#234848] flex items-center justify-center overflow-hidden relative rounded-none">
                   {profileImage || profile?.profilePicture ? (
                     <img
                       src={profileImage || profile?.profilePicture || ''}
