@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AdminLayout } from "../components/AdminLayout";
 import { useAdminStats, useAdminVoters } from "../hooks/useAdmin";
 import { 
@@ -10,8 +12,26 @@ import {
 } from "react-icons/md";
 
 export function AdminDashboard() {
+  const navigate = useNavigate();
   const { data: statsResponse, isLoading, isFetching, error } = useAdminStats();
   const { data: votersResponse } = useAdminVoters(); // Get all voters to count unique voters
+
+  // Redirect to admin login if authentication fails
+  useEffect(() => {
+    if (error) {
+      // Check if it's an authentication error (401 or 403)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (
+        errorMessage.includes("401") ||
+        errorMessage.includes("403") ||
+        errorMessage.includes("Authentication") ||
+        errorMessage.includes("Unauthorized") ||
+        errorMessage.includes("Admin access required")
+      ) {
+        navigate("/admin/login", { replace: true });
+      }
+    }
+  }, [error, navigate]);
 
   // Show loading only on initial load (not on background refetches)
   if (isLoading && !statsResponse) {

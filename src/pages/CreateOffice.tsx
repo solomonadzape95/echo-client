@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AdminLayout } from "../components/AdminLayout";
-import { useCreateOffice, useAdminOffices } from "../hooks/useAdmin";
+import { useCreateOffice, useAdminOffices, useAdminElection } from "../hooks/useAdmin";
 import { MdArrowBack, MdClose } from "react-icons/md";
 import { useToast } from "../hooks/useToast";
 
 export function CreateOffice() {
   const navigate = useNavigate();
   const { showToast, ToastContainer } = useToast();
-  const { id: electionId } = useParams<{ id: string }>();
+  const { slug: electionSlug } = useParams<{ slug: string }>();
+  const { data: electionResponse } = useAdminElection(electionSlug);
   const createOffice = useCreateOffice();
-  const { data: officesResponse } = useAdminOffices(electionId);
+  const { data: officesResponse } = useAdminOffices(electionResponse?.success ? electionResponse.data.id : undefined);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -22,18 +23,18 @@ export function CreateOffice() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!electionId) return;
+    if (!electionResponse?.success) return;
 
     try {
       await createOffice.mutateAsync({
         name: formData.name,
         description: formData.description,
-        election: electionId,
+        election: electionResponse.data.id,
         dependsOn: formData.dependsOn || null,
       });
 
       showToast("Office created successfully", "success");
-      navigate(`/admin/elections/${electionId}`);
+      navigate(`/admin/elections/${electionSlug}`);
     } catch (error) {
       showToast(error instanceof Error ? error.message : "Failed to create office", "error");
     }
@@ -45,7 +46,7 @@ export function CreateOffice() {
       <div className="p-8">
         {/* Back Button */}
         <button
-          onClick={() => navigate(`/admin/elections/${electionId}`)}
+          onClick={() => navigate(`/admin/elections/${electionSlug}`)}
           className="mb-6 text-[#92c9c9] hover:text-white flex items-center gap-2 transition-colors"
         >
           <MdArrowBack className="w-5 h-5" />
@@ -115,7 +116,7 @@ export function CreateOffice() {
             <div className="flex gap-4 pt-4">
               <button
                 type="button"
-                onClick={() => navigate(`/admin/elections/${electionId}`)}
+                onClick={() => navigate(`/admin/elections/${electionSlug}`)}
                 className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white rounded-lg transition-all"
               >
                 Cancel

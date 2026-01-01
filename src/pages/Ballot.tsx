@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { MdPerson, MdCheckBox, MdCheckBoxOutlineBlank, MdArrowBack, MdCheckCircle, MdVerified, MdErrorOutline, MdBarChart, MdHowToVote, MdContentCopy, MdDownload } from "react-icons/md";
 import { useBallot } from "../hooks/useBallot";
 import { useVoting, votingService } from "../hooks/useVoting";
@@ -9,12 +10,24 @@ import { FloatingHelpButton } from "../components/FloatingHelpButton";
 import { Footer } from "../components/Footer";
 import { authService } from "../lib/auth";
 import { dashboardHelpSteps } from "../constants/helpContent";
+import { api } from "../lib/api";
+import type { ApiResponse } from "../lib/api";
 
 type VotingStep = "loading" | "ballot" | "verifying" | "submitting" | "success" | "error";
 
 export function Ballot() {
   const navigate = useNavigate();
-  const { id: electionId } = useParams();
+  const { slug: electionSlug } = useParams<{ slug: string }>();
+  const { data: electionResponse } = useQuery({
+    queryKey: ["election", electionSlug],
+    queryFn: async () => {
+      if (!electionSlug) throw new Error("Election slug is required");
+      const response = await api.get<ApiResponse<any>>(`/election/${electionSlug}`);
+      return response;
+    },
+    enabled: !!electionSlug,
+  });
+  const electionId = electionResponse?.success ? electionResponse.data.id : undefined;
   const { data: ballotResponse, isLoading: isLoadingBallot, error: ballotError } = useBallot(electionId);
   const { data: hasVoted, isLoading: isLoadingVoteStatus } = useVoteStatus(electionId);
   const { verifyEligibility, submitVote } = useVoting();
@@ -164,7 +177,7 @@ export function Ballot() {
               </p>
               <div className="flex gap-4 justify-center">
                 <button
-                  onClick={() => navigate(`/elections/${electionId}`)}
+                  onClick={() => navigate(`/elections/${electionSlug}`)}
                   className="px-4 py-2 bg-[#234848] text-white rounded font-medium"
                 >
                   View Election

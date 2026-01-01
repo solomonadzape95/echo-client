@@ -8,8 +8,8 @@ import { useToast } from "../hooks/useToast";
 export function EditElection() {
   const navigate = useNavigate();
   const { showToast, ToastContainer } = useToast();
-  const { id: electionId } = useParams<{ id: string }>();
-  const { data: electionResponse, isLoading } = useAdminElection(electionId);
+  const { slug: electionSlug } = useParams<{ slug: string }>();
+  const { data: electionResponse, isLoading } = useAdminElection(electionSlug);
   const updateElection = useUpdateElection();
 
   const [formData, setFormData] = useState({
@@ -31,11 +31,11 @@ export function EditElection() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!electionId) return;
+    if (!election) return;
 
     try {
       await updateElection.mutateAsync({
-        id: electionId,
+        id: election.id,
         data: {
           name: formData.name,
           description: formData.description || undefined,
@@ -43,7 +43,7 @@ export function EditElection() {
       });
 
       showToast("Election updated successfully", "success");
-      navigate(`/admin/elections/${electionId}`);
+      navigate(`/admin/elections/${electionSlug}`);
     } catch (error) {
       showToast(error instanceof Error ? error.message : "Failed to update election", "error");
     }
@@ -131,7 +131,7 @@ export function EditElection() {
             <div className="flex gap-4 pt-4">
               <button
                 type="button"
-                onClick={() => navigate(`/admin/elections/${electionId}`)}
+                onClick={() => navigate(`/admin/elections/${electionSlug}`)}
                 className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white rounded-lg transition-all"
               >
                 Cancel

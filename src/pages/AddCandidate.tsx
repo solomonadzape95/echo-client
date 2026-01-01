@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AdminLayout } from "../components/AdminLayout";
-import { useSearchVotersByElection, useCreateCandidate, useAdminElection } from "../hooks/useAdmin";
+import { useSearchVotersByElection, useCreateCandidate, useAdminElection, useAdminOffice } from "../hooks/useAdmin";
 import { API_BASE_URL } from "../lib/api";
 import { MdArrowBack, MdAdd, MdPerson, MdSearch, MdImage, MdClose } from "react-icons/md";
 import { useToast } from "../hooks/useToast";
@@ -9,9 +9,10 @@ import { useToast } from "../hooks/useToast";
 export function AddCandidate() {
   const navigate = useNavigate();
   const { showToast, ToastContainer } = useToast();
-  const { id: electionId, officeId } = useParams<{ id: string; officeId: string }>();
+  const { slug: electionSlug, officeSlug } = useParams<{ slug: string; officeSlug: string }>();
   const createCandidate = useCreateCandidate();
-  const { data: electionResponse } = useAdminElection(electionId);
+  const { data: electionResponse } = useAdminElection(electionSlug);
+  const { data: officeResponse } = useAdminOffice(officeSlug);
   
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedVoter, setSelectedVoter] = useState<any | null>(null);
@@ -27,7 +28,7 @@ export function AddCandidate() {
   const searchRef = useRef<HTMLDivElement>(null);
 
   const { data: searchResults, isLoading: isSearching } = useSearchVotersByElection(
-    electionId,
+    electionResponse?.success ? electionResponse.data.id : undefined,
     searchQuery.length >= 3 ? searchQuery : ""
   );
 
@@ -101,7 +102,7 @@ export function AddCandidate() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!officeId || !selectedVoter) return;
+    if (!officeResponse?.success || !selectedVoter) return;
 
     // If image file is selected but not uploaded, upload it first
     if (imageFile && !formData.image) {
@@ -114,7 +115,7 @@ export function AddCandidate() {
 
     try {
       await createCandidate.mutateAsync({
-        officeId: officeId!,
+        officeId: officeResponse.data.id,
         voterId: selectedVoter.id,
         quote: formData.quote || undefined,
         manifesto: formData.manifesto || undefined,
@@ -122,7 +123,7 @@ export function AddCandidate() {
       });
 
       showToast("Candidate added successfully", "success");
-      navigate(`/admin/elections/${electionId}/offices/${officeId}`);
+      navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}`);
     } catch (error) {
       showToast(error instanceof Error ? error.message : "Failed to add candidate", "error");
     }
@@ -137,7 +138,7 @@ export function AddCandidate() {
       <div className="p-8">
         {/* Back Button */}
         <button
-          onClick={() => navigate(`/admin/elections/${electionId}/offices/${officeId}`)}
+          onClick={() => navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}`)}
           className="mb-6 text-[#92c9c9] hover:text-white flex items-center gap-2 transition-colors"
         >
           <MdArrowBack className="w-5 h-5" />
@@ -343,7 +344,7 @@ export function AddCandidate() {
             <div className="flex gap-4 pt-4">
               <button
                 type="button"
-                onClick={() => navigate(`/admin/elections/${electionId}/offices/${officeId}`)}
+                onClick={() => navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}`)}
                 className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white rounded-lg transition-all"
               >
                 Cancel

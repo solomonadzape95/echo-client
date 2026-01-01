@@ -8,9 +8,10 @@ import { useToast } from "../hooks/useToast";
 export function EditOffice() {
   const navigate = useNavigate();
   const { showToast, ToastContainer } = useToast();
-  const { id: electionId, officeId } = useParams<{ id: string; officeId: string }>();
-  const { data: officeResponse, isLoading } = useAdminOffice(officeId);
-  const { data: officesResponse } = useAdminOffices(electionId);
+  const { slug: electionSlug, officeSlug } = useParams<{ slug: string; officeSlug: string }>();
+  const { data: officeResponse, isLoading } = useAdminOffice(officeSlug);
+  const { data: electionResponse } = useAdminElection(electionSlug);
+  const { data: officesResponse } = useAdminOffices(electionResponse?.success ? electionResponse.data.id : undefined);
   const updateOffice = useUpdateOffice();
 
   const [formData, setFormData] = useState({
@@ -22,8 +23,9 @@ export function EditOffice() {
   const office = officeResponse?.success ? officeResponse.data : null;
   const offices = officesResponse?.success ? officesResponse.data : [];
 
+  const office = officeResponse?.success ? officeResponse.data : null;
   // Filter out current office from dependsOn options
-  const availableOffices = offices.filter((o) => o.id !== officeId);
+  const availableOffices = offices.filter((o) => o.id !== office?.id);
 
   // Populate form when office data loads
   useEffect(() => {
@@ -38,11 +40,11 @@ export function EditOffice() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!officeId) return;
+    if (!office) return;
 
     try {
       await updateOffice.mutateAsync({
-        id: officeId,
+        id: office.id,
         data: {
           name: formData.name,
           description: formData.description,
@@ -51,7 +53,7 @@ export function EditOffice() {
       });
 
       showToast("Office updated successfully", "success");
-      navigate(`/admin/elections/${electionId}/offices/${officeId}`);
+      navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}`);
     } catch (error) {
       showToast(error instanceof Error ? error.message : "Failed to update office", "error");
     }
@@ -74,7 +76,7 @@ export function EditOffice() {
           <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 rounded-lg">
             <p className="font-medium">Office not found</p>
             <button
-              onClick={() => navigate(`/admin/elections/${electionId}`)}
+              onClick={() => navigate(`/admin/elections/${electionSlug}`)}
               className="mt-4 px-4 py-2 bg-[#234848] text-white rounded hover:bg-[#2a5555] transition-colors"
             >
               Back to Election
@@ -91,7 +93,7 @@ export function EditOffice() {
       <div className="p-8">
         {/* Back Button */}
         <button
-          onClick={() => navigate(`/admin/elections/${electionId}/offices/${officeId}`)}
+          onClick={() => navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}`)}
           className="mb-6 text-[#92c9c9] hover:text-white flex items-center gap-2 transition-colors"
         >
           <MdArrowBack className="w-5 h-5" />
@@ -161,7 +163,7 @@ export function EditOffice() {
             <div className="flex gap-4 pt-4">
               <button
                 type="button"
-                onClick={() => navigate(`/admin/elections/${electionId}/offices/${officeId}`)}
+                onClick={() => navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}`)}
                 className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white rounded-lg transition-all"
               >
                 Cancel

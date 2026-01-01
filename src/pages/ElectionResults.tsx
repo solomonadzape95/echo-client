@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { MdArrowBack, MdBarChart, MdTrendingUp, MdHowToVote, MdPerson, MdVerified, MdRefresh } from "react-icons/md";
 import { FloatingMenu } from "../components/FloatingMenu";
@@ -7,7 +7,7 @@ import { Footer } from "../components/Footer";
 import { AdminLayout } from "../components/AdminLayout";
 import { authService } from "../lib/auth";
 import { useElectionResults, useCalculateResults } from "../hooks/useAdmin";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "../hooks/useToast";
 import { dashboardHelpSteps } from "../constants/helpContent";
 import { api } from "../lib/api";
@@ -35,28 +35,53 @@ interface OfficeResult {
 export function ElectionResults() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id: electionId } = useParams();
+  const queryClient = useQueryClient();
+  const hasAutoCalculated = useRef(false);
+  const { slug: electionSlug } = useParams<{ slug: string }>();
   const [officeFilter, setOfficeFilter] = useState<OfficeFilter>("all");
   const { showToast, ToastContainer } = useToast();
   
   // Check if this is an admin view
   const isAdminView = location.pathname.startsWith("/admin");
   
+  // Get election info first to get the ID
+  const { data: electionResponse } = useQuery({
+    queryKey: ["election", electionSlug],
+    queryFn: async () => {
+      if (!electionSlug) throw new Error("Election slug is required");
+      const response = await api.get<ApiResponse<any>>(`/election/${electionSlug}`);
+      return response;
+    },
+    enabled: !!electionSlug,
+  });
+  
+  const electionId = electionResponse?.success ? electionResponse.data.id : undefined;
+  
   // Fetch results
-  const { data: resultsResponse, isLoading: isLoadingResults, refetch: refetchResults } = useElectionResults(electionId);
+  const { data: resultsResponse, isLoading: isLoadingResults } = useElectionResults(electionId);
   const calculateResults = useCalculateResults();
   
-  // Auto-calculate results if admin and results don't exist
+  // Auto-calculate results if admin and results don't exist (only once)
   useEffect(() => {
-    if (isAdminView && resultsResponse?.success && !resultsResponse.data.hasResults && !calculateResults.isPending) {
+    if (
+      isAdminView && 
+      resultsResponse?.success && 
+      !resultsResponse.data.hasResults && 
+      !calculateResults.isPending && 
+      electionId &&
+      !hasAutoCalculated.current
+    ) {
+      hasAutoCalculated.current = true;
       // Auto-calculate results for admin
-      calculateResults.mutateAsync(electionId!).then(() => {
-        refetchResults();
+      calculateResults.mutateAsync(electionId).then(() => {
+        // Invalidate queries instead of refetching directly
+        queryClient.invalidateQueries({ queryKey: ["election", electionId, "results"] });
       }).catch((error) => {
         console.error("Failed to calculate results:", error);
+        hasAutoCalculated.current = false; // Reset on error so it can retry
       });
     }
-  }, [isAdminView, resultsResponse, electionId, calculateResults, refetchResults]);
+  }, [isAdminView, resultsResponse, electionId, calculateResults, queryClient]);
 
   const handleLogout = async () => {
     try {
@@ -73,7 +98,8 @@ export function ElectionResults() {
     try {
       await calculateResults.mutateAsync(electionId);
       showToast("Results calculated successfully", "success");
-      refetchResults();
+      // Invalidate queries instead of refetching directly
+      queryClient.invalidateQueries({ queryKey: ["election", electionId, "results"] });
     } catch (error) {
       showToast(error instanceof Error ? error.message : "Failed to calculate results", "error");
     }
@@ -86,16 +112,6 @@ export function ElectionResults() {
     { path: "/verify", label: "Verify Receipt", icon: MdVerified },
   ];
 
-  // Get election info
-  const { data: electionResponse } = useQuery({
-    queryKey: ["election", electionId],
-    queryFn: async () => {
-      if (!electionId) throw new Error("Election ID is required");
-      const response = await api.get<ApiResponse<any>>(`/election/${electionId}`);
-      return response;
-    },
-    enabled: !!electionId,
-  });
 
   const election = electionResponse?.success ? electionResponse.data : null;
   const results = resultsResponse?.success ? resultsResponse.data : null;

@@ -133,7 +133,7 @@ export function AdminElections() {
               <div
                 key={election.id}
                 className="bg-[#142828] border border-[#234848] rounded-lg p-6 hover:border-[#13ecec] transition-all cursor-pointer"
-                onClick={() => navigate(`/admin/elections/${election.id}`)}
+                onClick={() => navigate(`/admin/elections/${election.slug || election.id}`)}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -167,7 +167,7 @@ export function AdminElections() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/admin/elections/${election.id}`);
+                      navigate(`/admin/elections/${election.slug || election.id}`);
                     }}
                     className="flex-1 px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded text-sm transition-all"
                   >
@@ -176,7 +176,7 @@ export function AdminElections() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/admin/elections/${election.id}/results`);
+                      navigate(`/admin/elections/${election.slug || election.id}/results`);
                     }}
                     className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded text-sm transition-all"
                   >
@@ -234,16 +234,17 @@ export function AdminElections() {
 
 export function AdminElectionDetail() {
   const navigate = useNavigate();
-  const { id: electionId } = useParams();
-  const { data: electionResponse, isLoading: isLoadingElection } = useAdminElection(electionId);
-  const { data: statsResponse, isLoading: isLoadingStats } = useAdminElectionStats(electionId);
-  const { data: officesResponse } = useAdminOffices(electionId);
+  const { slug: electionSlug } = useParams<{ slug: string }>();
+  const { data: electionResponse, isLoading: isLoadingElection } = useAdminElection(electionSlug);
+  const { data: statsResponse, isLoading: isLoadingStats } = useAdminElectionStats(electionResponse?.success ? electionResponse.data.id : undefined);
+  const { data: officesResponse } = useAdminOffices(electionResponse?.success ? electionResponse.data.id : undefined);
   const deleteElection = useDeleteElection();
   const calculateResults = useCalculateResults();
 
   const election = electionResponse?.success ? electionResponse.data : null;
   const stats = statsResponse?.success ? statsResponse.data : null;
   const offices = officesResponse?.success ? officesResponse.data : [];
+  const currentElectionSlug = election?.slug || electionSlug;
 
   if (isLoadingElection) {
     return (
@@ -330,14 +331,14 @@ export function AdminElectionDetail() {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => navigate(`/admin/elections/${electionId}/edit`)}
+              onClick={() => navigate(`/admin/elections/${electionSlug}/edit`)}
               className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded flex items-center gap-2"
             >
               <MdEdit className="w-4 h-4" />
               <span>Edit</span>
             </button>
             <button
-              onClick={() => navigate(`/admin/elections/${electionId}/results`)}
+              onClick={() => navigate(`/admin/elections/${electionSlug}/results`)}
               className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded flex items-center gap-2"
             >
               <MdBarChart className="w-4 h-4" />
@@ -377,7 +378,7 @@ export function AdminElectionDetail() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-white">Offices</h2>
             <button
-              onClick={() => navigate(`/admin/elections/${electionId}/offices/create`)}
+              onClick={() => navigate(`/admin/elections/${currentElectionSlug}/offices/create`)}
               className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded flex items-center gap-2"
             >
               <MdAdd className="w-4 h-4" />
@@ -394,7 +395,7 @@ export function AdminElectionDetail() {
                 <div
                   key={office.id}
                   className="bg-[#102222] border border-[#234848] rounded-lg p-4 hover:border-[#13ecec] transition-all cursor-pointer"
-                  onClick={() => navigate(`/admin/elections/${electionId}/offices/${office.id}`)}
+                  onClick={() => navigate(`/admin/elections/${currentElectionSlug}/offices/${office.slug || office.id}`)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -409,7 +410,7 @@ export function AdminElectionDetail() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/admin/elections/${electionId}/offices/${office.id}`);
+                        navigate(`/admin/elections/${currentElectionSlug}/offices/${office.slug || office.id}`);
                       }}
                       className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded text-sm"
                     >
@@ -436,7 +437,7 @@ export function AdminElectionDetail() {
                   });
                   if (confirmed) {
                     try {
-                      await calculateResults.mutateAsync(electionId!);
+                      await calculateResults.mutateAsync(election!.id);
                       showToast("Results calculated successfully!", "success");
                     } catch (error) {
                       showToast("Failed to calculate results", "error");
@@ -458,7 +459,7 @@ export function AdminElectionDetail() {
                   });
                   if (confirmed) {
                     try {
-                      await deleteElection.mutateAsync(electionId!);
+                      await deleteElection.mutateAsync(election!.id);
                       showToast("Election deleted successfully", "success");
                       navigate("/admin/elections");
                     } catch (error) {

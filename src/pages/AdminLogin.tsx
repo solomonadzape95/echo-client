@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdBadge, MdLock, MdArrowForward, MdAdminPanelSettings, MdFingerprint } from "react-icons/md";
 import { authService } from "../lib/auth";
+import { api } from "../lib/api";
 
 export function AdminLogin() {
   const navigate = useNavigate();
@@ -9,6 +10,30 @@ export function AdminLogin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // Check if admin is already authenticated and redirect
+  useEffect(() => {
+    const checkAdminAuth = async () => {
+      try {
+        // Try to access an admin endpoint to check if admin is authenticated
+        // This will fail if not authenticated or not an admin
+        const response = await api.get<{ success: boolean }>("/admin/stats");
+        if (response && typeof response === 'object' && 'success' in response && response.success) {
+          // Admin is authenticated, redirect to admin dashboard
+          navigate("/admin/dashboard", { replace: true });
+          return;
+        }
+      } catch (error) {
+        // Admin is not authenticated or not an admin, stay on login page
+        // This is expected for unauthenticated users
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+
+    checkAdminAuth();
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +54,18 @@ export function AdminLogin() {
       setIsSubmitting(false);
     }
   };
+
+  // Show loading state while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="fixed inset-0 bg-[#102222] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4 relative overflow-hidden">

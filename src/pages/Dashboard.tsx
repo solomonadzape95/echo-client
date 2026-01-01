@@ -132,7 +132,7 @@ export function Dashboard() {
             </div>
           )}
  {/* Election Stats Section */}
- <div className="bg-[#142828] border border-[#234848] p-6 md:p-8 rounded-lg">
+ <div className="bg-[#142828] border border-[#234848] p-6 md:p-8 ">
             <div className="flex items-center gap-3 mb-6">
               <MdBarChart className="w-6 h-6 text-[#13ecec]" />
               <h2 className="text-2xl font-bold text-white">Election Statistics</h2>

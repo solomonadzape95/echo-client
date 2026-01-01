@@ -276,19 +276,19 @@ export function Profile() {
                   accept="image/*"
                   className="hidden"
                 />
-                <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-[#234848] flex items-center justify-center overflow-hidden relative rounded-none">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-[#234848] flex items-center justify-center overflow-hidden relative">
                   {profileImage || profile?.profilePicture ? (
                     <img
                       src={profileImage || profile?.profilePicture || ''}
                       alt="Profile"
-                      className="w-full h-full object-cover rounded-full"
+                      className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
                       }}
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-[#13ecec]/20 to-[#234848] flex items-center justify-center text-2xl sm:text-3xl md:text-4xl font-bold text-white rounded-full">
+                    <div className="w-full h-full bg-gradient-to-br from-[#13ecec]/20 to-[#234848] flex items-center justify-center text-2xl sm:text-3xl md:text-4xl font-bold text-white ">
                       {profile ? getInitials(profile.name) : "U"}
                     </div>
                   )}
@@ -475,6 +475,9 @@ export function Profile() {
 
       {/* Footer */}
       <Footer />
+
+      {/* Toast Container */}
+      <ToastContainer />
     </div>
   );
 }

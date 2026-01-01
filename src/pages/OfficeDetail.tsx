@@ -9,25 +9,25 @@ export function OfficeDetail() {
   const navigate = useNavigate();
   const { showToast, ToastContainer } = useToast();
   const { confirm, ConfirmDialogComponent } = useConfirm();
-  const { id: electionId, officeId } = useParams<{ id: string; officeId: string }>();
-  const { data: officeResponse, isLoading: isLoadingOffice, error: officeError } = useAdminOffice(officeId);
-  const { data: candidatesResponse } = useAdminCandidates(officeId);
+  const { slug: electionSlug, officeSlug } = useParams<{ slug: string; officeSlug: string }>();
+  const { data: officeResponse, isLoading: isLoadingOffice, error: officeError } = useAdminOffice(officeSlug);
+  const { data: candidatesResponse } = useAdminCandidates(officeResponse?.success ? officeResponse.data.id : undefined);
   const deleteOffice = useDeleteOffice();
 
   const office = officeResponse?.success ? officeResponse.data : null;
   const candidates = candidatesResponse?.success ? candidatesResponse.data : [];
 
-  if (!officeId) {
+  if (!officeSlug) {
     return (
       <AdminLayout>
         <div className="p-8">
           <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 rounded-lg">
             <p className="font-medium">Invalid Route</p>
             <p className="text-sm mt-2 text-red-300">
-              Office ID is missing from the URL. Please navigate from the election detail page.
+              Office slug is missing from the URL. Please navigate from the election detail page.
             </p>
             <button
-              onClick={() => navigate(`/admin/elections/${electionId || ''}`)}
+              onClick={() => navigate(`/admin/elections/${electionSlug || ''}`)}
               className="mt-4 px-4 py-2 bg-[#234848] text-white rounded hover:bg-[#2a5555] transition-colors"
             >
               Back to Election
@@ -65,10 +65,10 @@ export function OfficeDetail() {
               </p>
             )}
             <p className="text-sm mt-2 text-red-300">
-              Office ID: {officeId}
+              Office slug: {officeSlug}
             </p>
             <button
-              onClick={() => navigate(`/admin/elections/${electionId}`)}
+              onClick={() => navigate(`/admin/elections/${electionSlug}`)}
               className="mt-4 px-4 py-2 bg-[#234848] text-white rounded hover:bg-[#2a5555] transition-colors"
             >
               Back to Election
@@ -86,7 +86,7 @@ export function OfficeDetail() {
       <div className="p-8">
         {/* Back Button */}
         <button
-          onClick={() => navigate(`/admin/elections/${electionId}`)}
+          onClick={() => navigate(`/admin/elections/${electionSlug}`)}
           className="mb-6 text-[#92c9c9] hover:text-white flex items-center gap-2 transition-colors"
         >
           <MdArrowBack className="w-5 h-5" />
@@ -102,7 +102,7 @@ export function OfficeDetail() {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => navigate(`/admin/elections/${electionId}/offices/${officeId}/edit`)}
+                onClick={() => navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}/edit`)}
                 className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded flex items-center gap-2"
               >
                 <MdEdit className="w-4 h-4" />
@@ -118,9 +118,9 @@ export function OfficeDetail() {
                   });
                   if (confirmed) {
                     try {
-                      await deleteOffice.mutateAsync(officeId!);
+                      await deleteOffice.mutateAsync(office!.id);
                       showToast("Office deleted successfully", "success");
-                      navigate(`/admin/elections/${electionId}`);
+                      navigate(`/admin/elections/${electionSlug}`);
                     } catch (error) {
                       showToast("Failed to delete office", "error");
                     }
@@ -141,7 +141,7 @@ export function OfficeDetail() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-white">Candidates</h2>
             <button
-              onClick={() => navigate(`/admin/elections/${electionId}/offices/${officeId}/candidates/create`)}
+              onClick={() => navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}/candidates/create`)}
               className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded flex items-center gap-2"
             >
               <MdAdd className="w-4 h-4" />
@@ -153,7 +153,7 @@ export function OfficeDetail() {
               <MdPerson className="w-16 h-16 mx-auto mb-4 opacity-50" />
               <p>No candidates yet</p>
               <button
-                onClick={() => navigate(`/admin/elections/${electionId}/offices/${officeId}/candidates/create`)}
+                onClick={() => navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}/candidates/create`)}
                 className="mt-4 px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded"
               >
                 Add First Candidate

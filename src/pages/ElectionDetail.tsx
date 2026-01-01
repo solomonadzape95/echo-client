@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MdArrowBack, MdLink, MdVideocam, MdVolumeUp, MdClose, MdHowToVote, MdVerified, MdBarChart, MdPerson } from "react-icons/md";
 import { useBallot } from "../hooks/useBallot";
 import { useVoteStatus } from "../hooks/useVoteStatus";
@@ -8,6 +9,8 @@ import { FloatingHelpButton } from "../components/FloatingHelpButton";
 import { Footer } from "../components/Footer";
 import { authService } from "../lib/auth";
 import { dashboardHelpSteps } from "../constants/helpContent";
+import { api } from "../lib/api";
+import type { ApiResponse } from "../lib/api";
 import candidate1 from "../assets/candidate-1.png";
 import candidate2 from "../assets/candidate-2.png";
 import candidate3 from "../assets/candidate-3.png";
@@ -26,8 +29,21 @@ type PositionFilter = "all" | string;
 
 export function ElectionDetail() {
   const navigate = useNavigate();
-  const { id: electionId } = useParams();
-  const { data: ballotResponse, isLoading, error, refetch: refetchBallot } = useBallot(electionId);
+  const queryClient = useQueryClient();
+  const { slug: electionSlug } = useParams<{ slug: string }>();
+  const hasInvalidatedOnTimerEnd = useRef(false);
+  const hasInvalidatedOnTimerStart = useRef(false);
+  const { data: electionResponse } = useQuery({
+    queryKey: ["election", electionSlug],
+    queryFn: async () => {
+      if (!electionSlug) throw new Error("Election slug is required");
+      const response = await api.get<ApiResponse<any>>(`/election/${electionSlug}`);
+      return response;
+    },
+    enabled: !!electionSlug,
+  });
+  const electionId = electionResponse?.success ? electionResponse.data.id : undefined;
+  const { data: ballotResponse, isLoading, error } = useBallot(electionId);
   const { data: hasVoted, isLoading: isLoadingVoteStatus } = useVoteStatus(electionId);
   const [selectedCandidate, setSelectedCandidate] = useState<any | null>(null);
   const [positionFilter, setPositionFilter] = useState<PositionFilter>("all");
@@ -290,7 +306,10 @@ export function ElectionDetail() {
 
   // Calculate time remaining for active elections
   useEffect(() => {
-    if (electionStatus !== "active") return;
+    if (electionStatus !== "active") {
+      hasInvalidatedOnTimerEnd.current = false;
+      return;
+    }
 
     const calculateTime = () => {
       const now = new Date().getTime();
@@ -306,8 +325,12 @@ export function ElectionDetail() {
         setTimeRemaining({ days, hours, minutes, seconds });
       } else {
         setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        // Timer elapsed - refetch to update election status
-        refetchBallot();
+        // Timer elapsed - invalidate queries to update election status (only once)
+        if (!hasInvalidatedOnTimerEnd.current) {
+          hasInvalidatedOnTimerEnd.current = true;
+          queryClient.invalidateQueries({ queryKey: ["ballot", electionId] });
+          queryClient.invalidateQueries({ queryKey: ["election", electionSlug] });
+        }
       }
     };
 
@@ -315,11 +338,14 @@ export function ElectionDetail() {
     const interval = setInterval(calculateTime, 1000);
 
     return () => clearInterval(interval);
-  }, [endTime, electionStatus, refetchBallot]);
+  }, [endTime, electionStatus, electionId, electionSlug, queryClient]);
 
   // Calculate time until start for upcoming elections
   useEffect(() => {
-    if (electionStatus !== "upcoming") return;
+    if (electionStatus !== "upcoming") {
+      hasInvalidatedOnTimerStart.current = false;
+      return;
+    }
 
     const calculateTime = () => {
       const now = new Date().getTime();
@@ -335,8 +361,12 @@ export function ElectionDetail() {
         setTimeUntilStart({ days, hours, minutes, seconds });
       } else {
         setTimeUntilStart({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        // Timer elapsed - refetch to update election status (election should now be active)
-        refetchBallot();
+        // Timer elapsed - invalidate queries to update election status (election should now be active, only once)
+        if (!hasInvalidatedOnTimerStart.current) {
+          hasInvalidatedOnTimerStart.current = true;
+          queryClient.invalidateQueries({ queryKey: ["ballot", electionId] });
+          queryClient.invalidateQueries({ queryKey: ["election", electionSlug] });
+        }
       }
     };
 
@@ -344,7 +374,7 @@ export function ElectionDetail() {
     const interval = setInterval(calculateTime, 1000);
 
     return () => clearInterval(interval);
-  }, [startTime, electionStatus, refetchBallot]);
+  }, [startTime, electionStatus, electionId, electionSlug, queryClient]);
 
   // Get unique office names for filter
   const officeNames = useMemo(() => {
@@ -607,7 +637,7 @@ export function ElectionDetail() {
                 </button>
               ) : (
                 <button
-                  onClick={() => navigate(`/elections/${electionId}/ballot`)}
+                  onClick={() => navigate(`/elections/${electionSlug}/ballot`)}
                   className="bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-8 py-3 flex items-center gap-2 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] uppercase tracking-wider"
                 >
                   <MdHowToVote className="w-5 h-5" />
@@ -619,7 +649,7 @@ export function ElectionDetail() {
 
           {electionStatus === "completed" && (
             <button
-              onClick={() => navigate(`/elections/${electionId}/results`)}
+              onClick={() => navigate(`/elections/${electionSlug}/results`)}
               className="bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-8 py-3 flex items-center gap-2 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] uppercase tracking-wider"
             >
               <MdBarChart className="w-5 h-5" />
@@ -814,7 +844,7 @@ export function ElectionDetail() {
                   {hasVoted ? (
                     <button 
                       onClick={() => {
-                        navigate(`/vote-verification?electionId=${electionId}`);
+                        navigate(`/vote-verification?electionId=${electionId || ''}`);
                         setSelectedCandidate(null);
                       }}
                       className="w-full bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-6 py-4 flex items-center justify-center gap-2 transition-colors uppercase tracking-wider"
@@ -825,7 +855,7 @@ export function ElectionDetail() {
                   ) : (
                     <button 
                       onClick={() => {
-                        navigate(`/elections/${electionId}/ballot`);
+                        navigate(`/elections/${electionSlug}/ballot`);
                         setSelectedCandidate(null);
                       }}
                       className="w-full bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-6 py-4 flex items-center justify-center gap-2 transition-colors uppercase tracking-wider"

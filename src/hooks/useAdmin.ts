@@ -42,6 +42,7 @@ export interface AdminVoter {
 
 export interface AdminElection {
   id: string;
+  slug: string;
   name: string;
   type: string;
   status: "pending" | "active" | "completed";
@@ -64,6 +65,7 @@ export interface AdminClass {
 
 export interface AdminOffice {
   id: string;
+  slug: string;
   name: string;
   description: string;
   election: string;
