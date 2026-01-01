@@ -69,7 +69,11 @@ export function LoginForm() {
             PASSWORD <span className="text-red-400">*</span>
           </label>
           <a
-            href="#"
+            href="/forgot-password"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/forgot-password");
+            }}
             className="text-[#568888] hover:text-[#13ecec] text-xs underline decoration-dotted underline-offset-4 transition-colors"
           >
             Forgot Password?
