@@ -1,17 +1,39 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { MdCheckCircle, MdLock, MdHistory, MdArrowBack, MdCameraAlt } from "react-icons/md";
+import { MdCheckCircle, MdLock, MdHistory, MdArrowBack, MdCameraAlt, MdBarChart, MdHowToVote, MdPerson, MdVerified } from "react-icons/md";
+import { useProfile } from "../hooks/useProfile";
+import { FloatingMenu } from "../components/FloatingMenu";
+import { authService } from "../lib/auth";
 
 export function Profile() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState("security");
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const { data: profileResponse, isLoading, error } = useProfile();
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      navigate("/login");
+    }
+  };
+
+  const menuItems = [
+    { path: "/dashboard", label: "Dashboard", icon: MdBarChart },
+    { path: "/elections", label: "Elections", icon: MdHowToVote },
+    { path: "/profile", label: "Profile", icon: MdPerson },
+    { path: "/stats", label: "Stats", icon: MdBarChart },
+    { path: "/verify", label: "Verify Receipt", icon: MdVerified },
+  ];
 
   const handlePasswordChange = (field: string, value: string) => {
     setPasswordData((prev) => ({ ...prev, [field]: value }));
@@ -36,6 +58,66 @@ export function Profile() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#102222] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !profileResponse?.success) {
+    return (
+      <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4">
+        <div className="text-center">
+          <p className="text-red-400 text-lg mb-4">
+            {error instanceof Error ? error.message : "Failed to load profile"}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-[#13ecec] text-[#112222] rounded font-medium"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const profileData = profileResponse.data;
+  const profile = profileData.profile;
+  const votingHistory = profileData.votingHistory;
+
+  // Get initials for avatar
+  const getInitials = (name: string) => {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
   };
 
   return (
@@ -91,7 +173,7 @@ export function Profile() {
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[#13ecec]/20 to-[#234848] flex items-center justify-center text-2xl sm:text-3xl md:text-4xl font-bold text-white">
-                      AC
+                      {profile ? getInitials(profile.name) : "U"}
                     </div>
                   )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
@@ -106,21 +188,27 @@ export function Profile() {
               {/* Profile Info */}
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-3 mb-2">
-                  <h2 className="text-xl sm:text-2xl font-bold text-white">Alex Chen</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-white">{profile.name}</h2>
+                  {profile.isVerified && (
                   <span className="bg-[#13ecec] text-[#112222] text-xs font-bold px-3 py-1 uppercase tracking-wider">
                     VERIFIED VOTER
                   </span>
+                  )}
                 </div>
-                <p className="text-[#92c9c9] text-sm mb-3">Computer Science • Class of 2025</p>
+                <p className="text-[#92c9c9] text-sm mb-3">
+                  {profile.class?.department?.name || "N/A"} • {profile.class?.name || "N/A"}
+                </p>
                 <div className="space-y-1 text-sm text-[#92c9c9]">
                   <div className="flex items-center gap-2">
                     <span className="w-4 h-4 flex items-center justify-center">ID</span>
-                    <span>Reg. Number: S-2024-XXXX</span>
+                    <span>Reg. Number: {profile.regNumber}</span>
                   </div>
+                  {profile.class?.department?.faculty && (
                   <div className="flex items-center gap-2">
                     <span className="w-4 h-4 flex items-center justify-center">🏛️</span>
-                    <span>Faculty: Engineering & Technology</span>
+                      <span>Faculty: {profile.class.department.faculty.name}</span>
                   </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -215,58 +303,47 @@ export function Profile() {
             {activeTab === "history" && (
               <div className="bg-[#142828] border border-[#234848] p-6">
                 <h3 className="text-xl font-bold text-white mb-6">Voting History</h3>
-                <div className="space-y-4">
-                  {/* Example voting history items */}
-                  <div className="border border-[#234848] p-4">
+                {votingHistory.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-[#92c9c9]">No voting history found.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {votingHistory.map((vote) => (
+                      <div key={vote.voteId} className="border border-[#234848] p-4">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
                       <div>
-                        <h4 className="text-white font-bold text-lg mb-1">Student Government Election 2024</h4>
-                        <p className="text-[#92c9c9] text-sm">Voted on March 15, 2024 at 2:34 PM</p>
+                            <h4 className="text-white font-bold text-lg mb-1">{vote.electionName}</h4>
+                            <p className="text-[#92c9c9] text-sm">
+                              Voted on {formatDate(vote.votedAt)} at {formatTime(vote.votedAt)}
+                            </p>
                       </div>
                       <span className="bg-[#13ecec] text-[#112222] text-xs font-bold px-3 py-1 uppercase tracking-wider self-start">
                         COMPLETED
                       </span>
                     </div>
-                    <div className="text-[#568888] text-xs mt-2">
-                      <div>Vote ID: V-2024-001234</div>
-                    </div>
+                        <div className="text-[#568888] text-xs mt-2 space-y-1">
+                          <div>Vote ID: {vote.voteId.substring(0, 8)}...</div>
+                          {vote.receiptCode && (
+                            <div>Receipt: {vote.receiptCode}</div>
+                          )}
                   </div>
-
-                  <div className="border border-[#234848] p-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
-                      <div>
-                        <h4 className="text-white font-bold text-lg mb-1">Class Representative Election</h4>
-                        <p className="text-[#92c9c9] text-sm">Voted on February 28, 2024 at 10:15 AM</p>
                       </div>
-                      <span className="bg-[#13ecec] text-[#112222] text-xs font-bold px-3 py-1 uppercase tracking-wider self-start">
-                        COMPLETED
-                      </span>
-                    </div>
-                    <div className="text-[#568888] text-xs mt-2">
-                      <div>Vote ID: V-2024-000987</div>
-                    </div>
+                    ))}
                   </div>
-
-                  <div className="border border-[#234848] p-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
-                      <div>
-                        <h4 className="text-white font-bold text-lg mb-1">Campus Budget Proposal</h4>
-                        <p className="text-[#92c9c9] text-sm">Voted on January 10, 2024 at 4:22 PM</p>
-                      </div>
-                      <span className="bg-[#13ecec] text-[#112222] text-xs font-bold px-3 py-1 uppercase tracking-wider self-start">
-                        COMPLETED
-                      </span>
-                    </div>
-                    <div className="text-[#568888] text-xs mt-2">
-                      <div>Vote ID: V-2024-000456</div>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Floating Menu */}
+      <FloatingMenu
+        items={menuItems}
+        title="echo"
+        onLogout={handleLogout}
+      />
     </div>
   );
 }

@@ -1,6 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { MdArrowBack, MdLink, MdVideocam, MdVolumeUp, MdClose, MdHowToVote } from "react-icons/md";
+import { MdArrowBack, MdLink, MdVideocam, MdVolumeUp, MdClose, MdHowToVote, MdVerified, MdBarChart, MdPerson } from "react-icons/md";
+import { useBallot } from "../hooks/useBallot";
+import { useVoteStatus } from "../hooks/useVoteStatus";
+import { FloatingMenu } from "../components/FloatingMenu";
+import { authService } from "../lib/auth";
 import candidate1 from "../assets/candidate-1.png";
 import candidate2 from "../assets/candidate-2.png";
 import candidate3 from "../assets/candidate-3.png";
@@ -15,54 +19,93 @@ const candidateImages = {
   candidate5,
 };
 
-
-type PositionFilter = "all" | "presidential" | "vp" | "secretary" | "treasurer";
-
-interface Candidate {
-  id: string;
-  name: string;
-  class: string;
-  position: string;
-  department: string;
-  quote: string;
-  image: string;
-  isIncumbent?: boolean;
-  year: string;
-  gpa: string;
-  experience: string;
-  manifesto: {
-    intro: string;
-    pillars: Array<{
-      title: string;
-      description: string;
-    }>;
-  };
-  website?: string;
-  video?: string;
-}
+type PositionFilter = "all" | string;
 
 export function ElectionDetail() {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const { id: electionId } = useParams();
+  const { data: ballotResponse, isLoading, error } = useBallot(electionId);
+  const { data: hasVoted, isLoading: isLoadingVoteStatus } = useVoteStatus(electionId);
+  const [selectedCandidate, setSelectedCandidate] = useState<any | null>(null);
   const [positionFilter, setPositionFilter] = useState<PositionFilter>("all");
   const [timeRemaining, setTimeRemaining] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+  const [timeUntilStart, setTimeUntilStart] = useState({
+    days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
 
-  // Example election data - memoize endTime to prevent infinite loop
-  const endTime = useMemo(() => {
-    return new Date(Date.now() + 2 * 24 * 60 * 60 * 1000 + 14 * 60 * 60 * 1000 + 45 * 60 * 1000 + 12 * 1000);
-  }, []);
-
-  const election = {
-    id: id || "1",
-    title: "STUDENT BODY PRESIDENT",
-    description: "Cast your vote for the next academic year's leadership. Review manifestos and candidate profiles below before submitting your ballot.",
-    endTime,
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      navigate("/login");
+    }
   };
+
+  const menuItems = [
+    { path: "/dashboard", label: "Dashboard", icon: MdBarChart },
+    { path: "/elections", label: "Elections", icon: MdHowToVote },
+    { path: "/profile", label: "Profile", icon: MdPerson },
+    { path: "/stats", label: "Stats", icon: MdBarChart },
+    { path: "/verify", label: "Verify Receipt", icon: MdVerified },
+  ];
+
+  const ballotData = ballotResponse?.success ? ballotResponse.data : null;
+  const election = ballotData?.election;
+  const offices = ballotData?.offices || [];
+
+  // Determine election status based on dates
+  const electionStatus = useMemo(() => {
+    if (!election) return "upcoming";
+    const now = new Date();
+    const startDate = new Date(election.startDate);
+    const endDate = new Date(election.endDate);
+
+    if (now < startDate) {
+      return "upcoming";
+    } else if (now >= startDate && now <= endDate) {
+      return "active";
+    } else {
+      return "completed";
+    }
+  }, [election]);
+
+  // Calculate end time from election data
+  const endTime = useMemo(() => {
+    if (election?.endDate) {
+      return new Date(election.endDate);
+    }
+    return new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
+  }, [election]);
+
+  // Calculate start time
+  const startTime = useMemo(() => {
+    if (election?.startDate) {
+      return new Date(election.startDate);
+    }
+    return new Date(Date.now() + 1 * 24 * 60 * 60 * 1000);
+  }, [election]);
+
+  // Flatten candidates from all offices for display
+  const allCandidates = useMemo(() => {
+    return offices.flatMap(office =>
+      office.candidates.map(candidate => ({
+        ...candidate,
+        officeId: office.id,
+        officeName: office.name,
+        position: office.name.toLowerCase().replace(/\s+/g, "-"),
+      }))
+    );
+  }, [offices]);
 
   // Example candidates data
   const candidates: Candidate[] = [
@@ -243,20 +286,24 @@ export function ElectionDetail() {
     },
   ];
 
+  // Calculate time remaining for active elections
   useEffect(() => {
+    if (electionStatus !== "active") return;
+
     const calculateTime = () => {
       const now = new Date().getTime();
       const end = endTime.getTime();
       const difference = end - now;
 
       if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
         const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-        setTimeRemaining({ hours, minutes, seconds });
+        setTimeRemaining({ days, hours, minutes, seconds });
       } else {
-        setTimeRemaining({ hours: 0, minutes: 0, seconds: 0 });
+        setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
     };
 
@@ -264,24 +311,85 @@ export function ElectionDetail() {
     const interval = setInterval(calculateTime, 1000);
 
     return () => clearInterval(interval);
-  }, [endTime]);
+  }, [endTime, electionStatus]);
 
-  const filteredCandidates = candidates.filter((candidate) => {
+  // Calculate time until start for upcoming elections
+  useEffect(() => {
+    if (electionStatus !== "upcoming") return;
+
+    const calculateTime = () => {
+      const now = new Date().getTime();
+      const start = startTime.getTime();
+      const difference = start - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        setTimeUntilStart({ days, hours, minutes, seconds });
+      } else {
+        setTimeUntilStart({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    calculateTime();
+    const interval = setInterval(calculateTime, 1000);
+
+    return () => clearInterval(interval);
+  }, [startTime, electionStatus]);
+
+  // Get unique office names for filter
+  const officeNames = useMemo(() => {
+    const unique = Array.from(new Set(offices.map(o => o.name.toLowerCase())));
+    return unique;
+  }, [offices]);
+
+  const filteredCandidates = allCandidates.filter((candidate) => {
     if (positionFilter === "all") return true;
-    return candidate.position === positionFilter;
+    return candidate.position === positionFilter || candidate.officeName.toLowerCase() === positionFilter;
   });
 
   const formatTime = (value: number) => value.toString().padStart(2, "0");
 
-  const getPositionLabel = (position: string) => {
-    const labels: Record<string, string> = {
-      presidential: "PRESIDENTIAL",
-      vp: "VP",
-      secretary: "SECRETARY",
-      treasurer: "TREASURER",
-    };
-    return labels[position] || position.toUpperCase();
-  };
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg font-medium mb-2">Loading Election</p>
+          <p className="text-[#92c9c9] text-sm">Getting election information...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !ballotData || !election) {
+    return (
+      <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <p className="text-red-400 text-lg font-medium mb-2">Error Loading Election</p>
+          <p className="text-[#92c9c9] text-sm mb-4">
+            {error instanceof Error ? error.message : "Failed to load election data"}
+          </p>
+          <button
+            onClick={() => navigate(-1)}
+            className="px-6 py-3 bg-[#13ecec] text-[#112222] rounded font-bold uppercase"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full w-full bg-[#102222] relative overflow-y-auto overflow-x-hidden">
@@ -308,130 +416,240 @@ export function ElectionDetail() {
             <span className="text-sm font-medium">Back</span>
           </button>
 
-          {/* Election Status and Title */}
+          {/* Election Status and Title - Different based on status */}
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 bg-[#13ecec] shadow-[0_0_8px_rgba(19,236,236,0.8)]"></div>
-                <span className="text-[#13ecec] text-xs font-medium uppercase tracking-wider">
-                  VOTING LIVE
-                </span>
+                {electionStatus === "upcoming" && (
+                  <>
+                    <div className="w-2 h-2 bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.8)]"></div>
+                    <span className="text-yellow-400 text-xs font-medium uppercase tracking-wider">
+                      UPCOMING
+                    </span>
+                  </>
+                )}
+                {electionStatus === "active" && (
+                  <>
+                    <div className="w-2 h-2 bg-[#13ecec] shadow-[0_0_8px_rgba(19,236,236,0.8)]"></div>
+                    <span className="text-[#13ecec] text-xs font-medium uppercase tracking-wider">
+                      VOTING LIVE
+                    </span>
+                  </>
+                )}
+                {electionStatus === "completed" && (
+                  <>
+                    <div className="w-2 h-2 bg-[#568888] shadow-[0_0_8px_rgba(86,136,136,0.8)]"></div>
+                    <span className="text-[#568888] text-xs font-medium uppercase tracking-wider">
+                      COMPLETED
+                    </span>
+                  </>
+                )}
               </div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 uppercase">
-                {election.title}
+                {election.name}
               </h1>
               <p className="text-[#92c9c9] text-sm sm:text-base max-w-2xl">
-                {election.description}
+                {election.description || 
+                  (electionStatus === "upcoming" 
+                    ? "This election will begin soon. Review the candidates below and prepare to cast your vote."
+                    : electionStatus === "active"
+                    ? "Cast your vote for the next academic year's leadership. Review manifestos and candidate profiles below before submitting your ballot."
+                    : "This election has ended. View the results to see the winners.")}
               </p>
-            </div>
-
-            {/* Countdown Timer */}
-            <div className="flex flex-col">
-              <h3 className="text-[#568888] text-xs uppercase tracking-wider mb-4">TIME REMAINING</h3>
-              
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                {/* Hours */}
-                <div className="bg-[#102222] border border-[#234848] p-4 text-center">
-                  <div className="text-3xl font-bold text-white">{formatTime(timeRemaining.hours)}</div>
-                  <div className="text-xs text-white mt-1">HOURS</div>
+              <div className="mt-4 space-y-2">
+                <div className="text-sm text-[#568888]">
+                  <span className="font-medium text-[#92c9c9]">Start:</span>{" "}
+                  {new Date(election.startDate).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
                 </div>
-
-                {/* Minutes */}
-                <div className="bg-[#102222] border border-[#234848] p-4 text-center">
-                  <div className="text-3xl font-bold text-white">{formatTime(timeRemaining.minutes)}</div>
-                  <div className="text-xs text-white mt-1">MINUTES</div>
-                </div>
-
-                {/* Seconds */}
-                <div className="bg-[#102222] border border-[#234848] p-4 text-center">
-                  <div className="text-3xl font-bold text-white">{formatTime(timeRemaining.seconds)}</div>
-                  <div className="text-xs text-white mt-1">SECONDS</div>
-                </div>
-
-                {/* Urgent indicator */}
-                <div className="bg-[#13ecec] p-4 text-center flex flex-col items-center justify-center">
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="w-6 h-6 text-[#112222] mb-1"
-                    fill="currentColor"
-                  >
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
-                  </svg>
-                  <div className="text-xs font-bold text-[#112222] uppercase">URGENT</div>
+                <div className="text-sm text-[#568888]">
+                  <span className="font-medium text-[#92c9c9]">End:</span>{" "}
+                  {new Date(election.endDate).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
                 </div>
               </div>
-
-              <p className="text-[#568888] text-xs">
-                Voting closes at {endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })} EST
-              </p>
             </div>
+
+            {/* Countdown Timer - Different for upcoming vs active */}
+            {electionStatus === "upcoming" && (
+              <div className="flex flex-col">
+                <h3 className="text-[#568888] text-xs uppercase tracking-wider mb-4">STARTS IN</h3>
+              
+                <div className={`grid ${timeUntilStart.days > 0 ? 'grid-cols-2' : 'grid-cols-2'} gap-3 mb-4`}>
+                  {timeUntilStart.days > 0 && (
+                    <div className="bg-[#102222] border border-[#234848] p-4 text-center">
+                      <div className="text-3xl font-bold text-white">{formatTime(timeUntilStart.days)}</div>
+                      <div className="text-xs text-white mt-1">{timeUntilStart.days === 1 ? "DAY" : "DAYS"}</div>
+                    </div>
+                  )}
+                  <div className="bg-[#102222] border border-[#234848] p-4 text-center">
+                    <div className="text-3xl font-bold text-white">{formatTime(timeUntilStart.hours)}</div>
+                    <div className="text-xs text-white mt-1">HOURS</div>
+                  </div>
+                  <div className="bg-[#102222] border border-[#234848] p-4 text-center">
+                    <div className="text-3xl font-bold text-white">{formatTime(timeUntilStart.minutes)}</div>
+                    <div className="text-xs text-white mt-1">MINUTES</div>
+                  </div>
+                  <div className="bg-[#102222] border border-[#234848] p-4 text-center">
+                    <div className="text-3xl font-bold text-white">{formatTime(timeUntilStart.seconds)}</div>
+                    <div className="text-xs text-white mt-1">SECONDS</div>
+                  </div>
+                </div>
+
+                <p className="text-[#568888] text-xs">
+                  Voting starts at {startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })} EST
+                </p>
+              </div>
+            )}
+
+            {electionStatus === "active" && (
+              <div className="flex flex-col">
+                <h3 className="text-[#568888] text-xs uppercase tracking-wider mb-4">TIME REMAINING</h3>
+              
+                <div className={`grid ${timeRemaining.days > 0 ? 'grid-cols-2' : 'grid-cols-2'} gap-3 mb-4`}>
+                  {timeRemaining.days > 0 && (
+                    <div className="bg-[#102222] border border-[#234848] p-4 text-center">
+                      <div className="text-3xl font-bold text-white">{formatTime(timeRemaining.days)}</div>
+                      <div className="text-xs text-white mt-1">{timeRemaining.days === 1 ? "DAY" : "DAYS"}</div>
+                    </div>
+                  )}
+                  <div className="bg-[#102222] border border-[#234848] p-4 text-center">
+                    <div className="text-3xl font-bold text-white">{formatTime(timeRemaining.hours)}</div>
+                    <div className="text-xs text-white mt-1">HOURS</div>
+                  </div>
+                  <div className="bg-[#102222] border border-[#234848] p-4 text-center">
+                    <div className="text-3xl font-bold text-white">{formatTime(timeRemaining.minutes)}</div>
+                    <div className="text-xs text-white mt-1">MINUTES</div>
+                  </div>
+                  <div className="bg-[#102222] border border-[#234848] p-4 text-center">
+                    <div className="text-3xl font-bold text-white">{formatTime(timeRemaining.seconds)}</div>
+                    <div className="text-xs text-white mt-1">SECONDS</div>
+                  </div>
+                  {timeRemaining.days === 0 && (
+                    <div className="bg-[#13ecec] p-4 text-center flex flex-col items-center justify-center">
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="w-6 h-6 text-[#112222] mb-1"
+                        fill="currentColor"
+                      >
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+                      </svg>
+                      <div className="text-xs font-bold text-[#112222] uppercase">URGENT</div>
+                    </div>
+                  )}
+                </div>
+
+                <p className="text-[#568888] text-xs">
+                  Voting closes at {endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })} EST
+                </p>
+              </div>
+            )}
+
+            {electionStatus === "completed" && (
+              <div className="flex flex-col">
+                <div className="bg-[#102222] border border-[#234848] p-6 text-center">
+                  <div className="text-2xl font-bold text-white mb-2">ELECTION ENDED</div>
+                  <div className="text-sm text-[#92c9c9]">
+                    {endTime.toLocaleDateString("en-US", { 
+                      month: "long", 
+                      day: "numeric", 
+                      year: "numeric" 
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Cast Vote Button */}
+        {/* Action Buttons - Different based on status */}
         <div className="mb-6 flex justify-end">
-          <button
-            onClick={() => navigate(`/elections/${id}/ballot`)}
-            className="bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-8 py-3 flex items-center gap-2 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] uppercase tracking-wider"
-          >
-            <MdHowToVote className="w-5 h-5" />
-            <span>CAST YOUR VOTE</span>
-          </button>
+          {electionStatus === "upcoming" && (
+            <div className="bg-[#234848] text-[#92c9c9] font-bold px-8 py-3 flex items-center gap-2 uppercase tracking-wider opacity-50 cursor-not-allowed">
+              <span>VOTING NOT YET OPEN</span>
+            </div>
+          )}
+
+          {electionStatus === "active" && (
+            <>
+              {isLoadingVoteStatus ? (
+                <button
+                  disabled
+                  className="bg-[#234848] text-[#92c9c9] font-bold px-8 py-3 flex items-center gap-2 transition-all opacity-50 cursor-not-allowed uppercase tracking-wider"
+                >
+                  <span>Loading...</span>
+                </button>
+              ) : hasVoted ? (
+                <button
+                  onClick={() => navigate(`/vote-verification?electionId=${electionId}`)}
+                  className="bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-8 py-3 flex items-center gap-2 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] uppercase tracking-wider"
+                >
+                  <MdVerified className="w-5 h-5" />
+                  <span>VERIFY RECEIPT</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => navigate(`/elections/${electionId}/ballot`)}
+                  className="bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-8 py-3 flex items-center gap-2 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] uppercase tracking-wider"
+                >
+                  <MdHowToVote className="w-5 h-5" />
+                  <span>CAST YOUR VOTE</span>
+                </button>
+              )}
+            </>
+          )}
+
+          {electionStatus === "completed" && (
+            <button
+              onClick={() => navigate(`/elections/${electionId}/results`)}
+              className="bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-8 py-3 flex items-center gap-2 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] uppercase tracking-wider"
+            >
+              <MdBarChart className="w-5 h-5" />
+              <span>VIEW RESULTS</span>
+            </button>
+          )}
         </div>
 
         {/* Position Filter Tabs */}
-        <div className="mb-6 flex gap-2 overflow-x-auto">
-          <button
-            onClick={() => setPositionFilter("all")}
-            className={`px-4 py-2 font-bold text-sm uppercase tracking-wider transition-colors whitespace-nowrap ${
-              positionFilter === "all"
-                ? "bg-[#13ecec] text-[#112222]"
-                : "bg-[#142828] border border-[#234848] text-[#92c9c9] hover:text-white"
-            }`}
-          >
-            ALL CANDIDATES
-          </button>
-          <button
-            onClick={() => setPositionFilter("presidential")}
-            className={`px-4 py-2 font-bold text-sm uppercase tracking-wider transition-colors whitespace-nowrap ${
-              positionFilter === "presidential"
-                ? "bg-[#13ecec] text-[#112222]"
-                : "bg-[#142828] border border-[#234848] text-[#92c9c9] hover:text-white"
-            }`}
-          >
-            PRESIDENTIAL
-          </button>
-          <button
-            onClick={() => setPositionFilter("vp")}
-            className={`px-4 py-2 font-bold text-sm uppercase tracking-wider transition-colors whitespace-nowrap ${
-              positionFilter === "vp"
-                ? "bg-[#13ecec] text-[#112222]"
-                : "bg-[#142828] border border-[#234848] text-[#92c9c9] hover:text-white"
-            }`}
-          >
-            VP
-          </button>
-          <button
-            onClick={() => setPositionFilter("secretary")}
-            className={`px-4 py-2 font-bold text-sm uppercase tracking-wider transition-colors whitespace-nowrap ${
-              positionFilter === "secretary"
-                ? "bg-[#13ecec] text-[#112222]"
-                : "bg-[#142828] border border-[#234848] text-[#92c9c9] hover:text-white"
-            }`}
-          >
-            SECRETARY
-          </button>
-          <button
-            onClick={() => setPositionFilter("treasurer")}
-            className={`px-4 py-2 font-bold text-sm uppercase tracking-wider transition-colors whitespace-nowrap ${
-              positionFilter === "treasurer"
-                ? "bg-[#13ecec] text-[#112222]"
-                : "bg-[#142828] border border-[#234848] text-[#92c9c9] hover:text-white"
-            }`}
-          >
-            TREASURER
-          </button>
-        </div>
+        {offices.length > 0 && (
+          <div className="mb-6 flex gap-2 overflow-x-auto">
+            <button
+              onClick={() => setPositionFilter("all")}
+              className={`px-4 py-2 font-bold text-sm uppercase tracking-wider transition-colors whitespace-nowrap ${
+                positionFilter === "all"
+                  ? "bg-[#13ecec] text-[#112222]"
+                  : "bg-[#142828] border border-[#234848] text-[#92c9c9] hover:text-white"
+              }`}
+            >
+              ALL CANDIDATES
+            </button>
+            {offices.map((office) => (
+              <button
+                key={office.id}
+                onClick={() => setPositionFilter(office.name.toLowerCase())}
+                className={`px-4 py-2 font-bold text-sm uppercase tracking-wider transition-colors whitespace-nowrap ${
+                  positionFilter === office.name.toLowerCase()
+                    ? "bg-[#13ecec] text-[#112222]"
+                    : "bg-[#142828] border border-[#234848] text-[#92c9c9] hover:text-white"
+                }`}
+              >
+                {office.name}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Candidates Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
@@ -447,43 +665,42 @@ export function ElectionDetail() {
             >
               {/* Candidate Image */}
               <div className="relative h-64 overflow-hidden">
-                <img
-                  src={candidate.image}
-                  alt={candidate.name}
-                  className={`w-full h-full object-cover transition-all duration-300 ${
-                    selectedCandidate?.id === candidate.id ? "grayscale-0" : "grayscale group-hover:grayscale-0"
-                  }`}
-                  onError={(e) => {
-                    // Fallback if image doesn't exist
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = "none";
-                    const fallback = target.parentElement?.querySelector(".fallback");
-                    if (fallback) {
-                      (fallback as HTMLElement).style.display = "flex";
-                    }
-                  }}
-                />
-                <div className="fallback hidden absolute inset-0 bg-gradient-to-br from-[#13ecec]/20 to-[#234848] items-center justify-center text-4xl font-bold text-white">
+                {candidate.image ? (
+                  <img
+                    src={candidate.image}
+                    alt={candidate.name}
+                    className={`w-full h-full object-cover transition-all duration-300 ${
+                      selectedCandidate?.id === candidate.id ? "grayscale-0" : "grayscale group-hover:grayscale-0"
+                    }`}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = "none";
+                      const fallback = target.parentElement?.querySelector(".fallback");
+                      if (fallback) {
+                        (fallback as HTMLElement).style.display = "flex";
+                      }
+                    }}
+                  />
+                ) : null}
+                <div className={`${candidate.image ? 'fallback hidden' : ''} absolute inset-0 bg-gradient-to-br from-[#13ecec]/20 to-[#234848] items-center justify-center text-4xl font-bold text-white flex`}>
                   {candidate.name.split(" ").map((n) => n[0]).join("")}
                 </div>
-                {candidate.isIncumbent && (
-                  <div className="absolute top-2 right-2 bg-[#13ecec] text-[#112222] text-xs font-bold px-2 py-1 uppercase">
-                    INCUMBENT
-                  </div>
-                )}
               </div>
 
               {/* Candidate Info */}
               <div className="p-4">
-                <div className="text-[#568888] text-xs uppercase tracking-wider mb-1">
-                  {candidate.department}
-                  {positionFilter === "all" && (
-                    <span className="ml-2 text-[#13ecec]">• {getPositionLabel(candidate.position)}</span>
-                  )}
-                </div>
+                {positionFilter === "all" && candidate.officeName && (
+                  <div className="text-[#568888] text-xs uppercase tracking-wider mb-1">
+                    <span className="text-[#13ecec]">{candidate.officeName}</span>
+                  </div>
+                )}
                 <h3 className="text-xl font-bold text-white mb-1 uppercase">{candidate.name}</h3>
-                <p className="text-[#92c9c9] text-sm mb-3">{candidate.class}</p>
-                <p className="text-[#92c9c9] text-sm italic mb-4">"{candidate.quote}"</p>
+                {candidate.regNumber && (
+                  <p className="text-[#92c9c9] text-sm mb-3">{candidate.regNumber}</p>
+                )}
+                {candidate.quote && (
+                  <p className="text-[#92c9c9] text-sm italic mb-4">"{candidate.quote}"</p>
+                )}
                 <button className="w-full bg-[#234848] hover:bg-[#2a5555] text-white font-bold px-4 py-2 flex items-center justify-center gap-2 transition-colors text-sm">
                   <span>READ MANIFESTO</span>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -561,76 +778,78 @@ export function ElectionDetail() {
                 </div>
                 <div className="flex-1">
                   <h2 className="text-3xl font-bold text-white mb-2">{selectedCandidate.name}</h2>
-                  <div className="text-[#13ecec] text-sm uppercase tracking-wider mb-4">
-                    {selectedCandidate.department}
-                  </div>
-                  <div className="flex gap-2">
-                    {selectedCandidate.website && (
-                      <button className="bg-[#234848] hover:bg-[#2a5555] text-white px-4 py-2 flex items-center gap-2 transition-colors text-sm">
-                        <MdLink className="w-4 h-4" />
-                        <span>WEBSITE</span>
-                      </button>
-                    )}
-                    {selectedCandidate.video && (
-                      <button className="bg-[#234848] hover:bg-[#2a5555] text-white px-4 py-2 flex items-center gap-2 transition-colors text-sm">
-                        <MdVideocam className="w-4 h-4" />
-                        <span>VIDEO</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Key Stats */}
-              <div>
-                <h3 className="text-white font-bold uppercase tracking-wider text-sm mb-4">KEY STATS</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center py-2 border-b border-[#234848]">
-                    <span className="text-[#92c9c9] text-sm">Year</span>
-                    <span className="text-white font-medium">{selectedCandidate.year}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-[#234848]">
-                    <span className="text-[#92c9c9] text-sm">GPA</span>
-                    <span className="text-white font-medium">{selectedCandidate.gpa}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-[#234848]">
-                    <span className="text-[#92c9c9] text-sm">Experience</span>
-                    <span className="text-white font-medium">{selectedCandidate.experience}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Manifesto Summary */}
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <MdVolumeUp className="w-5 h-5 text-[#13ecec]" />
-                  <h3 className="text-[#13ecec] font-bold uppercase tracking-wider text-sm">MANIFESTO SUMMARY</h3>
-                </div>
-                <p className="text-[#92c9c9] text-sm leading-relaxed mb-6 relative">
-                  <span className="absolute -left-4 -top-2 text-6xl text-[#234848] font-serif">"</span>
-                  {selectedCandidate.manifesto.intro}
-                </p>
-                <div className="space-y-4">
-                  {selectedCandidate.manifesto.pillars.map((pillar, index) => (
-                    <div key={index} className="border-l-2 border-[#13ecec] pl-4">
-                      <h4 className="text-white font-bold mb-2">
-                        {index + 1}. {pillar.title}:
-                      </h4>
-                      <p className="text-[#92c9c9] text-sm leading-relaxed">{pillar.description}</p>
+                  {selectedCandidate.officeName && (
+                    <div className="text-[#13ecec] text-sm uppercase tracking-wider mb-4">
+                      {selectedCandidate.officeName}
                     </div>
-                  ))}
+                  )}
+                  {selectedCandidate.regNumber && (
+                    <div className="text-[#92c9c9] text-sm mb-4">
+                      {selectedCandidate.regNumber}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Add to Ballot Button */}
-              <button className="w-full bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-6 py-4 flex items-center justify-center gap-2 transition-colors uppercase tracking-wider">
-                <MdHowToVote className="w-5 h-5" />
-                <span>ADD TO BALLOT</span>
-              </button>
+              {/* Quote */}
+              {selectedCandidate.quote && (
+                <div>
+                  <h3 className="text-white font-bold uppercase tracking-wider text-sm mb-4">QUOTE</h3>
+                  <p className="text-[#92c9c9] text-sm leading-relaxed relative">
+                    <span className="absolute -left-4 -top-2 text-6xl text-[#234848] font-serif">"</span>
+                    {selectedCandidate.quote}
+                  </p>
+                </div>
+              )}
+
+              {/* Manifesto */}
+              {selectedCandidate.manifesto && (
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <MdVolumeUp className="w-5 h-5 text-[#13ecec]" />
+                    <h3 className="text-[#13ecec] font-bold uppercase tracking-wider text-sm">MANIFESTO</h3>
+                  </div>
+                  <p className="text-[#92c9c9] text-sm leading-relaxed mb-6">
+                    {selectedCandidate.manifesto}
+                  </p>
+                </div>
+              )}
+
+              {/* Vote Button or Verify Receipt Button */}
+              {hasVoted ? (
+                <button 
+                  onClick={() => {
+                    navigate(`/vote-verification?electionId=${electionId}`);
+                    setSelectedCandidate(null);
+                  }}
+                  className="w-full bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-6 py-4 flex items-center justify-center gap-2 transition-colors uppercase tracking-wider"
+                >
+                  <MdVerified className="w-5 h-5" />
+                  <span>VERIFY RECEIPT</span>
+                </button>
+              ) : (
+                <button 
+                  onClick={() => {
+                    navigate(`/elections/${electionId}/ballot`);
+                    setSelectedCandidate(null);
+                  }}
+                  className="w-full bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-6 py-4 flex items-center justify-center gap-2 transition-colors uppercase tracking-wider"
+                >
+                  <MdHowToVote className="w-5 h-5" />
+                  <span>CAST YOUR VOTE</span>
+                </button>
+              )}
             </div>
           </div>
         </>
       )}
+
+      {/* Floating Menu */}
+      <FloatingMenu
+        items={menuItems}
+        title="echo"
+        onLogout={handleLogout}
+      />
     </div>
   );
 }

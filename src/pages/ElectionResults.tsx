@@ -1,193 +1,212 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { MdArrowBack, MdBarChart, MdTrendingUp, MdHowToVote } from "react-icons/md";
-import candidate1 from "../assets/candidate-1.png";
-import candidate2 from "../assets/candidate-2.png";
-import candidate3 from "../assets/candidate-3.png";
-import candidate4 from "../assets/candidate-4.png";
-import candidate5 from "../assets/candidate-5.png";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { MdArrowBack, MdBarChart, MdTrendingUp, MdHowToVote, MdPerson, MdVerified, MdRefresh } from "react-icons/md";
+import { FloatingMenu } from "../components/FloatingMenu";
+import { AdminLayout } from "../components/AdminLayout";
+import { authService } from "../lib/auth";
+import { useElectionResults, useCalculateResults } from "../hooks/useAdmin";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../lib/api";
+import type { ApiResponse } from "../lib/api";
 
-type OfficeFilter = "all" | "presidential" | "vp" | "secretary" | "treasurer";
+type OfficeFilter = "all" | string;
 
 interface CandidateResult {
-  id: string;
-  name: string;
-  affiliation: string;
-  party: string;
-  image: string;
-  votes: number;
+  candidateId: string;
+  candidateName: string;
+  voteCount: number;
   percentage: number;
-  isIncumbent?: boolean;
+  isWinner: boolean;
+  image?: string;
 }
 
 interface OfficeResult {
-  office: string;
-  seats: number;
+  officeId: string;
+  officeName: string;
+  officeDescription: string;
+  totalVotes: number;
   candidates: CandidateResult[];
-  abstainVotes: number;
-  abstainPercentage: number;
 }
 
 export function ElectionResults() {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const location = useLocation();
+  const { id: electionId } = useParams();
   const [officeFilter, setOfficeFilter] = useState<OfficeFilter>("all");
+  
+  // Check if this is an admin view
+  const isAdminView = location.pathname.startsWith("/admin");
+  
+  // Fetch results
+  const { data: resultsResponse, isLoading: isLoadingResults, refetch: refetchResults } = useElectionResults(electionId);
+  const calculateResults = useCalculateResults();
+  
+  // Auto-calculate results if admin and results don't exist
+  useEffect(() => {
+    if (isAdminView && resultsResponse?.success && !resultsResponse.data.hasResults && !calculateResults.isPending) {
+      // Auto-calculate results for admin
+      calculateResults.mutateAsync(electionId!).then(() => {
+        refetchResults();
+      }).catch((error) => {
+        console.error("Failed to calculate results:", error);
+      });
+    }
+  }, [isAdminView, resultsResponse, electionId, calculateResults, refetchResults]);
 
-  // Example election data
-  const election = {
-    id: id || "1",
-    pollsCloseTime: "8:00 PM EST",
-    lastUpdated: "2 mins ago",
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      navigate("/login");
+    }
   };
 
-  // Example results data
-  const allResults: OfficeResult[] = [
-    {
-      office: "Presidential",
-      seats: 2,
-      candidates: [
-        {
-          id: "1",
-          name: "Sarah Chen",
-          affiliation: "Progressive Alliance",
-          party: "INCUMBENT",
-          image: candidate1,
-          votes: 1538,
-          percentage: 45.2,
-          isIncumbent: true,
-        },
-        {
-          id: "2",
-          name: "Michael Ross",
-          affiliation: "STUDENT VOICE",
-          party: "Independent",
-          image: candidate2,
-          votes: 1092,
-          percentage: 32.1,
-        },
-        {
-          id: "3",
-          name: "Jessica Lee",
-          affiliation: "CAMPUS UNITED",
-          party: "Green Party",
-          image: candidate3,
-          votes: 629,
-          percentage: 18.5,
-        },
-      ],
-      abstainVotes: 143,
-      abstainPercentage: 4.2,
-    },
-    {
-      office: "VP",
-      seats: 1,
-      candidates: [
-        {
-          id: "4",
-          name: "David Okonjo",
-          affiliation: "LAW SCHOOL",
-          party: "Independent",
-          image: candidate4,
-          votes: 892,
-          percentage: 52.3,
-        },
-        {
-          id: "5",
-          name: "Emily Zhang",
-          affiliation: "COMPUTER SCIENCE",
-          party: "Tech Forward",
-          image: candidate5,
-          votes: 812,
-          percentage: 47.7,
-        },
-      ],
-      abstainVotes: 45,
-      abstainPercentage: 2.6,
-    },
-    {
-      office: "Secretary",
-      seats: 1,
-      candidates: [
-        {
-          id: "6",
-          name: "Priya Patel",
-          affiliation: "ARTS & SCIENCES",
-          party: "Green Party",
-          image: candidate3,
-          votes: 1205,
-          percentage: 58.1,
-        },
-        {
-          id: "7",
-          name: "Marcus Chen",
-          affiliation: "BUSINESS",
-          party: "Progressive Alliance",
-          image: candidate2,
-          votes: 869,
-          percentage: 41.9,
-        },
-      ],
-      abstainVotes: 32,
-      abstainPercentage: 1.5,
-    },
-    {
-      office: "Treasurer",
-      seats: 1,
-      candidates: [
-        {
-          id: "8",
-          name: "Michael Ross",
-          affiliation: "HUMANITIES",
-          party: "Independent",
-          image: candidate2,
-          votes: 1103,
-          percentage: 55.8,
-        },
-        {
-          id: "9",
-          name: "Sarah Jenkins",
-          affiliation: "ENGINEERING",
-          party: "Tech Forward",
-          image: candidate1,
-          votes: 874,
-          percentage: 44.2,
-        },
-      ],
-      abstainVotes: 28,
-      abstainPercentage: 1.4,
-    },
+  const handleCalculateResults = async () => {
+    if (!electionId) return;
+    try {
+      await calculateResults.mutateAsync(electionId);
+      refetchResults();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Failed to calculate results");
+    }
+  };
+
+  const menuItems = [
+    { path: "/dashboard", label: "Dashboard", icon: MdBarChart },
+    { path: "/elections", label: "Elections", icon: MdHowToVote },
+    { path: "/profile", label: "Profile", icon: MdPerson },
+    { path: "/stats", label: "Stats", icon: MdBarChart },
+    { path: "/verify", label: "Verify Receipt", icon: MdVerified },
   ];
 
-  // Calculate summary statistics
-  // For believable stats: total votes should be less than registered voters
-  const registeredVoters = 5000;
+  // Get election info
+  const { data: electionResponse } = useQuery({
+    queryKey: ["election", electionId],
+    queryFn: async () => {
+      if (!electionId) throw new Error("Election ID is required");
+      const response = await api.get<ApiResponse<any>>(`/election/${electionId}`);
+      return response;
+    },
+    enabled: !!electionId,
+  });
+
+  const election = electionResponse?.success ? electionResponse.data : null;
+  const results = resultsResponse?.success ? resultsResponse.data : null;
+
+  // Transform API results to component format
+  const allResults: OfficeResult[] = results?.offices || [];
   
-  // Calculate total votes from all offices
+  // Get unique office names for filter
+  const officeNames = allResults.map(r => r.officeName.toLowerCase());
+  const uniqueOfficeNames = ["all", ...new Set(officeNames)];
+
+  // Calculate summary statistics
   const totalVotesCast = allResults.reduce(
-    (sum, office) =>
-      sum +
-      office.candidates.reduce((candidateSum, candidate) => candidateSum + candidate.votes, 0) +
-      office.abstainVotes,
+    (sum, office) => sum + office.totalVotes,
     0
   );
-  
-  // For believable stats: assume each voter votes in multiple offices
-  // Calculate unique voters (each voter can vote in ~2-3 offices on average)
-  // So unique voters should be less than total votes cast
-  const uniqueVoters = Math.min(Math.floor(totalVotesCast / 2.5), registeredVoters);
-  const voterTurnout = ((uniqueVoters / registeredVoters) * 100).toFixed(1);
-  
-  // Calculate change vs 2023 (based on unique voters, not total votes)
-  const totalVotes2023 = 3036;
-  const votesChange = ((uniqueVoters - totalVotes2023) / totalVotes2023) * 100;
 
-  const filteredResults = officeFilter === "all" ? allResults : allResults.filter((r) => r.office.toLowerCase() === officeFilter);
+  const filteredResults = officeFilter === "all" 
+    ? allResults 
+    : allResults.filter((r) => r.officeName.toLowerCase() === officeFilter);
 
   const formatNumber = (num: number) => {
     return num.toLocaleString();
   };
 
-  return (
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleString();
+  };
+
+  // Loading state
+  if (isLoadingResults || calculateResults.isPending) {
+    const content = (
+      <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg">
+            {calculateResults.isPending ? "Counting votes..." : "Loading results..."}
+          </p>
+        </div>
+      </div>
+    );
+
+    return isAdminView ? <AdminLayout>{content}</AdminLayout> : (
+      <div className="min-h-full w-full bg-[#102222] relative overflow-y-auto overflow-x-hidden">
+        {content}
+      </div>
+    );
+  }
+
+  // No results state
+  if (resultsResponse?.success && !resultsResponse.data.hasResults) {
+    const content = (
+      <div className="p-8">
+        <button
+          onClick={() => navigate(isAdminView ? "/admin/elections" : "/elections")}
+          className="mb-6 text-[#92c9c9] hover:text-white flex items-center gap-2 transition-colors"
+        >
+          <MdArrowBack className="w-5 h-5" />
+          <span>Back</span>
+        </button>
+
+        <div className="bg-[#142828] border border-[#234848] rounded-lg p-8 text-center">
+          <MdBarChart className="w-16 h-16 text-[#92c9c9] mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Results Not Available</h2>
+          <p className="text-[#92c9c9] mb-6">
+            {resultsResponse.data.message || "Results have not been calculated yet."}
+          </p>
+          {isAdminView && (
+            <button
+              onClick={handleCalculateResults}
+              disabled={calculateResults.isPending}
+              className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg disabled:opacity-50 flex items-center gap-2 mx-auto"
+            >
+              <MdRefresh className="w-5 h-5" />
+              {calculateResults.isPending ? "Calculating..." : "Calculate Results"}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+
+    return isAdminView ? <AdminLayout>{content}</AdminLayout> : (
+      <div className="min-h-full w-full bg-[#102222] relative overflow-y-auto overflow-x-hidden">
+        {content}
+      </div>
+    );
+  }
+
+  // Error state
+  if (resultsResponse && !resultsResponse.success) {
+    const content = (
+      <div className="p-8">
+        <button
+          onClick={() => navigate(isAdminView ? "/admin/elections" : "/elections")}
+          className="mb-6 text-[#92c9c9] hover:text-white flex items-center gap-2 transition-colors"
+        >
+          <MdArrowBack className="w-5 h-5" />
+          <span>Back</span>
+        </button>
+
+        <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 rounded-lg">
+          <p className="font-medium">Error loading results</p>
+          <p className="text-sm mt-2">{resultsResponse.message}</p>
+        </div>
+      </div>
+    );
+
+    return isAdminView ? <AdminLayout>{content}</AdminLayout> : (
+      <div className="min-h-full w-full bg-[#102222] relative overflow-y-auto overflow-x-hidden">
+        {content}
+      </div>
+    );
+  }
+
+  const mainContent = (
     <div className="min-h-full w-full bg-[#102222] relative overflow-y-auto overflow-x-hidden">
       {/* Grid pattern overlay */}
       <div
@@ -205,7 +224,7 @@ export function ElectionResults() {
         {/* Header with Back Button */}
         <div className="mb-6">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(isAdminView ? "/admin/elections" : "/elections")}
             className="flex items-center gap-2 text-[#92c9c9] hover:text-white transition-colors mb-4"
           >
             <MdArrowBack className="w-5 h-5" />
@@ -215,19 +234,27 @@ export function ElectionResults() {
           {/* Title and Info */}
           <div className="mb-6">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2">
-              2024 Student Government
+              {election?.name || results?.electionName || "Election Results"}
             </h1>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#13ecec] mb-4">
-              Election Results
+              Results
             </h2>
             <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-              <span className="text-sm text-[#92c9c9]">Real-time counting. Polls close at {election.pollsCloseTime}.</span>
-              <div className="bg-[#1a2a2a] border border-[#234848] px-3 py-1.5 rounded flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#92c9c9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-xs text-[#92c9c9]">Last updated: {election.lastUpdated}</span>
-              </div>
+              {results?.calculatedAt && (
+                <span className="text-sm text-[#92c9c9]">
+                  Calculated: {formatDate(results.calculatedAt)}
+                </span>
+              )}
+              {isAdminView && (
+                <button
+                  onClick={handleCalculateResults}
+                  disabled={calculateResults.isPending}
+                  className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded text-sm transition-all flex items-center gap-2 disabled:opacity-50"
+                >
+                  <MdRefresh className="w-4 h-4" />
+                  {calculateResults.isPending ? "Recalculating..." : "Recalculate"}
+                </button>
+              )}
             </div>
           </div>
 
@@ -239,172 +266,113 @@ export function ElectionResults() {
                 <div className="text-white text-xs uppercase tracking-wider font-medium">TOTAL VOTES</div>
                 <MdBarChart className="w-5 h-5 text-[#13ecec]" />
               </div>
-              <div className="text-4xl font-bold text-white mb-3">{formatNumber(uniqueVoters)}</div>
-              <div className="flex items-center gap-1 text-sm" style={{ color: '#4ade80' }}>
-                <MdTrendingUp className="w-4 h-4" />
-                <span>+{Math.abs(votesChange).toFixed(0)}% vs 2023</span>
-              </div>
+              <div className="text-4xl font-bold text-white mb-3">{formatNumber(totalVotesCast)}</div>
+              <div className="text-sm text-[#92c9c9]">Across all offices</div>
             </div>
 
-            {/* Voter Turnout */}
+            {/* Offices */}
             <div className="bg-[#1a2a2a] border border-[#234848] p-6 rounded">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-white text-xs uppercase tracking-wider font-medium">VOTER TURNOUT</div>
-                <div className="w-6 h-6 relative">
-                  <svg viewBox="0 0 24 24" className="w-6 h-6 text-[#13ecec]">
-                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.3" />
-                    <path
-                      d="M 12 12 L 12 2 A 10 10 0 0 1 20 8 Z"
-                      fill="currentColor"
-                      opacity="0.6"
-                    />
-                    {/* Small voter figures */}
-                    <circle cx="10" cy="8" r="1.5" fill="currentColor" />
-                    <circle cx="14" cy="8" r="1.5" fill="currentColor" />
-                  </svg>
-                </div>
-              </div>
-              <div className="text-4xl font-bold text-white mb-3">{voterTurnout}%</div>
-              <div className="flex items-center gap-3">
-                <div className="flex-1 h-2 bg-[#102222] border border-[#234848] overflow-hidden">
-                  <div
-                    className="h-full bg-[#13ecec] transition-all"
-                    style={{ width: `${voterTurnout}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Active Ballots */}
-            <div className="bg-[#1a2a2a] border border-[#234848] p-6 rounded">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-white text-xs uppercase tracking-wider font-medium">ACTIVE BALLOTS</div>
+                <div className="text-white text-xs uppercase tracking-wider font-medium">OFFICES</div>
                 <MdHowToVote className="w-5 h-5 text-[#13ecec]" />
               </div>
-              <div className="text-4xl font-bold text-white mb-3">{formatNumber(registeredVoters)}</div>
-              <div className="text-sm text-[#92c9c9]">Registered Eligible Voters</div>
+              <div className="text-4xl font-bold text-white mb-3">{allResults.length}</div>
+              <div className="text-sm text-[#92c9c9]">Contested positions</div>
+            </div>
+
+            {/* Candidates */}
+            <div className="bg-[#1a2a2a] border border-[#234848] p-6 rounded">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-white text-xs uppercase tracking-wider font-medium">CANDIDATES</div>
+                <MdPerson className="w-5 h-5 text-[#13ecec]" />
+              </div>
+              <div className="text-4xl font-bold text-white mb-3">
+                {formatNumber(allResults.reduce((sum, office) => sum + office.candidates.length, 0))}
+              </div>
+              <div className="text-sm text-[#92c9c9]">Total candidates</div>
             </div>
           </div>
 
           {/* Office Filter Tabs */}
+          {uniqueOfficeNames.length > 1 && (
           <div className="mb-6 flex gap-2 overflow-x-auto">
+              {uniqueOfficeNames.map((officeName) => (
             <button
-              onClick={() => setOfficeFilter("all")}
+                  key={officeName}
+                  onClick={() => setOfficeFilter(officeName)}
               className={`px-4 py-2 font-bold text-sm uppercase tracking-wider transition-colors whitespace-nowrap ${
-                officeFilter === "all"
+                    officeFilter === officeName
                   ? "bg-[#13ecec] text-[#112222]"
                   : "bg-[#142828] border border-[#234848] text-[#92c9c9] hover:text-white"
               }`}
             >
-              ALL OFFICES
+                  {officeName === "all" ? "ALL OFFICES" : officeName.toUpperCase()}
             </button>
-            <button
-              onClick={() => setOfficeFilter("presidential")}
-              className={`px-4 py-2 font-bold text-sm uppercase tracking-wider transition-colors whitespace-nowrap ${
-                officeFilter === "presidential"
-                  ? "bg-[#13ecec] text-[#112222]"
-                  : "bg-[#142828] border border-[#234848] text-[#92c9c9] hover:text-white"
-              }`}
-            >
-              PRESIDENTIAL
-            </button>
-            <button
-              onClick={() => setOfficeFilter("vp")}
-              className={`px-4 py-2 font-bold text-sm uppercase tracking-wider transition-colors whitespace-nowrap ${
-                officeFilter === "vp"
-                  ? "bg-[#13ecec] text-[#112222]"
-                  : "bg-[#142828] border border-[#234848] text-[#92c9c9] hover:text-white"
-              }`}
-            >
-              VP
-            </button>
-            <button
-              onClick={() => setOfficeFilter("secretary")}
-              className={`px-4 py-2 font-bold text-sm uppercase tracking-wider transition-colors whitespace-nowrap ${
-                officeFilter === "secretary"
-                  ? "bg-[#13ecec] text-[#112222]"
-                  : "bg-[#142828] border border-[#234848] text-[#92c9c9] hover:text-white"
-              }`}
-            >
-              SECRETARY
-            </button>
-            <button
-              onClick={() => setOfficeFilter("treasurer")}
-              className={`px-4 py-2 font-bold text-sm uppercase tracking-wider transition-colors whitespace-nowrap ${
-                officeFilter === "treasurer"
-                  ? "bg-[#13ecec] text-[#112222]"
-                  : "bg-[#142828] border border-[#234848] text-[#92c9c9] hover:text-white"
-              }`}
-            >
-              TREASURER
-            </button>
+              ))}
           </div>
+          )}
         </div>
 
         {/* Results Display */}
         <div className="space-y-8">
-          {filteredResults.map((officeResult, index) => {
-            const sortedCandidates = [...officeResult.candidates].sort((a, b) => b.votes - a.votes);
+          {filteredResults.length === 0 ? (
+            <div className="bg-[#142828] border border-[#234848] p-8 text-center">
+              <p className="text-[#92c9c9]">No results to display</p>
+            </div>
+          ) : (
+            filteredResults.map((officeResult) => {
+              const sortedCandidates = [...officeResult.candidates].sort((a, b) => b.voteCount - a.voteCount);
             const leadingCandidate = sortedCandidates[0];
 
             return (
-              <div key={officeResult.office} className="bg-[#142828] border border-[#234848] p-6">
+                <div key={officeResult.officeId} className="bg-[#142828] border border-[#234848] p-6 rounded-lg">
                 {/* Office Header */}
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl md:text-3xl font-bold text-white uppercase">
-                    {officeResult.office} Race
+                    <div>
+                      <h2 className="text-2xl md:text-3xl font-bold text-white uppercase mb-2">
+                        {officeResult.officeName}
                   </h2>
-                  <div className="bg-[#234848] text-[#92c9c9] text-xs font-bold px-3 py-1 uppercase tracking-wider">
-                    {officeResult.seats} {officeResult.seats === 1 ? "SEAT" : "SEATS"} OPEN
-                  </div>
+                      {officeResult.officeDescription && (
+                        <p className="text-[#92c9c9] text-sm">{officeResult.officeDescription}</p>
+                      )}
+                    </div>
+                    <div className="bg-[#234848] text-[#92c9c9] text-xs font-bold px-3 py-1 uppercase tracking-wider rounded">
+                      {officeResult.totalVotes} TOTAL VOTES
+                    </div>
                 </div>
 
                 {/* Candidates List */}
                 <div className="space-y-3">
                   {sortedCandidates.map((candidate, candidateIndex) => {
-                    const isLeading = candidateIndex === 0;
+                      const isLeading = candidate.isWinner || candidateIndex === 0;
                     return (
                       <div
-                        key={candidate.id}
-                        className="bg-[#1a2a2a] border border-[#234848] p-4"
+                          key={candidate.candidateId}
+                          className={`bg-[#1a2a2a] border p-4 rounded ${
+                            isLeading ? "border-[#13ecec]" : "border-[#234848]"
+                          }`}
                       >
                         <div className="flex items-center gap-4">
-                          {/* Candidate Image */}
-                          <div className="flex-shrink-0">
-                            <img
-                              src={candidate.image}
-                              alt={candidate.name}
-                              className={`w-20 h-20 object-cover ${
-                                isLeading ? "border-2 border-[#13ecec]" : "border border-[#234848]"
-                              }`}
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = "none";
-                              }}
-                            />
-                          </div>
-
-                          {/* Candidate Info - Name, Affiliation, Party */}
-                          <div className="flex-shrink-0 min-w-[220px]">
-                            <h3 className="text-xl font-bold text-white mb-1">{candidate.name}</h3>
-                            {candidate.isIncumbent ? (
-                              <div className="text-[#13ecec] text-sm font-medium mb-1">INCUMBENT</div>
-                            ) : (
-                              <div className="text-[#92c9c9] text-xs uppercase tracking-wider mb-1">
-                                {candidate.affiliation}
+                            {/* Candidate Info */}
+                            <div className="flex-1 min-w-[220px]">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="text-xl font-bold text-white">{candidate.candidateName}</h3>
+                                {candidate.isWinner && (
+                                  <span className="px-2 py-0.5 bg-[#13ecec] text-[#112222] text-xs font-bold rounded">
+                                    WINNER
+                                  </span>
+                                )}
                               </div>
-                            )}
-                            <div className="text-[#92c9c9] text-sm">{candidate.party}</div>
                           </div>
 
-                          {/* Progress Bar - Full Width Horizontal */}
+                            {/* Progress Bar */}
                           <div className="flex-1 relative h-12">
                             <div className="absolute inset-0 flex items-center">
                               <div
                                 className={`h-full flex items-center ${
                                   isLeading ? "bg-[#13ecec]" : "bg-[#234848]"
                                 }`}
-                                style={{ width: `${candidate.percentage}%` }}
+                                  style={{ width: `${Math.min(candidate.percentage, 100)}%` }}
                               >
                                 {isLeading && (
                                   <MdBarChart className="w-5 h-5 text-[#112222] ml-2" />
@@ -413,35 +381,36 @@ export function ElectionResults() {
                             </div>
                           </div>
 
-                          {/* Vote Stats - Right Side */}
+                            {/* Vote Stats */}
                           <div className="flex-shrink-0 text-right min-w-[140px]">
                             <div className={`text-2xl font-bold mb-1 ${isLeading ? "text-[#13ecec]" : "text-[#92c9c9]"}`}>
                               {candidate.percentage.toFixed(1)}%
                             </div>
-                            <div className="text-white text-xl font-bold">{formatNumber(candidate.votes)}</div>
+                              <div className="text-white text-xl font-bold">{formatNumber(candidate.voteCount)}</div>
                             <div className="text-white text-sm">VOTES</div>
-                          </div>
+                            </div>
                         </div>
                       </div>
                     );
                   })}
-
-                  {/* Abstain / Write-in */}
-                  <div className="bg-[#1a2a2a] border border-[#234848] p-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-white">Abstain / Write-in</span>
-                      <span className="text-white">
-                        {formatNumber(officeResult.abstainVotes)} Votes ({officeResult.abstainPercentage.toFixed(1)}%)
-                      </span>
-                    </div>
-                  </div>
                 </div>
               </div>
             );
-          })}
+            })
+          )}
         </div>
       </div>
+
+      {/* Floating Menu (only for user view) */}
+      {!isAdminView && (
+      <FloatingMenu
+        items={menuItems}
+        title="echo"
+        onLogout={handleLogout}
+      />
+      )}
     </div>
   );
-}
 
+  return isAdminView ? <AdminLayout>{mainContent}</AdminLayout> : mainContent;
+}
