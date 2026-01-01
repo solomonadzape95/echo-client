@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { MdFingerprint } from "react-icons/md";
 
 export function SplashPage({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0);
@@ -37,19 +38,10 @@ export function SplashPage({ onComplete }: { onComplete: () => void }) {
 
       {/* Central content */}
       <div className="relative z-10 flex flex-col items-center">
-        {/* Ballot box icon */}
+        {/* Fingerprint logo */}
         <div className="mb-8 relative">
           <div className="w-32 h-32 rounded-lg border-2 border-[#13ecec] bg-[#13ecec]/10 flex items-center justify-center shadow-[0_0_30px_rgba(19,236,236,0.5)]">
-            <svg
-              viewBox="0 0 100 100"
-              className="w-20 h-20 text-[#13ecec]"
-              fill="currentColor"
-            >
-              <rect x="20" y="30" width="60" height="50" rx="2" />
-              <rect x="25" y="35" width="50" height="40" fill="currentColor" />
-              <path d="M 30 35 L 30 45 L 70 45 L 70 35 Z" fill="#102222" />
-              <rect x="45" y="20" width="10" height="15" rx="1" />
-            </svg>
+            <MdFingerprint className="w-20 h-20 text-[#13ecec]" />
           </div>
         </div>
 

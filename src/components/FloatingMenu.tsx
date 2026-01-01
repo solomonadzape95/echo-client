@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { MdMenu, MdClose, MdDashboard, MdPeople, MdHowToVote, MdBarChart, MdSettings, MdLogout, MdAdminPanelSettings } from "react-icons/md";
+import { MdMenu, MdClose, MdDashboard, MdPeople, MdHowToVote, MdBarChart, MdSettings, MdLogout, MdAdminPanelSettings, MdFingerprint } from "react-icons/md";
 
 interface MenuItem {
   path: string;
@@ -58,11 +58,14 @@ export function FloatingMenu({
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="p-6 border-b border-[#234848] flex items-center justify-between sticky top-0 bg-[#142828] z-10">
-                <div>
-                  <h2 className="text-xl font-bold text-white">{title}</h2>
-                  {subtitle && (
-                    <p className="text-xs text-[#568888] uppercase tracking-wider mt-1">{subtitle}</p>
-                  )}
+                <div className="flex items-center gap-3">
+                  <MdFingerprint className="w-6 h-6 text-[#13ecec]" />
+                  <div>
+                    <h2 className="text-xl font-bold text-white">{title}</h2>
+                    {subtitle && (
+                      <p className="text-xs text-[#568888] uppercase tracking-wider mt-1">{subtitle}</p>
+                    )}
+                  </div>
                 </div>
                 <button
                   onClick={() => setIsMenuOpen(false)}

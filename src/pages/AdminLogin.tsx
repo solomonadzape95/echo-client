@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MdBadge, MdLock, MdArrowForward, MdAdminPanelSettings } from "react-icons/md";
+import { MdBadge, MdLock, MdArrowForward, MdAdminPanelSettings, MdFingerprint } from "react-icons/md";
 import { authService } from "../lib/auth";
 
 export function AdminLogin() {
@@ -48,7 +48,7 @@ export function AdminLogin() {
         {/* Logo/Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-[#13ecec] rounded-full mb-4">
-            <MdAdminPanelSettings className="w-10 h-10 text-[#112222]" />
+            <MdFingerprint className="w-10 h-10 text-[#112222]" />
           </div>
           <h1 className="text-4xl font-bold text-white mb-2">echo</h1>
           <p className="text-[#13ecec] text-sm uppercase tracking-wider">ADMIN CONSOLE</p>

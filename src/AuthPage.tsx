@@ -24,15 +24,7 @@ export function AuthPage() {
       <header className="flex justify-between items-center px-10 py-4 fixed top-0 left-0 right-0 z-50 bg-[#102222]">
         <div className="flex items-center gap-4">
           <div className="w-8 h-8 rounded bg-[#234848] flex items-center justify-center">
-            <svg
-              viewBox="0 0 24 24"
-              className="w-5 h-5 text-[#13ecec]"
-              fill="currentColor"
-            >
-              <rect x="6" y="4" width="12" height="16" rx="2" />
-              <rect x="8" y="6" width="8" height="12" fill="currentColor" />
-              <path d="M 10 4 L 10 6 L 14 6 L 14 4 Z" fill="#102222" />
-            </svg>
+            <MdFingerprint className="w-5 h-5 text-[#13ecec]" />
           </div>
           <h1 className="text-white text-lg font-bold tracking-tight uppercase">
             echo
@@ -79,8 +71,8 @@ export function AuthPage() {
                 "LOGIN"
               )}
             </h2>
-            <div className="opacity-50">
-              <MdFingerprint className="w-16 h-16 text-[#234848]" />
+            <div>
+              <MdFingerprint className="w-16 h-16 text-[#13ecec] opacity-80" />
             </div>
           </div>
 
