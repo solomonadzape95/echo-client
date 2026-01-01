@@ -27,7 +27,7 @@ type PositionFilter = "all" | string;
 export function ElectionDetail() {
   const navigate = useNavigate();
   const { id: electionId } = useParams();
-  const { data: ballotResponse, isLoading, error } = useBallot(electionId);
+  const { data: ballotResponse, isLoading, error, refetch: refetchBallot } = useBallot(electionId);
   const { data: hasVoted, isLoading: isLoadingVoteStatus } = useVoteStatus(electionId);
   const [selectedCandidate, setSelectedCandidate] = useState<any | null>(null);
   const [positionFilter, setPositionFilter] = useState<PositionFilter>("all");
@@ -307,6 +307,8 @@ export function ElectionDetail() {
         setTimeRemaining({ days, hours, minutes, seconds });
       } else {
         setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        // Timer elapsed - refetch to update election status
+        refetchBallot();
       }
     };
 
@@ -314,7 +316,7 @@ export function ElectionDetail() {
     const interval = setInterval(calculateTime, 1000);
 
     return () => clearInterval(interval);
-  }, [endTime, electionStatus]);
+  }, [endTime, electionStatus, refetchBallot]);
 
   // Calculate time until start for upcoming elections
   useEffect(() => {
@@ -334,6 +336,8 @@ export function ElectionDetail() {
         setTimeUntilStart({ days, hours, minutes, seconds });
       } else {
         setTimeUntilStart({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        // Timer elapsed - refetch to update election status (election should now be active)
+        refetchBallot();
       }
     };
 
@@ -341,7 +345,7 @@ export function ElectionDetail() {
     const interval = setInterval(calculateTime, 1000);
 
     return () => clearInterval(interval);
-  }, [startTime, electionStatus]);
+  }, [startTime, electionStatus, refetchBallot]);
 
   // Get unique office names for filter
   const officeNames = useMemo(() => {

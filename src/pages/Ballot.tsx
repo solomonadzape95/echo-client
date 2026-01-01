@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { MdPerson, MdCheckBox, MdCheckBoxOutlineBlank, MdArrowBack, MdCheckCircle, MdVerified, MdErrorOutline, MdBarChart, MdHowToVote } from "react-icons/md";
+import { MdPerson, MdCheckBox, MdCheckBoxOutlineBlank, MdArrowBack, MdCheckCircle, MdVerified, MdErrorOutline, MdBarChart, MdHowToVote, MdContentCopy, MdDownload } from "react-icons/md";
 import { useBallot } from "../hooks/useBallot";
 import { useVoting, votingService } from "../hooks/useVoting";
 import { useVoteStatus } from "../hooks/useVoteStatus";
@@ -272,7 +272,39 @@ export function Ballot() {
           {receiptCode && (
             <div className="bg-[#142828] border border-[#234848] p-6 rounded-lg mb-6">
               <p className="text-[#568888] text-xs uppercase tracking-wider mb-2">Receipt Code</p>
-              <p className="text-2xl font-bold text-[#13ecec] font-mono">{receiptCode}</p>
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <p className="text-2xl font-bold text-[#13ecec] font-mono">{receiptCode}</p>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(receiptCode);
+                    // You could add a toast notification here if you have useToast available
+                  }}
+                  className="p-2 bg-[#234848] hover:bg-[#2a5555] text-[#13ecec] rounded transition-colors"
+                  title="Copy receipt code"
+                >
+                  <MdContentCopy className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => {
+                    const ballotData = ballotResponse?.success ? ballotResponse.data : null;
+                    const election = ballotData?.election;
+                    const receiptText = `Echo Platform - Vote Receipt\n\nReceipt Code: ${receiptCode}\nElection: ${election?.name || 'N/A'}\nDate: ${new Date().toLocaleString()}\n\nKeep this receipt for your records.`;
+                    const blob = new Blob([receiptText], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `vote-receipt-${receiptCode}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="p-2 bg-[#234848] hover:bg-[#2a5555] text-[#13ecec] rounded transition-colors"
+                  title="Download receipt"
+                >
+                  <MdDownload className="w-5 h-5" />
+                </button>
+              </div>
               <p className="text-[#92c9c9] text-xs mt-2">Save this code for your records</p>
             </div>
           )}
