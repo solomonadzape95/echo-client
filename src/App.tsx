@@ -13,14 +13,39 @@ import { Stats } from "./pages/Stats";
 import { Profile } from "./pages/Profile";
 import { AdminLogin } from "./pages/AdminLogin";
 import { AdminDashboard } from "./pages/AdminDashboard";
+import { AdminVoters, AdminVoterDetail } from "./pages/AdminVoters";
+import { AdminElections, AdminElectionDetail } from "./pages/AdminElections";
+import { AdminStats } from "./pages/AdminStats";
+import { AdminManagement } from "./pages/AdminManagement";
+import { AdminClasses } from "./pages/AdminClasses";
 import { CreateClass } from "./pages/CreateClass";
 import { CreateElection } from "./pages/CreateElection";
+import { EditElection } from "./pages/EditElection";
+import { CreateOffice } from "./pages/CreateOffice";
+import { EditOffice } from "./pages/EditOffice";
+import { OfficeDetail } from "./pages/OfficeDetail";
+import { AddCandidate } from "./pages/AddCandidate";
 import { queryClient } from "./lib/queryClient";
 import { setupTokenRefresh } from "./lib/tokenRefresh";
 import "./index.css";
 
+const SPLASH_SCREEN_SEEN_KEY = "echo_splash_seen";
+
 export function App() {
   const [showAuth, setShowAuth] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
+
+  // Check if splash screen has been seen before
+  useEffect(() => {
+    const hasSeenSplash = localStorage.getItem(SPLASH_SCREEN_SEEN_KEY);
+    if (!hasSeenSplash) {
+      // First visit - show splash screen
+      setShowSplash(true);
+    } else {
+      // Already seen - skip splash screen
+      setShowAuth(true);
+    }
+  }, []);
 
   // Set up automatic token refresh
   useEffect(() => {
@@ -28,8 +53,20 @@ export function App() {
     return cleanup;
   }, []);
 
+  const handleSplashComplete = () => {
+    // Mark splash screen as seen
+    localStorage.setItem(SPLASH_SCREEN_SEEN_KEY, "true");
+    setShowSplash(false);
+    setShowAuth(true);
+  };
+
+  if (showSplash) {
+    return <SplashPage onComplete={handleSplashComplete} />;
+  }
+
   if (!showAuth) {
-    return <SplashPage onComplete={() => setShowAuth(true)} />;
+    // Still loading - show nothing or a minimal loader
+    return null;
   }
 
   return (
@@ -47,13 +84,28 @@ export function App() {
           <Route path="/elections/:id/ballot" element={<Ballot />} />
           <Route path="/elections/:id/results" element={<ElectionResults />} />
           <Route path="/verify" element={<VoteVerification />} />
+          <Route path="/vote-verification" element={<VoteVerification />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/profile" element={<Profile />} />
           
           {/* Admin routes */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/classes/create" element={<CreateClass />} />
+          <Route path="/admin/voters" element={<AdminVoters />} />
+          <Route path="/admin/voters/:id" element={<AdminVoterDetail />} />
+          <Route path="/admin/elections" element={<AdminElections />} />
           <Route path="/admin/elections/create" element={<CreateElection />} />
+          {/* More specific routes must come before less specific ones */}
+          <Route path="/admin/elections/:id/offices/:officeId/candidates/create" element={<AddCandidate />} />
+          <Route path="/admin/elections/:id/offices/:officeId/edit" element={<EditOffice />} />
+          <Route path="/admin/elections/:id/offices/:officeId" element={<OfficeDetail />} />
+          <Route path="/admin/elections/:id/offices/create" element={<CreateOffice />} />
+          <Route path="/admin/elections/:id/results" element={<ElectionResults />} />
+          <Route path="/admin/elections/:id/edit" element={<EditElection />} />
+          <Route path="/admin/elections/:id" element={<AdminElectionDetail />} />
+          <Route path="/admin/stats" element={<AdminStats />} />
+          <Route path="/admin/admins" element={<AdminManagement />} />
+          <Route path="/admin/classes" element={<AdminClasses />} />
+          <Route path="/admin/classes/create" element={<CreateClass />} />
           
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/login" replace />} />

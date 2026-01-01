@@ -67,7 +67,7 @@ export function SplashPage({ onComplete }: { onComplete: () => void }) {
         <div className="w-96">
           <div className="flex justify-between items-center mb-3">
             <span className="text-white text-sm tracking-wide">
-              INITIALIZING SECURE ENVIRONMENT...
+              STARTING UP...
             </span>
             <span className="text-white text-sm font-mono">{progress}%</span>
           </div>
