@@ -1,25 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../lib/api";
+import type { ApiResponse } from "../lib/api";
 
-// Example React Query hook - you can use this as a template for other API calls
+export interface Election {
+  id: string;
+  name: string;
+  description: string | null;
+  type: string;
+  status: "pending" | "active" | "completed";
+  startDate: string;
+  endDate: string;
+  domainId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export function useElections() {
   return useQuery({
     queryKey: ["elections"],
-    queryFn: () => api.get("/elections"),
+    queryFn: async () => {
+      const response = await api.get<ApiResponse<Election[]>>("/election");
+      return response;
+    },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
 }
-
-// Example mutation hook (for creating/updating)
-// import { useMutation, useQueryClient } from "@tanstack/react-query";
-// 
-// export function useCreateElection() {
-//   const queryClient = useQueryClient();
-//   
-//   return useMutation({
-//     mutationFn: (data: unknown) => api.post("/elections", data),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ["elections"] });
-//     },
-//   });
-// }
-
