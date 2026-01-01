@@ -89,7 +89,7 @@ export const votingService = {
 
     // Build payload - only include optional fields if they have values
     const payload: any = {
-      electionId: data.electionId,
+      election: data.electionId, // Backend expects "election" not "electionId"
       tokenId: data.tokenId,
       voteDataHash,
       currentHash,
