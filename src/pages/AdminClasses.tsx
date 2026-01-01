@@ -16,9 +16,13 @@ import {
   MdClose,
   MdArrowBack,
 } from "react-icons/md";
+import { useToast } from "../hooks/useToast";
+import { useConfirm } from "../hooks/useConfirm";
 
 export function AdminClasses() {
   const navigate = useNavigate();
+  const { showToast, ToastContainer } = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirm();
   const { data: classesResponse, isLoading } = useAdminClasses();
   const createClass = useCreateClass();
   const updateClass = useUpdateClass();
@@ -67,8 +71,9 @@ export function AdminClasses() {
         faculty: "",
         department: "",
       });
+      showToast("Class created successfully", "success");
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Failed to create class");
+      showToast(error instanceof Error ? error.message : "Failed to create class", "error");
     }
   };
 
@@ -89,17 +94,27 @@ export function AdminClasses() {
         faculty: "",
         department: "",
       });
+      showToast("Class updated successfully", "success");
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Failed to update class");
+      showToast(error instanceof Error ? error.message : "Failed to update class", "error");
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this class?")) {
+    const confirmed = await confirm({
+      title: "Delete Class",
+      message: "Are you sure you want to delete this class? This action cannot be undone.",
+      type: "danger",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+
+    if (confirmed) {
       try {
         await deleteClass.mutateAsync(id);
+        showToast("Class deleted successfully", "success");
       } catch (error) {
-        alert(error instanceof Error ? error.message : "Failed to delete class");
+        showToast(error instanceof Error ? error.message : "Failed to delete class", "error");
       }
     }
   };

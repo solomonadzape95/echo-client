@@ -2,9 +2,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AdminLayout } from "../components/AdminLayout";
 import { useAdminOffice, useAdminCandidates, useDeleteOffice } from "../hooks/useAdmin";
 import { MdArrowBack, MdPerson, MdAdd, MdDelete, MdEdit } from "react-icons/md";
+import { useToast } from "../hooks/useToast";
+import { useConfirm } from "../hooks/useConfirm";
 
 export function OfficeDetail() {
   const navigate = useNavigate();
+  const { showToast, ToastContainer } = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirm();
   const { id: electionId, officeId } = useParams<{ id: string; officeId: string }>();
   const { data: officeResponse, isLoading: isLoadingOffice, error: officeError } = useAdminOffice(officeId);
   const { data: candidatesResponse } = useAdminCandidates(officeId);
@@ -77,6 +81,8 @@ export function OfficeDetail() {
 
   return (
     <AdminLayout>
+      <ToastContainer />
+      {ConfirmDialogComponent}
       <div className="p-8">
         {/* Back Button */}
         <button
@@ -104,12 +110,19 @@ export function OfficeDetail() {
               </button>
               <button
                 onClick={async () => {
-                  if (confirm("Are you sure you want to delete this office?")) {
+                  const confirmed = await confirm({
+                    title: "Delete Office",
+                    message: "Are you sure you want to delete this office? This action cannot be undone.",
+                    type: "danger",
+                    confirmText: "Delete",
+                  });
+                  if (confirmed) {
                     try {
                       await deleteOffice.mutateAsync(officeId!);
+                      showToast("Office deleted successfully", "success");
                       navigate(`/admin/elections/${electionId}`);
                     } catch (error) {
-                      alert("Failed to delete office");
+                      showToast("Failed to delete office", "error");
                     }
                   }
                 }}

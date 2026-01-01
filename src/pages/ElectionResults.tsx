@@ -67,9 +67,10 @@ export function ElectionResults() {
     if (!electionId) return;
     try {
       await calculateResults.mutateAsync(electionId);
+      showToast("Results calculated successfully", "success");
       refetchResults();
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Failed to calculate results");
+      showToast(error instanceof Error ? error.message : "Failed to calculate results", "error");
     }
   };
 
@@ -134,8 +135,14 @@ export function ElectionResults() {
       </div>
     );
 
-    return isAdminView ? <AdminLayout>{content}</AdminLayout> : (
+    return isAdminView ? (
+      <AdminLayout>
+        <ToastContainer />
+        {content}
+      </AdminLayout>
+    ) : (
       <div className="min-h-full w-full bg-[#102222] relative overflow-y-auto overflow-x-hidden">
+        <ToastContainer />
         {content}
       </div>
     );
@@ -173,8 +180,14 @@ export function ElectionResults() {
       </div>
     );
 
-    return isAdminView ? <AdminLayout>{content}</AdminLayout> : (
+    return isAdminView ? (
+      <AdminLayout>
+        <ToastContainer />
+        {content}
+      </AdminLayout>
+    ) : (
       <div className="min-h-full w-full bg-[#102222] relative overflow-y-auto overflow-x-hidden">
+        <ToastContainer />
         {content}
       </div>
     );
@@ -199,8 +212,14 @@ export function ElectionResults() {
       </div>
     );
 
-    return isAdminView ? <AdminLayout>{content}</AdminLayout> : (
+    return isAdminView ? (
+      <AdminLayout>
+        <ToastContainer />
+        {content}
+      </AdminLayout>
+    ) : (
       <div className="min-h-full w-full bg-[#102222] relative overflow-y-auto overflow-x-hidden">
+        <ToastContainer />
         {content}
       </div>
     );
@@ -412,5 +431,15 @@ export function ElectionResults() {
     </div>
   );
 
-  return isAdminView ? <AdminLayout>{mainContent}</AdminLayout> : mainContent;
+  return isAdminView ? (
+    <AdminLayout>
+      <ToastContainer />
+      {mainContent}
+    </AdminLayout>
+  ) : (
+    <>
+      <ToastContainer />
+      {mainContent}
+    </>
+  );
 }

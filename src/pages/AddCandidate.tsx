@@ -4,9 +4,11 @@ import { AdminLayout } from "../components/AdminLayout";
 import { useSearchVotersByElection, useCreateCandidate, useAdminElection } from "../hooks/useAdmin";
 import { API_BASE_URL } from "../lib/api";
 import { MdArrowBack, MdAdd, MdPerson, MdSearch, MdImage, MdClose } from "react-icons/md";
+import { useToast } from "../hooks/useToast";
 
 export function AddCandidate() {
   const navigate = useNavigate();
+  const { showToast, ToastContainer } = useToast();
   const { id: electionId, officeId } = useParams<{ id: string; officeId: string }>();
   const createCandidate = useCreateCandidate();
   const { data: electionResponse } = useAdminElection(electionId);
@@ -48,13 +50,13 @@ export function AddCandidate() {
     if (file) {
       // Validate file type
       if (!file.type.startsWith("image/")) {
-        alert("Please select an image file");
+        showToast("Please select an image file", "error");
         return;
       }
 
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert("Image size must be less than 5MB");
+        showToast("Image size must be less than 5MB", "error");
         return;
       }
 
@@ -86,12 +88,12 @@ export function AddCandidate() {
       const result = await response.json();
       if (result.success) {
         setFormData((prev) => ({ ...prev, image: result.data.url }));
-        alert("Image uploaded successfully!");
+        showToast("Image uploaded successfully!", "success");
       } else {
         throw new Error(result.message || "Failed to upload image");
       }
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Failed to upload image");
+      showToast(error instanceof Error ? error.message : "Failed to upload image", "error");
     } finally {
       setUploadingImage(false);
     }
@@ -105,7 +107,7 @@ export function AddCandidate() {
     if (imageFile && !formData.image) {
       await handleUploadImage();
       if (!formData.image) {
-        alert("Please wait for image upload to complete");
+        showToast("Please wait for image upload to complete", "warning");
         return;
       }
     }
@@ -119,9 +121,10 @@ export function AddCandidate() {
         image: formData.image || undefined,
       });
 
+      showToast("Candidate added successfully", "success");
       navigate(`/admin/elections/${electionId}/offices/${officeId}`);
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Failed to add candidate");
+      showToast(error instanceof Error ? error.message : "Failed to add candidate", "error");
     }
   };
 
@@ -130,6 +133,7 @@ export function AddCandidate() {
 
   return (
     <AdminLayout>
+      <ToastContainer />
       <div className="p-8">
         {/* Back Button */}
         <button

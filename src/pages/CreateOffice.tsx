@@ -3,9 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AdminLayout } from "../components/AdminLayout";
 import { useCreateOffice, useAdminOffices } from "../hooks/useAdmin";
 import { MdArrowBack, MdClose } from "react-icons/md";
+import { useToast } from "../hooks/useToast";
 
 export function CreateOffice() {
   const navigate = useNavigate();
+  const { showToast, ToastContainer } = useToast();
   const { id: electionId } = useParams<{ id: string }>();
   const createOffice = useCreateOffice();
   const { data: officesResponse } = useAdminOffices(electionId);
@@ -30,14 +32,16 @@ export function CreateOffice() {
         dependsOn: formData.dependsOn || null,
       });
 
+      showToast("Office created successfully", "success");
       navigate(`/admin/elections/${electionId}`);
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Failed to create office");
+      showToast(error instanceof Error ? error.message : "Failed to create office", "error");
     }
   };
 
   return (
     <AdminLayout>
+      <ToastContainer />
       <div className="p-8">
         {/* Back Button */}
         <button

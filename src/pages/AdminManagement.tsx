@@ -16,9 +16,13 @@ import {
   MdShield,
   MdClose,
 } from "react-icons/md";
+import { useToast } from "../hooks/useToast";
+import { useConfirm } from "../hooks/useConfirm";
 
 export function AdminManagement() {
   const navigate = useNavigate();
+  const { showToast, ToastContainer } = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirm();
   const { data: adminsResponse, isLoading } = useAdminAdmins();
   const createAdmin = useCreateAdmin();
   const updateAdmin = useUpdateAdmin();
@@ -67,7 +71,7 @@ export function AdminManagement() {
         fullName: "",
       });
     } catch (error) {
-      alert("Failed to create admin");
+      showToast("Failed to create admin", "error");
     }
   };
 
@@ -92,16 +96,25 @@ export function AdminManagement() {
         fullName: "",
       });
     } catch (error) {
-      alert("Failed to update admin");
+      showToast("Failed to update admin", "error");
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this admin?")) {
+    const confirmed = await confirm({
+      title: "Delete Admin",
+      message: "Are you sure you want to delete this admin? This action cannot be undone.",
+      type: "danger",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+
+    if (confirmed) {
       try {
         await deleteAdmin.mutateAsync(id);
+        showToast("Admin deleted successfully", "success");
       } catch (error) {
-        alert("Failed to delete admin");
+        showToast("Failed to delete admin", "error");
       }
     }
   };

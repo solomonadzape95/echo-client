@@ -3,9 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AdminLayout } from "../components/AdminLayout";
 import { useAdminElection, useUpdateElection } from "../hooks/useAdmin";
 import { MdArrowBack, MdSave } from "react-icons/md";
+import { useToast } from "../hooks/useToast";
 
 export function EditElection() {
   const navigate = useNavigate();
+  const { showToast, ToastContainer } = useToast();
   const { id: electionId } = useParams<{ id: string }>();
   const { data: electionResponse, isLoading } = useAdminElection(electionId);
   const updateElection = useUpdateElection();
@@ -40,9 +42,10 @@ export function EditElection() {
         },
       });
 
+      showToast("Election updated successfully", "success");
       navigate(`/admin/elections/${electionId}`);
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Failed to update election");
+      showToast(error instanceof Error ? error.message : "Failed to update election", "error");
     }
   };
 
@@ -76,6 +79,7 @@ export function EditElection() {
 
   return (
     <AdminLayout>
+      <ToastContainer />
       <div className="p-8">
         {/* Back Button */}
         <button

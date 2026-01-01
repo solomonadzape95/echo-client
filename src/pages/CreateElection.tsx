@@ -4,11 +4,13 @@ import { AdminLayout } from "../components/AdminLayout";
 import { useCreateElection, useAdminClasses, useOfficeTemplates, type OfficeTemplate } from "../hooks/useAdmin";
 import { useFaculties, useDepartments, useEnums } from "../hooks/useEnums";
 import { MdArrowBack, MdSchool, MdGroups, MdDescription, MdRocket, MdVisibility, MdSave, MdCheckBox, MdCheckBoxOutlineBlank } from "react-icons/md";
+import { useToast } from "../hooks/useToast";
 
 type ElectionType = "class" | "department" | "faculty";
 
 export function CreateElection() {
   const navigate = useNavigate();
+  const { showToast, ToastContainer } = useToast();
   const createElection = useCreateElection();
   
   // State declarations first
@@ -77,7 +79,7 @@ export function CreateElection() {
     
     // Validate dates
     if (dateError) {
-      alert(dateError);
+      showToast(dateError, "error");
       return;
     }
 
@@ -85,7 +87,7 @@ export function CreateElection() {
     const endDateTime = new Date(`${formData.endDate}T${formData.endTime}`);
     
     if (endDateTime <= startDateTime) {
-      alert("End date and time must be after start date and time");
+      showToast("End date and time must be after start date and time", "error");
       return;
     }
 
@@ -119,15 +121,17 @@ export function CreateElection() {
         offices: offices && offices.length > 0 ? offices : undefined,
       });
 
+      showToast("Election created successfully", "success");
       navigate("/admin/elections");
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Failed to create election");
+      showToast(error instanceof Error ? error.message : "Failed to create election", "error");
     }
   };
 
   return (
     <AdminLayout>
-    <div className="p-8">
+      <ToastContainer />
+      <div className="p-8">
         {/* Back Button */}
         <button
           onClick={() => navigate("/admin/elections")}

@@ -22,11 +22,15 @@ import {
   MdArrowBack,
   MdPerson,
 } from "react-icons/md";
+import { useToast } from "../hooks/useToast";
+import { useConfirm } from "../hooks/useConfirm";
 
 type ElectionTab = "all" | "pending" | "active" | "completed";
 
 export function AdminElections() {
   const navigate = useNavigate();
+  const { showToast, ToastContainer } = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirm();
   const [activeTab, setActiveTab] = useState<ElectionTab>("all");
   const { data: electionsResponse, isLoading } = useAdminElections(
     undefined,
@@ -124,7 +128,7 @@ export function AdminElections() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {paginatedElections.map((election) => (
               <div
                 key={election.id}
@@ -180,8 +184,8 @@ export function AdminElections() {
                   </button>
                 </div>
               </div>
-              ))}
-            </div>
+            ))}
+          </div>
             {/* Pagination */}
             {elections.length > itemsPerPage && (
               <div className="mt-6 flex items-center justify-between">
@@ -425,12 +429,17 @@ export function AdminElectionDetail() {
             <div className="flex gap-4">
               <button
                 onClick={async () => {
-                  if (confirm("Are you sure you want to calculate results? This will end the election.")) {
+                  const confirmed = await confirm({
+                    title: "Calculate Results",
+                    message: "Are you sure you want to calculate results? This will end the election.",
+                    type: "warning",
+                  });
+                  if (confirmed) {
                     try {
                       await calculateResults.mutateAsync(electionId!);
-                      alert("Results calculated successfully!");
+                      showToast("Results calculated successfully!", "success");
                     } catch (error) {
-                      alert("Failed to calculate results");
+                      showToast("Failed to calculate results", "error");
                     }
                   }
                 }}
@@ -441,12 +450,19 @@ export function AdminElectionDetail() {
               </button>
               <button
                 onClick={async () => {
-                  if (confirm("Are you sure you want to delete this election?")) {
+                  const confirmed = await confirm({
+                    title: "Delete Election",
+                    message: "Are you sure you want to delete this election? This action cannot be undone.",
+                    type: "danger",
+                    confirmText: "Delete",
+                  });
+                  if (confirmed) {
                     try {
                       await deleteElection.mutateAsync(electionId!);
+                      showToast("Election deleted successfully", "success");
                       navigate("/admin/elections");
                     } catch (error) {
-                      alert("Failed to delete election");
+                      showToast("Failed to delete election", "error");
                     }
                   }
                 }}

@@ -3,9 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AdminLayout } from "../components/AdminLayout";
 import { useAdminOffice, useAdminOffices, useUpdateOffice } from "../hooks/useAdmin";
 import { MdArrowBack, MdSave } from "react-icons/md";
+import { useToast } from "../hooks/useToast";
 
 export function EditOffice() {
   const navigate = useNavigate();
+  const { showToast, ToastContainer } = useToast();
   const { id: electionId, officeId } = useParams<{ id: string; officeId: string }>();
   const { data: officeResponse, isLoading } = useAdminOffice(officeId);
   const { data: officesResponse } = useAdminOffices(electionId);
@@ -48,9 +50,10 @@ export function EditOffice() {
         },
       });
 
+      showToast("Office updated successfully", "success");
       navigate(`/admin/elections/${electionId}/offices/${officeId}`);
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Failed to update office");
+      showToast(error instanceof Error ? error.message : "Failed to update office", "error");
     }
   };
 
@@ -84,6 +87,7 @@ export function EditOffice() {
 
   return (
     <AdminLayout>
+      <ToastContainer />
       <div className="p-8">
         {/* Back Button */}
         <button

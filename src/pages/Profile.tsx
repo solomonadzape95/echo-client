@@ -4,9 +4,11 @@ import { MdCheckCircle, MdLock, MdHistory, MdArrowBack, MdCameraAlt, MdBarChart,
 import { useProfile } from "../hooks/useProfile";
 import { FloatingMenu } from "../components/FloatingMenu";
 import { authService } from "../lib/auth";
+import { useToast } from "../hooks/useToast";
 
 export function Profile() {
   const navigate = useNavigate();
+  const { showToast, ToastContainer } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState("security");
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -16,6 +18,7 @@ export function Profile() {
     newPassword: "",
     confirmPassword: "",
   });
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -39,10 +42,41 @@ export function Profile() {
     setPasswordData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Changing password:", passwordData);
-    // Handle password change logic here
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      showToast("New passwords do not match", "error");
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      showToast("Password must be at least 6 characters", "error");
+      return;
+    }
+
+    setIsChangingPassword(true);
+
+    try {
+      const response = await authService.changePassword(
+        passwordData.currentPassword,
+        passwordData.newPassword
+      );
+      if (response.success) {
+        showToast("Password changed successfully", "success");
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      } else {
+        showToast(response.message || "Failed to change password", "error");
+      }
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Failed to change password", "error");
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   const handleImageClick = () => {
@@ -284,9 +318,10 @@ export function Profile() {
                   <div className="flex gap-4 pt-4">
                     <button
                       type="submit"
-                      className="bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-6 py-3 transition-colors"
+                      disabled={isChangingPassword}
+                      className="bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-6 py-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      UPDATE PASSWORD
+                      {isChangingPassword ? "CHANGING..." : "UPDATE PASSWORD"}
                     </button>
                     <button
                       type="button"
