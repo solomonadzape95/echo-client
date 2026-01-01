@@ -713,19 +713,6 @@ export function ElectionDetail() {
               </div>
             </div>
           ))}
-
-          {/* Nominate Candidate Card */}
-          <div className="bg-[#142828] border-2 border-dashed border-[#234848] p-8 flex flex-col items-center justify-center min-h-[400px] hover:border-[#13ecec]/50 transition-colors cursor-pointer">
-            <div className="w-24 h-24 bg-[#234848] flex items-center justify-center mb-4">
-              <svg className="w-12 h-12 text-[#13ecec]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2 uppercase text-center">NOMINATE CANDIDATE</h3>
-            <p className="text-[#92c9c9] text-sm text-center">
-              Know someone who should run? Submit a nomination form.
-            </p>
-          </div>
         </div>
       </div>
 
@@ -818,29 +805,33 @@ export function ElectionDetail() {
                 </div>
               )}
 
-              {/* Vote Button or Verify Receipt Button */}
-              {hasVoted ? (
-                <button 
-                  onClick={() => {
-                    navigate(`/vote-verification?electionId=${electionId}`);
-                    setSelectedCandidate(null);
-                  }}
-                  className="w-full bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-6 py-4 flex items-center justify-center gap-2 transition-colors uppercase tracking-wider"
-                >
-                  <MdVerified className="w-5 h-5" />
-                  <span>VERIFY RECEIPT</span>
-                </button>
-              ) : (
-                <button 
-                  onClick={() => {
-                    navigate(`/elections/${electionId}/ballot`);
-                    setSelectedCandidate(null);
-                  }}
-                  className="w-full bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-6 py-4 flex items-center justify-center gap-2 transition-colors uppercase tracking-wider"
-                >
-                  <MdHowToVote className="w-5 h-5" />
-                  <span>CAST YOUR VOTE</span>
-                </button>
+              {/* Vote Button or Verify Receipt Button - Only show for active elections */}
+              {electionStatus === "active" && (
+                <>
+                  {hasVoted ? (
+                    <button 
+                      onClick={() => {
+                        navigate(`/vote-verification?electionId=${electionId}`);
+                        setSelectedCandidate(null);
+                      }}
+                      className="w-full bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-6 py-4 flex items-center justify-center gap-2 transition-colors uppercase tracking-wider"
+                    >
+                      <MdVerified className="w-5 h-5" />
+                      <span>VERIFY RECEIPT</span>
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        navigate(`/elections/${electionId}/ballot`);
+                        setSelectedCandidate(null);
+                      }}
+                      className="w-full bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold px-6 py-4 flex items-center justify-center gap-2 transition-colors uppercase tracking-wider"
+                    >
+                      <MdHowToVote className="w-5 h-5" />
+                      <span>CAST YOUR VOTE</span>
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>
