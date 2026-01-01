@@ -38,10 +38,10 @@ export function FloatingMenu({
       {/* Floating Hamburger Button - Always visible */}
       <button
         onClick={() => setIsMenuOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] rounded-full shadow-lg flex items-center justify-center z-40 transition-all hover:scale-110"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] rounded-full shadow-lg flex items-center justify-center z-40 transition-all hover:scale-110 active:scale-95"
         aria-label="Open navigation menu"
       >
-        <MdMenu className="w-6 h-6" />
+        <MdMenu className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
 
       {/* Hamburger Menu Modal */}

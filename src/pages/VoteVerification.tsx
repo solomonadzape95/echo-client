@@ -3,7 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { MdSearch, MdContentCopy, MdVisibility, MdLock, MdCheckCircle, MdErrorOutline, MdHowToVote, MdBarChart, MdPerson, MdVerified } from "react-icons/md";
 import { useReceiptVerification } from "../hooks/useReceiptVerification";
 import { FloatingMenu } from "../components/FloatingMenu";
+import { FloatingHelpButton } from "../components/FloatingHelpButton";
+import { Footer } from "../components/Footer";
 import { authService } from "../lib/auth";
+import { dashboardHelpSteps } from "../constants/helpContent";
 
 export function VoteVerification() {
   const navigate = useNavigate();
@@ -304,6 +307,16 @@ export function VoteVerification() {
         title="echo"
         onLogout={handleLogout}
       />
+
+      {/* Floating Help Button */}
+      <FloatingHelpButton
+        steps={dashboardHelpSteps}
+        title="Platform Guide"
+        position="dashboard"
+      />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

@@ -3,7 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { MdArrowBack, MdBarChart, MdHowToVote, MdPerson, MdVerified } from "react-icons/md";
 import { useElections } from "../hooks/useElections";
 import { FloatingMenu } from "../components/FloatingMenu";
+import { FloatingHelpButton } from "../components/FloatingHelpButton";
+import { Footer } from "../components/Footer";
 import { authService } from "../lib/auth";
+import { dashboardHelpSteps } from "../constants/helpContent";
 
 type ElectionStatus = "all" | "upcoming" | "ongoing" | "completed";
 
@@ -101,7 +104,7 @@ export function Elections() {
   }
 
   return (
-    <div className="min-h-screen bg-[#102222] p-4 md:p-8 relative">
+    <div className="min-h-screen bg-[#102222] p-4 md:p-8 pb-16 relative">
       {/* Grid pattern overlay */}
       <div
         className="absolute inset-0 opacity-10 pointer-events-none"
@@ -275,6 +278,16 @@ export function Elections() {
         title="echo"
         onLogout={handleLogout}
       />
+
+      {/* Floating Help Button */}
+      <FloatingHelpButton
+        steps={dashboardHelpSteps}
+        title="Platform Guide"
+        position="dashboard"
+      />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

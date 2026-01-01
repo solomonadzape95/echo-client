@@ -47,6 +47,8 @@ export function RegisterForm() {
   };
 
   const handleConfirm = () => {
+    // Prefill username with the registration number used initially
+    setUsername(regNumber);
     setStep("password");
   };
 

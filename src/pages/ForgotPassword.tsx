@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { MdBadge, MdArrowForward, MdArrowBack, MdEmail } from "react-icons/md";
 import { authService } from "../lib/auth";
 import { useToast } from "../hooks/useToast";
+import { FloatingHelpButton } from "../components/FloatingHelpButton";
+import { Footer } from "../components/Footer";
+import { authHelpSteps } from "../constants/helpContent";
 
 export function ForgotPassword() {
   const navigate = useNavigate();
@@ -147,6 +150,16 @@ export function ForgotPassword() {
           )}
         </div>
       </div>
+
+      {/* Floating Help Button */}
+      <FloatingHelpButton
+        steps={authHelpSteps}
+        title="Getting Started Guide"
+        position="auth"
+      />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

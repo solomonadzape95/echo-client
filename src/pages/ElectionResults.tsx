@@ -422,11 +422,19 @@ export function ElectionResults() {
 
       {/* Floating Menu (only for user view) */}
       {!isAdminView && (
-      <FloatingMenu
-        items={menuItems}
-        title="echo"
-        onLogout={handleLogout}
-      />
+        <>
+          <FloatingMenu
+            items={menuItems}
+            title="echo"
+            onLogout={handleLogout}
+          />
+          <FloatingHelpButton
+            steps={dashboardHelpSteps}
+            title="Platform Guide"
+            position="dashboard"
+          />
+          <Footer />
+        </>
       )}
     </div>
   );

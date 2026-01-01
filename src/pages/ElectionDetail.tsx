@@ -4,7 +4,10 @@ import { MdArrowBack, MdLink, MdVideocam, MdVolumeUp, MdClose, MdHowToVote, MdVe
 import { useBallot } from "../hooks/useBallot";
 import { useVoteStatus } from "../hooks/useVoteStatus";
 import { FloatingMenu } from "../components/FloatingMenu";
+import { FloatingHelpButton } from "../components/FloatingHelpButton";
+import { Footer } from "../components/Footer";
 import { authService } from "../lib/auth";
+import { dashboardHelpSteps } from "../constants/helpContent";
 import candidate1 from "../assets/candidate-1.png";
 import candidate2 from "../assets/candidate-2.png";
 import candidate3 from "../assets/candidate-3.png";
@@ -850,6 +853,16 @@ export function ElectionDetail() {
         title="echo"
         onLogout={handleLogout}
       />
+
+      {/* Floating Help Button */}
+      <FloatingHelpButton
+        steps={dashboardHelpSteps}
+        title="Platform Guide"
+        position="dashboard"
+      />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

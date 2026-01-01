@@ -7,8 +7,11 @@ import { ProfileCard } from "../components/ProfileCard";
 import { StatsCard } from "../components/StatsCard";
 import { ElectionsCard } from "../components/ElectionsCard";
 import { FloatingMenu } from "../components/FloatingMenu";
+import { FloatingHelpButton } from "../components/FloatingHelpButton";
+import { Footer } from "../components/Footer";
 import { authService } from "../lib/auth";
 import { useDashboard } from "../hooks/useDashboard";
+import { dashboardHelpSteps } from "../constants/helpContent";
 
 export function Dashboard() {
   const navigate = useNavigate();
@@ -229,6 +232,16 @@ export function Dashboard() {
         title="echo"
         onLogout={handleLogout}
       />
+
+      {/* Floating Help Button */}
+      <FloatingHelpButton
+        steps={dashboardHelpSteps}
+        title="Platform Guide"
+        position="dashboard"
+      />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

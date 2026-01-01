@@ -5,7 +5,10 @@ import { useBallot } from "../hooks/useBallot";
 import { useVoting, votingService } from "../hooks/useVoting";
 import { useVoteStatus } from "../hooks/useVoteStatus";
 import { FloatingMenu } from "../components/FloatingMenu";
+import { FloatingHelpButton } from "../components/FloatingHelpButton";
+import { Footer } from "../components/Footer";
 import { authService } from "../lib/auth";
+import { dashboardHelpSteps } from "../constants/helpContent";
 
 type VotingStep = "loading" | "ballot" | "verifying" | "submitting" | "success" | "error";
 
@@ -509,6 +512,16 @@ export function Ballot() {
         title="echo"
         onLogout={handleLogout}
       />
+
+      {/* Floating Help Button */}
+      <FloatingHelpButton
+        steps={dashboardHelpSteps}
+        title="Platform Guide"
+        position="dashboard"
+      />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

@@ -2,12 +2,15 @@ import { useState } from "react";
 import { MdFingerprint } from "react-icons/md";
 import { LoginForm } from "./components/LoginForm";
 import { RegisterForm } from "./components/RegisterForm";
+import { FloatingHelpButton } from "./components/FloatingHelpButton";
+import { Footer } from "./components/Footer";
+import { authHelpSteps } from "./constants/helpContent";
 
 export function AuthPage() {
   const [isRegister, setIsRegister] = useState(false);
 
   return (
-    <div className="fixed inset-0 bg-[#102222] flex flex-col">
+    <div className="fixed inset-0 bg-transparent flex flex-col relative h-screen">
       {/* Grid pattern overlay */}
       <div
         className="absolute inset-0 opacity-10"
@@ -21,7 +24,7 @@ export function AuthPage() {
       />
 
       {/* Header */}
-      <header className="flex justify-between items-center px-10 py-4 fixed top-0 left-0 right-0 z-50 bg-[#102222]">
+      <header className="flex justify-between items-center px-10 py-4 fixed top-0 left-0 right-0 z-50 bg-transparent">
         <div className="flex items-center gap-1">
           <div className="w-8 h-8 rounded flex items-center justify-center">
             <MdFingerprint className="w-5 h-5 text-[#13ecec]" />
@@ -101,6 +104,16 @@ export function AuthPage() {
           </div>
         </div>
       </main>
+
+      {/* Floating Help Button */}
+      <FloatingHelpButton
+        steps={authHelpSteps}
+        title="Getting Started Guide"
+        position="auth"
+      />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

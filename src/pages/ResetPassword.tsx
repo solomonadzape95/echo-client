@@ -3,6 +3,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { MdLock, MdArrowForward, MdArrowBack, MdCheckCircle } from "react-icons/md";
 import { authService } from "../lib/auth";
 import { useToast } from "../hooks/useToast";
+import { FloatingHelpButton } from "../components/FloatingHelpButton";
+import { Footer } from "../components/Footer";
+import { authHelpSteps } from "../constants/helpContent";
 
 export function ResetPassword() {
   const navigate = useNavigate();
@@ -61,7 +64,7 @@ export function ResetPassword() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4 relative">
         <ToastContainer />
         <div className="w-full max-w-md">
           <div className="bg-[#142828] rounded-lg p-6 md:p-8 border border-[#234848] shadow-2xl text-center">
@@ -74,6 +77,14 @@ export function ResetPassword() {
             </p>
           </div>
         </div>
+        {/* Floating Help Button */}
+        <FloatingHelpButton
+          steps={authHelpSteps}
+          title="Getting Started Guide"
+          position="auth"
+        />
+        {/* Footer */}
+        <Footer />
       </div>
     );
   }
@@ -170,6 +181,16 @@ export function ResetPassword() {
           </button>
         </div>
       </div>
+
+      {/* Floating Help Button */}
+      <FloatingHelpButton
+        steps={authHelpSteps}
+        title="Getting Started Guide"
+        position="auth"
+      />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
