@@ -46,14 +46,23 @@ export function ElectionResults() {
   const isAdminView = location.pathname.startsWith("/admin");
   
   // Get election info first to get the ID
-  const { data: electionResponse } = useQuery({
-    queryKey: ["election", electionSlug],
+  // Use admin endpoint for admin views, public endpoint for user views
+  const { data: electionResponse, error: electionError } = useQuery({
+    queryKey: isAdminView ? ["admin", "election", electionSlug] : ["election", electionSlug],
     queryFn: async () => {
       if (!electionSlug) throw new Error("Election slug is required");
-      const response = await api.get<ApiResponse<any>>(`/election/${electionSlug}`);
+      // Use admin endpoint for admin views to bypass eligibility checks
+      const endpoint = isAdminView 
+        ? `/admin/election/${electionSlug}` 
+        : `/election/${electionSlug}`;
+      const response = await api.get<ApiResponse<any>>(endpoint);
+      if (!response.success) {
+        throw new Error(response.message || "Failed to fetch election");
+      }
       return response;
     },
     enabled: !!electionSlug,
+    retry: false, // Don't retry on 403 errors
   });
   
   const electionId = electionResponse?.success ? electionResponse.data.id : undefined;
@@ -74,9 +83,10 @@ export function ElectionResults() {
     ) {
       hasAutoCalculated.current = true;
       // Auto-calculate results for admin
-      calculateResults.mutateAsync(electionId).then(() => {
-        // Invalidate queries instead of refetching directly
-        queryClient.invalidateQueries({ queryKey: ["election", electionId, "results"] });
+      calculateResults.mutateAsync(electionId).then(async () => {
+        // Invalidate and refetch queries to ensure data is updated
+        await queryClient.invalidateQueries({ queryKey: ["election", electionId, "results"] });
+        await queryClient.refetchQueries({ queryKey: ["election", electionId, "results"] });
       }).catch((error) => {
         console.error("Failed to calculate results:", error);
         hasAutoCalculated.current = false; // Reset on error so it can retry
@@ -95,13 +105,23 @@ export function ElectionResults() {
   };
 
   const handleCalculateResults = async () => {
-    if (!electionId) return;
+    if (!electionId) {
+      showToast("Election ID is missing", "error");
+      return;
+    }
     try {
       await calculateResults.mutateAsync(electionId);
       showToast("Results calculated successfully", "success");
-      // Invalidate queries instead of refetching directly
-      queryClient.invalidateQueries({ queryKey: ["election", electionId, "results"] });
+      // Invalidate and refetch results
+      await queryClient.invalidateQueries({ queryKey: ["election", electionId, "results"] });
+      // Explicitly refetch to ensure data is updated
+      await queryClient.refetchQueries({ queryKey: ["election", electionId, "results"] });
+      // Also invalidate the election query to refresh status
+      await queryClient.invalidateQueries({ 
+        queryKey: isAdminView ? ["admin", "election", electionSlug] : ["election", electionSlug] 
+      });
     } catch (error) {
+      console.error("Error calculating results:", error);
       showToast(error instanceof Error ? error.message : "Failed to calculate results", "error");
     }
   };
@@ -169,6 +189,44 @@ export function ElectionResults() {
     );
   }
 
+  // Error state - check for election fetch error first
+  if (electionError || (electionResponse && !electionResponse.success)) {
+    const errorMessage = electionError?.message || electionResponse?.message || "Failed to load election";
+    const content = (
+      <div className="p-8">
+        <button
+          onClick={() => navigate(isAdminView ? "/admin/elections" : "/elections")}
+          className="mb-6 text-[#92c9c9] hover:text-white flex items-center gap-2 transition-colors"
+        >
+          <MdArrowBack className="w-5 h-5" />
+          <span>Back</span>
+        </button>
+
+        <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 ">
+          <p className="font-medium">Error loading election</p>
+          <p className="text-sm mt-2">{errorMessage}</p>
+          {isAdminView && (errorMessage.includes("403") || errorMessage.includes("Forbidden")) && (
+            <p className="text-sm mt-2 text-yellow-400">
+              Make sure you're authenticated as an admin. If this persists, try refreshing the page.
+            </p>
+          )}
+        </div>
+      </div>
+    );
+
+    return isAdminView ? (
+      <AdminLayout>
+        <ToastContainer />
+        {content}
+      </AdminLayout>
+    ) : (
+      <div className="min-h-full w-full bg-[#102222] relative overflow-y-auto overflow-x-hidden">
+        <ToastContainer />
+        {content}
+      </div>
+    );
+  }
+
   // No results state
   if (resultsResponse?.success && !resultsResponse.data.hasResults) {
     const content = (
@@ -185,7 +243,10 @@ export function ElectionResults() {
           <MdBarChart className="w-16 h-16 text-[#92c9c9] mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-white mb-2">Results Not Available</h2>
           <p className="text-[#92c9c9] mb-6">
-            {resultsResponse.data.message || "Results have not been calculated yet."}
+            {isAdminView 
+              ? (resultsResponse.data.message || "Results have not been calculated yet.")
+              : "Election results not ready yet, please wait."
+            }
           </p>
           {isAdminView && (
             <button
@@ -401,10 +462,48 @@ export function ElectionResults() {
                           }`}
                       >
                         <div className="flex items-center gap-4">
+                            {/* Candidate Profile Picture */}
+                            <div className="flex-shrink-0 relative">
+                              {candidate.image ? (
+                                <>
+                                  <img
+                                    src={candidate.image}
+                                    alt={candidate.candidateName}
+                                    className="w-16 h-16 rounded-full object-cover border-2 border-[#234848]"
+                                    onError={(e) => {
+                                      // Hide image on error
+                                      const target = e.target as HTMLImageElement;
+                                      target.style.display = 'none';
+                                    }}
+                                  />
+                                  {/* Fallback initials (hidden by default, shown if image fails) */}
+                                  <div className="w-16 h-16 rounded-full bg-[#234848] flex items-center justify-center text-white font-bold text-lg absolute top-0 left-0 hidden image-fallback">
+                                    {candidate.candidateName
+                                      .split(' ')
+                                      .map(n => n?.[0])
+                                      .filter(Boolean)
+                                      .join('')
+                                      .toUpperCase()
+                                      .slice(0, 2) || '?'}
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="w-16 h-16 rounded-full bg-[#234848] flex items-center justify-center text-white font-bold text-lg">
+                                  {candidate.candidateName
+                                    .split(' ')
+                                    .map(n => n?.[0])
+                                    .filter(Boolean)
+                                    .join('')
+                                    .toUpperCase()
+                                    .slice(0, 2) || '?'}
+                                </div>
+                              )}
+                            </div>
+
                             {/* Candidate Info */}
                             <div className="flex-1 min-w-[220px]">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h3 className="text-xl font-bold text-white">{candidate.candidateName}</h3>
+                              <h3 className="text-xl font-bold text-white mb-1">{candidate.candidateName}</h3>
+                              <div className="flex items-center gap-2">
                                 {isTied && (
                                   <span className="px-2 py-0.5 bg-yellow-500 text-[#112222] text-xs font-bold ">
                                     TIE

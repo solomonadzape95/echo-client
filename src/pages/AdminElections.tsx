@@ -25,6 +25,7 @@ import {
 import { formatDateTimeGMT1, formatDateShortGMT1 } from "../lib/dateUtils";
 import { useToast } from "../hooks/useToast";
 import { useConfirm } from "../hooks/useConfirm";
+import { useQueryClient } from "@tanstack/react-query";
 
 type ElectionTab = "all" | "pending" | "active" | "completed";
 
@@ -290,6 +291,7 @@ export function AdminElections() {
 
 export function AdminElectionDetail() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { showToast, ToastContainer } = useToast();
   const { confirm, ConfirmDialogComponent } = useConfirm();
   const { slug: electionSlug } = useParams<{ slug: string }>();
@@ -556,6 +558,9 @@ export function AdminElectionDetail() {
                       try {
                         await calculateResults.mutateAsync(election!.id);
                         showToast("Results calculated successfully!", "success");
+                        // Invalidate and refetch results to ensure they're available
+                        await queryClient.invalidateQueries({ queryKey: ["election", election!.id, "results"] });
+                        await queryClient.refetchQueries({ queryKey: ["election", election!.id, "results"] });
                       } catch (error) {
                         showToast("Failed to calculate results", "error");
                       }
