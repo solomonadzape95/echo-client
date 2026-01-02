@@ -149,9 +149,9 @@ export function CreateElection() {
               Configure parameters, select voter base, and define ballot items for the upcoming voting cycle.
             </p>
           </div>
-          <div className="bg-[#142828] border border-[#234848] px-4 py-2 rounded-lg">
+          <div className="bg-[#142828] border border-[#234848] px-4 py-2 ">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+              <div className="w-2 h-2 bg-yellow-400 "></div>
               <span className="text-sm text-[#92c9c9] uppercase tracking-wider">STATUS: DRAFT MODE</span>
             </div>
           </div>
@@ -159,9 +159,9 @@ export function CreateElection() {
 
         <form onSubmit={handleSubmit}>
           {/* Step 1: Election Scope */}
-          <div className="bg-[#142828] border border-[#234848] rounded-lg p-8 mb-6">
+          <div className="bg-[#142828] border border-[#234848]  p-8 mb-6">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 bg-[#13ecec] rounded-full flex items-center justify-center text-[#112222] font-bold text-2xl">
+              <div className="w-16 h-16 bg-[#13ecec]  flex items-center justify-center text-[#112222] font-bold text-2xl">
                 1
               </div>
               <h2 className="text-2xl font-bold text-white">ELECTION SCOPE</h2>
@@ -171,7 +171,7 @@ export function CreateElection() {
               <button
                 type="button"
                 onClick={() => setElectionType("class")}
-                className={`p-6 border-2 rounded-lg text-left transition-all ${
+                className={`p-6 border-2  text-left transition-all ${
                   electionType === "class"
                     ? "border-[#13ecec] bg-[#13ecec]/10"
                     : "border-[#234848] hover:border-[#13ecec]/50"
@@ -180,7 +180,7 @@ export function CreateElection() {
                 <div className="flex items-center justify-between mb-4">
                   <MdDescription className="w-8 h-8 text-[#13ecec]" />
                   {electionType === "class" && (
-                    <span className="text-xs bg-[#13ecec] text-[#112222] px-2 py-1 rounded font-bold uppercase">
+                    <span className="text-xs bg-[#13ecec] text-[#112222] px-2 py-1  font-bold uppercase">
                       SELECTED
                     </span>
                   )}
@@ -195,7 +195,7 @@ export function CreateElection() {
               <button
                 type="button"
                 onClick={() => setElectionType("department")}
-                className={`p-6 border-2 rounded-lg text-left transition-all ${
+                className={`p-6 border-2  text-left transition-all ${
                   electionType === "department"
                     ? "border-[#13ecec] bg-[#13ecec]/10"
                     : "border-[#234848] hover:border-[#13ecec]/50"
@@ -204,7 +204,7 @@ export function CreateElection() {
                 <div className="flex items-center justify-between mb-4">
                   <MdGroups className="w-8 h-8 text-[#13ecec]" />
                   {electionType === "department" && (
-                    <span className="text-xs bg-[#13ecec] text-[#112222] px-2 py-1 rounded font-bold uppercase">
+                    <span className="text-xs bg-[#13ecec] text-[#112222] px-2 py-1  font-bold uppercase">
                       SELECTED
                     </span>
                   )}
@@ -219,7 +219,7 @@ export function CreateElection() {
               <button
                 type="button"
                 onClick={() => setElectionType("faculty")}
-                className={`p-6 border-2 rounded-lg text-left transition-all ${
+                className={`p-6 border-2  text-left transition-all ${
                   electionType === "faculty"
                     ? "border-[#13ecec] bg-[#13ecec]/10"
                     : "border-[#234848] hover:border-[#13ecec]/50"
@@ -228,7 +228,7 @@ export function CreateElection() {
                 <div className="flex items-center justify-between mb-4">
                   <MdSchool className="w-8 h-8 text-[#13ecec]" />
                   {electionType === "faculty" && (
-                    <span className="text-xs bg-[#13ecec] text-[#112222] px-2 py-1 rounded font-bold uppercase">
+                    <span className="text-xs bg-[#13ecec] text-[#112222] px-2 py-1  font-bold uppercase">
                       SELECTED
                     </span>
                   )}
@@ -242,9 +242,9 @@ export function CreateElection() {
           </div>
 
           {/* Step 2: Election Metadata */}
-          <div className="bg-[#142828] border border-[#234848] rounded-lg p-8 mb-6">
+          <div className="bg-[#142828] border border-[#234848]  p-8 mb-6">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 bg-[#13ecec] rounded-full flex items-center justify-center text-[#112222] font-bold text-2xl">
+              <div className="w-16 h-16 bg-[#13ecec]  flex items-center justify-center text-[#112222] font-bold text-2xl">
                 2
               </div>
               <h2 className="text-2xl font-bold text-white">ELECTION METADATA</h2>
@@ -260,7 +260,7 @@ export function CreateElection() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g. Spring 2024 Executive Board"
-                  className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
+                  className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
                 />
               </div>
               <div>
@@ -273,7 +273,7 @@ export function CreateElection() {
                   placeholder="Enter a brief summary displayed on the ballot card..."
                   maxLength={140}
                   rows={4}
-                  className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec] resize-none"
+                  className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec] resize-none"
                 />
                 <div className="text-right text-sm text-[#568888] mt-1">
                   {formData.description.length}/140 characters
@@ -289,7 +289,7 @@ export function CreateElection() {
                     required
                     value={formData.domainId}
                     onChange={(e) => setFormData({ ...formData, domainId: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   >
                     <option value="">Select a class</option>
                     {classes.map((cls) => (
@@ -315,7 +315,7 @@ export function CreateElection() {
                         domainId: e.target.value
                       });
                     }}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   >
                     <option value="">Select a department</option>
                     {departmentsWithFaculty.map(({ department, faculty }) => (
@@ -336,7 +336,7 @@ export function CreateElection() {
                     required
                     value={formData.domainId}
                     onChange={(e) => setFormData({ ...formData, domainId: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   >
                     <option value="">Select a faculty</option>
                     {faculties.map((faculty) => (
@@ -352,9 +352,9 @@ export function CreateElection() {
 
           {/* Step 3: Office Selection */}
           {electionType && (
-            <div className="bg-[#142828] border border-[#234848] rounded-lg p-8 mb-6">
+            <div className="bg-[#142828] border border-[#234848]  p-8 mb-6">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-[#13ecec] rounded-full flex items-center justify-center text-[#112222] font-bold text-2xl">
+                <div className="w-16 h-16 bg-[#13ecec]  flex items-center justify-center text-[#112222] font-bold text-2xl">
                   3
                 </div>
                 <h2 className="text-2xl font-bold text-white">OFFICE SELECTION</h2>
@@ -379,7 +379,7 @@ export function CreateElection() {
                           }
                           setSelectedOffices(newSelected);
                         }}
-                        className={`p-4 border-2 rounded-lg text-left transition-all ${
+                        className={`p-4 border-2  text-left transition-all ${
                           isSelected
                             ? "border-[#13ecec] bg-[#13ecec]/10"
                             : "border-[#234848] hover:border-[#13ecec]/50"
@@ -414,9 +414,9 @@ export function CreateElection() {
           )}
 
           {/* Step 4: Timeline Sequence */}
-          <div className="bg-[#142828] border border-[#234848] rounded-lg p-8 mb-6">
+          <div className="bg-[#142828] border border-[#234848]  p-8 mb-6">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 bg-[#13ecec] rounded-full flex items-center justify-center text-[#112222] font-bold text-2xl">
+              <div className="w-16 h-16 bg-[#13ecec]  flex items-center justify-center text-[#112222] font-bold text-2xl">
                 {electionType ? "4" : "3"}
               </div>
               <h2 className="text-2xl font-bold text-white">TIMELINE SEQUENCE</h2>
@@ -432,14 +432,14 @@ export function CreateElection() {
                     required
                     value={formData.startDate}
                     onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                    className="flex-1 px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="flex-1 px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   />
                   <input
                     type="time"
                     required
                     value={formData.startTime}
                     onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                    className="flex-1 px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="flex-1 px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   />
                 </div>
               </div>
@@ -457,7 +457,7 @@ export function CreateElection() {
                       setFormData({ ...formData, endDate: e.target.value });
                       setDateError(null);
                     }}
-                    className="flex-1 px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="flex-1 px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   />
                   <input
                     type="time"
@@ -467,7 +467,7 @@ export function CreateElection() {
                       setFormData({ ...formData, endTime: e.target.value });
                       setDateError(null);
                     }}
-                    className="flex-1 px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="flex-1 px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   />
                 </div>
                 {dateError && (
@@ -489,14 +489,14 @@ export function CreateElection() {
             <div className="flex gap-4">
               <button
                 type="button"
-                className="px-6 py-3 bg-[#234848] hover:bg-[#2a5555] text-white font-bold rounded-lg flex items-center gap-2"
+                className="px-6 py-3 bg-[#234848] hover:bg-[#2a5555] text-white font-bold  flex items-center gap-2"
               >
                 <MdVisibility className="w-4 h-4" />
                 <span>PREVIEW BALLOT</span>
               </button>
               <button
                 type="button"
-                className="px-6 py-3 bg-[#234848] hover:bg-[#2a5555] text-white font-bold rounded-lg flex items-center gap-2"
+                className="px-6 py-3 bg-[#234848] hover:bg-[#2a5555] text-white font-bold  flex items-center gap-2"
               >
                 <MdSave className="w-4 h-4" />
                 <span>SAVE DRAFT</span>
@@ -514,7 +514,7 @@ export function CreateElection() {
                   createElection.isPending ||
                   !!dateError
                 }
-                className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <MdRocket className="w-4 h-4" />
                 <span>{createElection.isPending ? "PUBLISHING..." : "PUBLISH ELECTION"}</span>

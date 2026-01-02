@@ -6,7 +6,7 @@ import { RegisterForm } from "./components/RegisterForm";
 import { FloatingHelpButton } from "./components/FloatingHelpButton";
 import { Footer } from "./components/Footer";
 import { authHelpSteps } from "./constants/helpContent";
-import { authService } from "./lib/auth";
+import { api } from "./lib/api";
 
 export function AuthPage() {
   const navigate = useNavigate();
@@ -17,9 +17,10 @@ export function AuthPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Try to refresh token to check if user is authenticated
-        const response = await authService.refreshToken();
-        if (response.success) {
+        // Try to access a protected endpoint to check if user is authenticated
+        // This will fail if not authenticated or if tokens are invalid
+        const response = await api.get<{ success: boolean }>("/dashboard");
+        if (response && typeof response === 'object' && 'success' in response && response.success) {
           // User is authenticated, redirect to dashboard
           navigate("/dashboard", { replace: true });
           return;
@@ -40,7 +41,7 @@ export function AuthPage() {
     return (
       <div className="fixed inset-0 bg-[#102222] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="loader mx-auto mb-4"></div>
           <p className="text-white text-lg">Loading...</p>
         </div>
       </div>
@@ -64,7 +65,7 @@ export function AuthPage() {
       {/* Header */}
       <header className="flex justify-between items-center px-10 py-4 fixed top-0 left-0 right-0 z-50 bg-transparent">
         <div className="flex items-center gap-1">
-          <div className="w-8 h-8 rounded flex items-center justify-center">
+          <div className="w-8 h-8  flex items-center justify-center">
             <MdFingerprint className="w-5 h-5 text-[#13ecec]" />
           </div>
           <h1 className="text-white text-lg font-bold tracking-tight uppercase">
@@ -75,7 +76,7 @@ export function AuthPage() {
         <div className="flex items-center gap-4 relative z-50">
           <button
             onClick={() => setIsRegister(false)}
-            className={`px-4 py-2 text-sm font-medium uppercase tracking-wider rounded transition-colors cursor-pointer relative z-50 ${
+            className={`px-4 py-2 text-sm font-medium uppercase tracking-wider  transition-colors cursor-pointer relative z-50 ${
               !isRegister 
                 ? "bg-[#13ecec] text-[#112222]" 
                 : "text-[#92c9c9] hover:text-white"
@@ -86,7 +87,7 @@ export function AuthPage() {
           </button>
           <button
             onClick={() => setIsRegister(true)}
-            className={`px-4 py-2 text-sm font-medium uppercase tracking-wider rounded transition-colors cursor-pointer relative z-50 ${
+            className={`px-4 py-2 text-sm font-medium uppercase tracking-wider  transition-colors cursor-pointer relative z-50 ${
               isRegister 
                 ? "bg-[#13ecec] text-[#112222]" 
                 : "text-[#92c9c9] hover:text-white"

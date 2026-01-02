@@ -21,14 +21,14 @@ export function OfficeDetail() {
     return (
       <AdminLayout>
         <div className="p-8">
-          <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 rounded-lg">
+          <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 ">
             <p className="font-medium">Invalid Route</p>
             <p className="text-sm mt-2 text-red-300">
               Office slug is missing from the URL. Please navigate from the election detail page.
             </p>
             <button
               onClick={() => navigate(`/admin/elections/${electionSlug || ''}`)}
-              className="mt-4 px-4 py-2 bg-[#234848] text-white rounded hover:bg-[#2a5555] transition-colors"
+              className="mt-4 px-4 py-2 bg-[#234848] text-white  hover:bg-[#2a5555] transition-colors"
             >
               Back to Election
             </button>
@@ -42,7 +42,7 @@ export function OfficeDetail() {
     return (
       <AdminLayout>
         <div className="p-8 flex items-center justify-center min-h-[calc(100vh-8rem)]">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin"></div>
+          <div className="loader"></div>
         </div>
       </AdminLayout>
     );
@@ -52,7 +52,7 @@ export function OfficeDetail() {
     return (
       <AdminLayout>
         <div className="p-8">
-          <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 rounded-lg">
+          <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 ">
             <p className="font-medium">Office not found</p>
             {officeError && (
               <p className="text-sm mt-2 text-red-300">
@@ -69,7 +69,7 @@ export function OfficeDetail() {
             </p>
             <button
               onClick={() => navigate(`/admin/elections/${electionSlug}`)}
-              className="mt-4 px-4 py-2 bg-[#234848] text-white rounded hover:bg-[#2a5555] transition-colors"
+              className="mt-4 px-4 py-2 bg-[#234848] text-white  hover:bg-[#2a5555] transition-colors"
             >
               Back to Election
             </button>
@@ -94,7 +94,7 @@ export function OfficeDetail() {
         </button>
 
         {/* Office Info */}
-        <div className="bg-[#142828] border border-[#234848] rounded-lg p-6 mb-6">
+        <div className="bg-[#142828] border border-[#234848]  p-6 mb-6">
           <div className="flex items-start justify-between mb-4">
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">{office.name}</h1>
@@ -103,7 +103,7 @@ export function OfficeDetail() {
             <div className="flex gap-2">
               <button
                 onClick={() => navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}/edit`)}
-                className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded flex items-center gap-2"
+                className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white  flex items-center gap-2"
               >
                 <MdEdit className="w-4 h-4" />
                 <span>Edit</span>
@@ -127,7 +127,7 @@ export function OfficeDetail() {
                   }
                 }}
                 disabled={deleteOffice.isPending}
-                className="px-4 py-2 bg-red-900/20 hover:bg-red-900/30 text-red-400 border border-red-500/50 rounded flex items-center gap-2 disabled:opacity-50"
+                className="px-4 py-2 bg-red-900/20 hover:bg-red-900/30 text-red-400 border border-red-500/50  flex items-center gap-2 disabled:opacity-50"
               >
                 <MdDelete className="w-4 h-4" />
                 <span>Delete</span>
@@ -137,12 +137,12 @@ export function OfficeDetail() {
         </div>
 
         {/* Candidates */}
-        <div className="bg-[#142828] border border-[#234848] rounded-lg p-6">
+        <div className="bg-[#142828] border border-[#234848]  p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-white">Candidates</h2>
             <button
               onClick={() => navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}/candidates/create`)}
-              className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded flex items-center gap-2"
+              className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  flex items-center gap-2"
             >
               <MdAdd className="w-4 h-4" />
               <span>Add Candidate</span>
@@ -154,7 +154,7 @@ export function OfficeDetail() {
               <p>No candidates yet</p>
               <button
                 onClick={() => navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}/candidates/create`)}
-                className="mt-4 px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded"
+                className="mt-4 px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white "
               >
                 Add First Candidate
               </button>
@@ -164,15 +164,15 @@ export function OfficeDetail() {
               {candidates.map((candidate) => (
                 <div
                   key={candidate.id}
-                  className="bg-[#102222] border border-[#234848] rounded-lg p-4 hover:border-[#13ecec] transition-all"
+                  className="bg-[#102222] border border-[#234848]  p-4 hover:border-[#13ecec] transition-all"
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center overflow-hidden">
+                    <div className="w-12 h-12 bg-[#13ecec]/20  flex items-center justify-center overflow-hidden">
                       {candidate.image ? (
                         <img
                           src={candidate.image}
                           alt="Candidate"
-                          className="w-12 h-12 rounded-lg object-cover"
+                          className="w-12 h-12  object-cover"
                         />
                       ) : (
                         <MdPerson className="w-6 h-6 text-[#13ecec]" />
@@ -191,7 +191,7 @@ export function OfficeDetail() {
                         e.stopPropagation();
                         navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}/candidates/${candidate.id}/edit`);
                       }}
-                      className="p-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded transition-colors"
+                      className="p-2 bg-[#234848] hover:bg-[#2a5555] text-white  transition-colors"
                       title="Edit Candidate"
                     >
                       <MdEdit className="w-4 h-4" />

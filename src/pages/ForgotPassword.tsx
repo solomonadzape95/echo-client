@@ -43,11 +43,11 @@ export function ForgotPassword() {
     <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4">
       <ToastContainer />
       <div className="w-full max-w-md">
-        <div className="bg-[#142828] rounded-lg p-6 md:p-8 border border-[#234848] shadow-2xl">
+        <div className="bg-[#142828]  p-6 md:p-8 border border-[#234848] shadow-2xl">
           {!submitted ? (
             <>
               <div className="mb-6 text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#234848] mb-4">
+                <div className="inline-flex items-center justify-center w-16 h-16  bg-[#234848] mb-4">
                   <MdEmail className="w-8 h-8 text-[#13ecec]" />
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-2">Forgot Password?</h2>
@@ -70,7 +70,7 @@ export function ForgotPassword() {
                       value={regNumber}
                       onChange={(e) => setRegNumber(e.target.value)}
                       placeholder="2021/123456"
-                      className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0 rounded font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
+                      className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0  font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
                       required
                       disabled={isSubmitting}
                     />
@@ -90,7 +90,7 @@ export function ForgotPassword() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="your.email@example.com"
-                      className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0 rounded font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
+                      className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0  font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
                       required
                       disabled={isSubmitting}
                     />
@@ -100,7 +100,7 @@ export function ForgotPassword() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full h-14 bg-[#13ecec] hover:bg-[#0fd6d6] active:translate-y-[1px] text-[#112222] rounded font-bold text-lg uppercase tracking-wide flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full h-14 bg-[#13ecec] hover:bg-[#0fd6d6] active:translate-y-[1px] text-[#112222]  font-bold text-lg uppercase tracking-wide flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span>{isSubmitting ? "SENDING..." : "SEND RESET LINK"}</span>
                   <MdArrowForward className="w-5 h-5" />
@@ -117,7 +117,7 @@ export function ForgotPassword() {
             </>
           ) : (
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-900/20 border border-green-500/50 mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16  bg-green-900/20 border border-green-500/50 mb-4">
                 <MdEmail className="w-8 h-8 text-green-400" />
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">Check Your Email</h2>
@@ -127,7 +127,7 @@ export function ForgotPassword() {
               
               {/* Development only - show token */}
               {resetToken && process.env.NODE_ENV === 'development' && (
-                <div className="mb-6 p-4 bg-[#102222] border border-[#234848] rounded-lg">
+                <div className="mb-6 p-4 bg-[#102222] border border-[#234848] ">
                   <p className="text-xs text-[#568888] mb-2">Development Mode - Reset Token:</p>
                   <p className="text-[#13ecec] font-mono text-xs break-all">{resetToken}</p>
                   <button
@@ -141,7 +141,7 @@ export function ForgotPassword() {
 
               <button
                 onClick={() => navigate("/login")}
-                className="w-full h-12 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] rounded font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
+                className="w-full h-12 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222]  font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
               >
                 <MdArrowBack className="w-5 h-5" />
                 <span>Back to Login</span>

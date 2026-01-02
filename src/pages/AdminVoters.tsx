@@ -52,12 +52,12 @@ export function AdminVoters() {
               placeholder="Search by username or registration number..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-[#142828] border border-[#234848] rounded-lg text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
+              className="w-full pl-10 pr-4 py-3 bg-[#142828] border border-[#234848]  text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
             />
           </div>
           <button
             onClick={() => setSelectedClassId(undefined)}
-            className={`px-4 py-3 rounded-lg border transition-all ${
+            className={`px-4 py-3  border transition-all ${
               !selectedClassId
                 ? "bg-[#13ecec] text-[#112222] border-[#13ecec] font-bold"
                 : "bg-[#142828] text-[#92c9c9] border-[#234848] hover:border-[#13ecec]"
@@ -70,10 +70,10 @@ export function AdminVoters() {
         {/* Voters List */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin"></div>
+            <div className="loader"></div>
           </div>
         ) : filteredVoters.length === 0 ? (
-          <div className="bg-[#142828] border border-[#234848] rounded-lg p-12 text-center">
+          <div className="bg-[#142828] border border-[#234848]  p-12 text-center">
             <MdPerson className="w-16 h-16 text-[#568888] mx-auto mb-4" />
             <p className="text-[#92c9c9] text-lg mb-2">No voters found</p>
             <p className="text-[#568888] text-sm">
@@ -81,7 +81,7 @@ export function AdminVoters() {
             </p>
           </div>
         ) : (
-          <div className="bg-[#142828] border border-[#234848] rounded-lg overflow-hidden">
+          <div className="bg-[#142828] border border-[#234848]  overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -116,7 +116,7 @@ export function AdminVoters() {
                             <img
                               src={voter.profilePicture}
                               alt={voter.username}
-                              className="w-10 h-10 rounded-full object-cover border-2 border-[#13ecec]"
+                              className="w-10 h-10  object-cover border-2 border-[#13ecec]"
                               onError={(e) => {
                                 // Fallback to initials if image fails to load
                                 const target = e.target as HTMLImageElement;
@@ -127,7 +127,7 @@ export function AdminVoters() {
                             />
                           ) : null}
                           <div
-                            className={`w-10 h-10 bg-[#13ecec] rounded-full flex items-center justify-center text-[#112222] font-bold ${voter.profilePicture ? 'hidden' : ''}`}
+                            className={`w-10 h-10 bg-[#13ecec]  flex items-center justify-center text-[#112222] font-bold ${voter.profilePicture ? 'hidden' : ''}`}
                           >
                             {voter.username.substring(0, 2).toUpperCase()}
                           </div>
@@ -148,7 +148,7 @@ export function AdminVoters() {
                             e.stopPropagation();
                             navigate(`/admin/voters/${voter.id}`);
                           }}
-                          className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded text-sm transition-all"
+                          className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  text-sm transition-all"
                         >
                           View Details
                         </button>
@@ -171,7 +171,7 @@ export function AdminVoters() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 bg-[#142828] border border-[#234848] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
+                className="px-4 py-2 bg-[#142828] border border-[#234848] text-white  disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
               >
                 Previous
               </button>
@@ -180,7 +180,7 @@ export function AdminVoters() {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-2 rounded ${
+                    className={`px-3 py-2  ${
                       currentPage === page
                         ? "bg-[#13ecec] text-[#112222] font-bold"
                         : "bg-[#142828] border border-[#234848] text-white hover:border-[#13ecec]"
@@ -193,7 +193,7 @@ export function AdminVoters() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-[#142828] border border-[#234848] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
+                className="px-4 py-2 bg-[#142828] border border-[#234848] text-white  disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
               >
                 Next
               </button>
@@ -249,7 +249,7 @@ export function AdminVoterDetail() {
     return (
       <AdminLayout>
         <div className="p-8 flex items-center justify-center min-h-[calc(100vh-8rem)]">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin"></div>
+          <div className="loader"></div>
         </div>
       </AdminLayout>
     );
@@ -259,14 +259,14 @@ export function AdminVoterDetail() {
     return (
       <AdminLayout>
         <div className="p-8">
-          <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 rounded-lg">
+          <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 ">
             <p className="font-medium">Error loading voter</p>
             <p className="text-sm mt-1">
               {error instanceof Error ? error.message : "Voter not found"}
             </p>
             <button
               onClick={() => navigate("/admin/voters")}
-              className="mt-4 px-4 py-2 bg-[#234848] text-white rounded hover:bg-[#2a5555] transition-colors"
+              className="mt-4 px-4 py-2 bg-[#234848] text-white  hover:bg-[#2a5555] transition-colors"
             >
               Back to Voters
             </button>
@@ -296,7 +296,7 @@ export function AdminVoterDetail() {
               <img
                 src={voter.profilePicture}
                 alt={voter.username}
-                className="w-20 h-20 rounded-full object-cover border-2 border-[#13ecec]"
+                className="w-20 h-20  object-cover border-2 border-[#13ecec]"
                 onError={(e) => {
                   // Fallback to initials if image fails to load
                   const target = e.target as HTMLImageElement;
@@ -307,7 +307,7 @@ export function AdminVoterDetail() {
               />
             ) : null}
             <div
-              className={`w-20 h-20 bg-[#13ecec] rounded-full flex items-center justify-center text-[#112222] font-bold text-2xl ${voter.profilePicture ? 'hidden' : ''}`}
+              className={`w-20 h-20 bg-[#13ecec]  flex items-center justify-center text-[#112222] font-bold text-2xl ${voter.profilePicture ? 'hidden' : ''}`}
             >
               {voter.username.substring(0, 2).toUpperCase()}
             </div>
@@ -319,7 +319,7 @@ export function AdminVoterDetail() {
         </div>
 
         {/* Details Card */}
-        <div className="bg-[#142828] border border-[#234848] rounded-lg p-6 mb-6">
+        <div className="bg-[#142828] border border-[#234848]  p-6 mb-6">
           <h2 className="text-xl font-bold text-white mb-6">Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -354,7 +354,7 @@ export function AdminVoterDetail() {
         </div>
 
         {/* Voting History */}
-        <div className="bg-[#142828] border border-[#234848] rounded-lg p-6">
+        <div className="bg-[#142828] border border-[#234848]  p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-white">Voting History</h2>
             {votingHistory && (
@@ -368,7 +368,7 @@ export function AdminVoterDetail() {
               {votingHistory.elections.map((election) => (
                 <div
                   key={election.electionId}
-                  className="bg-[#102222] border border-[#234848] rounded-lg p-4 hover:border-[#13ecec] transition-all cursor-pointer"
+                  className="bg-[#102222] border border-[#234848]  p-4 hover:border-[#13ecec] transition-all cursor-pointer"
                   onClick={() => navigate(`/admin/elections/${election.electionId}`)}
                 >
                   <div className="flex items-center justify-between">
@@ -376,11 +376,11 @@ export function AdminVoterDetail() {
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="text-white font-bold">{election.electionName}</h3>
                         {election.hasVoted && (
-                          <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-medium">
+                          <span className="px-2 py-1 bg-green-500/20 text-green-400  text-xs font-medium">
                             VOTED
                           </span>
                         )}
-                        <span className="px-2 py-1 bg-[#234848] text-[#92c9c9] rounded text-xs capitalize">
+                        <span className="px-2 py-1 bg-[#234848] text-[#92c9c9]  text-xs capitalize">
                           {election.electionType}
                         </span>
                       </div>

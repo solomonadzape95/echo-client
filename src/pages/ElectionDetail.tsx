@@ -33,7 +33,7 @@ export function ElectionDetail() {
   const { slug: electionSlug } = useParams<{ slug: string }>();
   const hasInvalidatedOnTimerEnd = useRef(false);
   const hasInvalidatedOnTimerStart = useRef(false);
-  const { data: electionResponse, error: electionError } = useQuery({
+  const { data: electionResponse, error: electionError, isLoading: isLoadingElection } = useQuery({
     queryKey: ["election", electionSlug],
     queryFn: async () => {
       if (!electionSlug) throw new Error("Election slug is required");
@@ -66,7 +66,7 @@ export function ElectionDetail() {
     enabled: !!electionSlug,
   });
   const electionId = electionResponse?.success ? electionResponse.data.id : undefined;
-  const { data: ballotResponse, isLoading, error } = useBallot(electionId);
+  const { data: ballotResponse, isLoading: isLoadingBallot, error } = useBallot(electionId);
   const { data: hasVoted, isLoading: isLoadingVoteStatus } = useVoteStatus(electionId);
   const [selectedCandidate, setSelectedCandidate] = useState<any | null>(null);
   const [positionFilter, setPositionFilter] = useState<PositionFilter>("all");
@@ -351,8 +351,14 @@ export function ElectionDetail() {
         // Timer elapsed - invalidate queries to update election status (only once)
         if (!hasInvalidatedOnTimerEnd.current) {
           hasInvalidatedOnTimerEnd.current = true;
+          // Invalidate all related queries
           queryClient.invalidateQueries({ queryKey: ["ballot", electionId] });
           queryClient.invalidateQueries({ queryKey: ["election", electionSlug] });
+          queryClient.invalidateQueries({ queryKey: ["voteStatus", electionId] });
+          // Force a page reload after a short delay to ensure fresh data
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         }
       }
     };
@@ -387,8 +393,14 @@ export function ElectionDetail() {
         // Timer elapsed - invalidate queries to update election status (election should now be active, only once)
         if (!hasInvalidatedOnTimerStart.current) {
           hasInvalidatedOnTimerStart.current = true;
+          // Invalidate all related queries
           queryClient.invalidateQueries({ queryKey: ["ballot", electionId] });
           queryClient.invalidateQueries({ queryKey: ["election", electionSlug] });
+          queryClient.invalidateQueries({ queryKey: ["voteStatus", electionId] });
+          // Force a page reload after a short delay to ensure fresh data
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         }
       }
     };
@@ -412,38 +424,47 @@ export function ElectionDetail() {
 
   const formatTime = (value: number) => value.toString().padStart(2, "0");
 
-  // Loading state
-  if (isLoading) {
+  // Loading state - show loading if we're fetching election or ballot data
+  if (isLoadingElection || (isLoadingBallot && electionId)) {
     return (
       <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="loader mx-auto mb-4"></div>
           <p className="text-white text-lg font-medium mb-2">Loading Election</p>
-          <p className="text-[#92c9c9] text-sm">Getting election information...</p>
+          <p className="text-[#92c9c9] text-sm">
+            {isLoadingElection ? "Getting election information..." : "Getting ballot information..."}
+          </p>
         </div>
       </div>
     );
   }
 
-  // Error state - check both election and ballot errors
-  const hasError = electionError || error || !ballotData || !election;
+  // Error state - only check for errors if we're not loading
+  // Check election error first, then ballot error
+  const hasElectionError = electionError || (!electionResponse?.success && electionResponse && !isLoadingElection);
+  const hasBallotError = error || (!ballotResponse?.success && ballotResponse && electionId && !isLoadingBallot);
+  const hasError = hasElectionError || hasBallotError;
+  
   const errorMessage = electionError instanceof Error 
     ? electionError.message 
     : error instanceof Error 
     ? error.message 
     : !electionResponse?.success && electionResponse?.message
     ? electionResponse.message
+    : !ballotResponse?.success && ballotResponse?.message
+    ? ballotResponse.message
     : "Failed to load election data";
   const isEligibilityError = errorMessage.toLowerCase().includes('not eligible') || 
                              errorMessage.toLowerCase().includes('different class') ||
                              errorMessage.toLowerCase().includes('different department') ||
                              errorMessage.toLowerCase().includes('different faculty');
 
-  if (hasError) {
+  // Only show error if we have an actual error and we're not still loading
+  if (hasError && !isLoadingElection && !isLoadingBallot) {
     return (
       <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4">
         <div className="text-center max-w-md">
-          <div className={`w-16 h-16 ${isEligibilityError ? 'bg-yellow-500/20' : 'bg-red-500/20'} rounded-full flex items-center justify-center mx-auto mb-4`}>
+          <div className={`w-16 h-16 ${isEligibilityError ? 'bg-yellow-500/20' : 'bg-red-500/20'}  flex items-center justify-center mx-auto mb-4`}>
             {isEligibilityError ? (
               <svg className="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -464,7 +485,7 @@ export function ElectionDetail() {
           </p>
           <button
             onClick={() => navigate("/elections")}
-            className="px-6 py-3 bg-[#13ecec] text-[#112222] rounded font-bold uppercase"
+            className="px-6 py-3 bg-[#13ecec] text-[#112222]  font-bold uppercase"
           >
             {isEligibilityError ? "View Eligible Elections" : "Go Back"}
           </button>
@@ -831,7 +852,7 @@ export function ElectionDetail() {
                   <img
                     src={selectedCandidate.image}
                     alt={selectedCandidate.name}
-                    className="w-32 h-32 object-cover border-2 border-[#13ecec] rounded"
+                    className="w-32 h-32 object-cover border-2 border-[#13ecec] "
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.style.display = "none";
@@ -841,7 +862,7 @@ export function ElectionDetail() {
                       }
                     }}
                   />
-                  <div className="fallback-sidebar hidden w-32 h-32 bg-gradient-to-br from-[#13ecec]/20 to-[#234848] items-center justify-center text-2xl font-bold text-white border-2 border-[#13ecec] rounded">
+                  <div className="fallback-sidebar hidden w-32 h-32 bg-gradient-to-br from-[#13ecec]/20 to-[#234848] items-center justify-center text-2xl font-bold text-white border-2 border-[#13ecec] ">
                     {selectedCandidate.name.split(" ").map((n) => n[0]).join("")}
                   </div>
                 </div>

@@ -66,7 +66,7 @@ export function VoteVerification() {
             {/* Header */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 bg-[#13ecec] rounded-full shadow-[0_0_8px_rgba(19,236,236,0.8)]"></div>
+                <div className="w-2 h-2 bg-[#13ecec]  shadow-[0_0_8px_rgba(19,236,236,0.8)]"></div>
                 <span className="text-[#13ecec] text-xs font-medium uppercase tracking-wider">SYSTEM ONLINE</span>
               </div>
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
@@ -125,7 +125,7 @@ export function VoteVerification() {
               >
                 {isPending ? (
                   <>
-                    <div className="w-5 h-5 border-2 border-[#112222] border-t-transparent rounded-full animate-spin"></div>
+                    <div className="loader" style={{ width: '20px', height: '20px' }}></div>
                     <span>VERIFYING...</span>
                   </>
                 ) : (

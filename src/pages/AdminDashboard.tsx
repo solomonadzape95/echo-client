@@ -39,7 +39,7 @@ export function AdminDashboard() {
       <AdminLayout>
         <div className="p-8 flex items-center justify-center min-h-[calc(100vh-8rem)]">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="loader mx-auto mb-4"></div>
             <p className="text-white text-lg">Loading dashboard...</p>
           </div>
         </div>
@@ -51,7 +51,7 @@ export function AdminDashboard() {
     return (
       <AdminLayout>
         <div className="p-8">
-          <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 rounded-lg">
+          <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 ">
             <p className="font-medium">Error loading dashboard</p>
             <p className="text-sm mt-1">
               {error instanceof Error ? error.message : "Failed to load dashboard data"}
@@ -80,7 +80,7 @@ export function AdminDashboard() {
             </div>
             {isFetching && (
               <div className="flex items-center gap-2 text-[#568888] text-sm">
-                <div className="w-4 h-4 border-2 border-[#13ecec] border-t-transparent rounded-full animate-spin"></div>
+                <div className="loader" style={{ width: '16px', height: '16px' }}></div>
                 <span>Updating...</span>
               </div>
             )}
@@ -92,7 +92,7 @@ export function AdminDashboard() {
           {/* Total Elections */}
           <div className="bg-[#142828] border border-[#234848] p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-[#13ecec]/20  flex items-center justify-center">
                 <MdHowToVote className="w-6 h-6 text-[#13ecec]" />
               </div>
               <div className="text-right">
@@ -115,7 +115,7 @@ export function AdminDashboard() {
           {/* Total Voters */}
           <div className="bg-[#142828] border border-[#234848] p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-[#13ecec]/20  flex items-center justify-center">
                 <MdPeople className="w-6 h-6 text-[#13ecec]" />
               </div>
               <div className="text-right">
@@ -131,7 +131,7 @@ export function AdminDashboard() {
           {/* Total Votes Cast */}
           <div className="bg-[#142828] border border-[#234848] p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-[#13ecec]/20  flex items-center justify-center">
                 <MdCheckCircle className="w-6 h-6 text-[#13ecec]" />
               </div>
               <div className="text-right">
@@ -147,7 +147,7 @@ export function AdminDashboard() {
           {/* Overall Turnout */}
           <div className="bg-[#142828] border border-[#234848] p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-[#13ecec]/20  flex items-center justify-center">
                 <MdBarChart className="w-6 h-6 text-[#13ecec]" />
               </div>
               <div className="text-right">
@@ -155,9 +155,9 @@ export function AdminDashboard() {
                 <div className="text-sm text-[#568888]">Overall Turnout</div>
               </div>
             </div>
-            <div className="w-full bg-[#102222] rounded-full h-2 mt-2">
+            <div className="w-full bg-[#102222]  h-2 mt-2">
               <div
-                className="bg-[#13ecec] h-2 rounded-full transition-all"
+                className="bg-[#13ecec] h-2  transition-all"
                 style={{ width: `${stats.summary.overallTurnoutPercentage}%` }}
               ></div>
             </div>
@@ -184,7 +184,7 @@ export function AdminDashboard() {
         </div>
 
         {/* Recent Elections */}
-        <div className="bg-[#142828] border border-[#234848] rounded-lg p-6">
+        <div className="bg-[#142828] border border-[#234848]  p-6">
           <h2 className="text-xl font-bold text-white mb-4">Recent Elections</h2>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -204,7 +204,7 @@ export function AdminDashboard() {
                     <td className="py-3 px-4 text-[#92c9c9] text-sm capitalize">{election.electionType}</td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${
+                        className={`px-2 py-1  text-xs font-medium ${
                           election.electionStatus === "active"
                             ? "bg-[#13ecec]/20 text-[#13ecec]"
                             : election.electionStatus === "completed"
@@ -220,9 +220,9 @@ export function AdminDashboard() {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
-                        <div className="w-16 bg-[#102222] rounded-full h-2">
+                        <div className="w-16 bg-[#102222]  h-2">
                           <div
-                            className="bg-[#13ecec] h-2 rounded-full"
+                            className="bg-[#13ecec] h-2 "
                             style={{ width: `${election.turnoutPercentage}%` }}
                           ></div>
                         </div>

@@ -38,7 +38,7 @@ export function FloatingMenu({
       {/* Floating Hamburger Button - Always visible */}
       <button
         onClick={() => setIsMenuOpen(true)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] rounded-full shadow-lg flex items-center justify-center z-40 transition-all hover:scale-110 active:scale-95"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222]  shadow-lg flex items-center justify-center z-40 transition-all hover:scale-110 active:scale-95"
         aria-label="Open navigation menu"
       >
         <MdMenu className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -69,7 +69,7 @@ export function FloatingMenu({
                 </div>
                 <button
                   onClick={() => setIsMenuOpen(false)}
-                  className="p-2 text-[#92c9c9] hover:text-white hover:bg-[#1a3333] rounded-lg transition-all"
+                  className="p-2 text-[#92c9c9] hover:text-white hover:bg-[#1a3333]  transition-all"
                   aria-label="Close menu"
                 >
                   <MdClose className="w-6 h-6" />
@@ -88,7 +88,7 @@ export function FloatingMenu({
                         navigate(item.path);
                         setIsMenuOpen(false);
                       }}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                      className={`w-full flex items-center gap-3 px-4 py-3  transition-all ${
                         active
                           ? "bg-[#13ecec] text-[#112222] font-bold"
                           : "text-[#92c9c9] hover:bg-[#1a3333] hover:text-white"
@@ -110,7 +110,7 @@ export function FloatingMenu({
                         navigate("/settings");
                         setIsMenuOpen(false);
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[#92c9c9] hover:bg-[#1a3333] hover:text-white transition-all"
+                      className="w-full flex items-center gap-3 px-4 py-3  text-[#92c9c9] hover:bg-[#1a3333] hover:text-white transition-all"
                     >
                       <MdSettings className="w-5 h-5" />
                       <span>Settings</span>
@@ -126,7 +126,7 @@ export function FloatingMenu({
                         }
                         setIsMenuOpen(false);
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-900/20 hover:text-red-300 transition-all"
+                      className="w-full flex items-center gap-3 px-4 py-3  text-red-400 hover:bg-red-900/20 hover:text-red-300 transition-all"
                     >
                       <MdLogout className="w-5 h-5" />
                       <span>Logout</span>

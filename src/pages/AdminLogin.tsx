@@ -60,7 +60,7 @@ export function AdminLogin() {
     return (
       <div className="fixed inset-0 bg-[#102222] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="loader mx-auto mb-4"></div>
           <p className="text-white text-lg">Loading...</p>
         </div>
       </div>
@@ -84,7 +84,7 @@ export function AdminLogin() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-1">
+          <div className="inline-flex items-center justify-center w-20 h-20  mb-1">
             <MdFingerprint className="w-10 h-10 text-[#13ecec]" />
           </div>
           <h1 className="text-4xl font-bold text-white mb-2">echo</h1>
@@ -95,10 +95,10 @@ export function AdminLogin() {
         {/* Login Form */}
         <form
           onSubmit={handleSubmit}
-          className="bg-[#142828] rounded-lg p-6 md:p-8 border border-[#234848] shadow-2xl w-full relative overflow-hidden group"
+          className="bg-[#142828]  p-6 md:p-8 border border-[#234848] shadow-2xl w-full relative overflow-hidden group"
         >
           {error && (
-            <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 text-red-400 text-sm rounded">
+            <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 text-red-400 text-sm ">
               {error}
             </div>
           )}
@@ -120,7 +120,7 @@ export function AdminLogin() {
                   setError(null);
                 }}
                 placeholder="admin"
-                className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0 rounded font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
+                className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0  font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
                 required
                 disabled={isSubmitting}
               />
@@ -146,7 +146,7 @@ export function AdminLogin() {
                   setError(null);
                 }}
                 placeholder="••••••"
-                className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0 rounded font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
+                className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0  font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
                 required
                 disabled={isSubmitting}
               />
@@ -157,7 +157,7 @@ export function AdminLogin() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="mt-4 w-full h-14 bg-[#13ecec] hover:bg-[#0fd6d6] active:translate-y-[1px] text-[#112222] rounded font-bold text-lg uppercase tracking-wide flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-4 w-full h-14 bg-[#13ecec] hover:bg-[#0fd6d6] active:translate-y-[1px] text-[#112222]  font-bold text-lg uppercase tracking-wide flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span>{isSubmitting ? "LOGGING IN..." : "LOGIN"}</span>
             <MdArrowForward className="w-5 h-5" />

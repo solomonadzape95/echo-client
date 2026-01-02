@@ -34,13 +34,13 @@ export function SplashPage({ onComplete }: { onComplete: () => void }) {
       />
       
       {/* Ambient glow effect */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#13ecec]/5 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#13ecec]/5 blur-[120px]  pointer-events-none"></div>
 
       {/* Central content */}
       <div className="relative z-10 flex flex-col items-center">
         {/* Fingerprint logo */}
         <div className="mb-8 relative">
-          <div className="w-32 h-32 rounded-lg border-2 border-[#13ecec] bg-[#13ecec]/10 flex items-center justify-center shadow-[0_0_30px_rgba(19,236,236,0.5)]">
+          <div className="w-32 h-32  border-2 border-[#13ecec] bg-[#13ecec]/10 flex items-center justify-center shadow-[0_0_30px_rgba(19,236,236,0.5)]">
             <MdFingerprint className="w-20 h-20 text-[#13ecec]" />
           </div>
         </div>
@@ -65,7 +65,7 @@ export function SplashPage({ onComplete }: { onComplete: () => void }) {
           </div>
 
           {/* Progress bar */}
-          <div className="w-full h-2 bg-[#234848]/30 rounded-full overflow-hidden border border-[#234848]/50">
+          <div className="w-full h-2 bg-[#234848]/30  overflow-hidden border border-[#234848]/50">
             <div
               className="h-full bg-[#13ecec] transition-all duration-100 ease-linear shadow-[0_0_10px_rgba(19,236,236,0.8)]"
               style={{ width: `${progress}%` }}
@@ -75,7 +75,7 @@ export function SplashPage({ onComplete }: { onComplete: () => void }) {
 
         {/* Version number */}
         <p className="text-white text-xs mt-16 tracking-wider opacity-70">
-          V2.4.0 ALPHA
+          V0.1.0 ALPHA
         </p>
       </div>
     </div>

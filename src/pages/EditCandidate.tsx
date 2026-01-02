@@ -131,7 +131,7 @@ export function EditCandidate() {
     return (
       <AdminLayout>
         <div className="p-8 flex items-center justify-center min-h-[calc(100vh-8rem)]">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin"></div>
+          <div className="loader"></div>
         </div>
       </AdminLayout>
     );
@@ -141,11 +141,11 @@ export function EditCandidate() {
     return (
       <AdminLayout>
         <div className="p-8">
-          <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 rounded-lg">
+          <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 ">
             <p className="font-medium">Candidate not found</p>
             <button
               onClick={() => navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}`)}
-              className="mt-4 px-4 py-2 bg-[#234848] text-white rounded hover:bg-[#2a5555] transition-colors"
+              className="mt-4 px-4 py-2 bg-[#234848] text-white  hover:bg-[#2a5555] transition-colors"
             >
               Back to Office
             </button>
@@ -177,7 +177,7 @@ export function EditCandidate() {
         </div>
 
         {/* Form */}
-        <div className="bg-[#142828] border border-[#234848] rounded-lg p-8">
+        <div className="bg-[#142828] border border-[#234848]  p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-[#568888] text-sm uppercase tracking-wider mb-2">
@@ -189,7 +189,7 @@ export function EditCandidate() {
                 onChange={(e) => setFormData({ ...formData, quote: e.target.value })}
                 placeholder="e.g. Vote for change!"
                 maxLength={200}
-                className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
+                className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
               />
               <div className="text-right text-sm text-[#568888] mt-1">
                 {formData.quote.length}/200 characters
@@ -205,7 +205,7 @@ export function EditCandidate() {
                 onChange={(e) => setFormData({ ...formData, manifesto: e.target.value })}
                 placeholder="Enter the candidate's manifesto or campaign promises..."
                 rows={8}
-                className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec] resize-none"
+                className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec] resize-none"
               />
             </div>
 
@@ -222,7 +222,7 @@ export function EditCandidate() {
                       onChange={handleImageChange}
                       className="hidden"
                     />
-                    <div className="px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white hover:border-[#13ecec] transition-colors flex items-center justify-center gap-2">
+                    <div className="px-4 py-3 bg-[#102222] border border-[#234848]  text-white hover:border-[#13ecec] transition-colors flex items-center justify-center gap-2">
                       <MdImage className="w-5 h-5" />
                       <span>{imageFile ? imageFile.name : "Upload Custom Image"}</span>
                     </div>
@@ -232,7 +232,7 @@ export function EditCandidate() {
                       type="button"
                       onClick={handleUploadImage}
                       disabled={uploadingImage}
-                      className="px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg disabled:opacity-50"
+                      className="px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  disabled:opacity-50"
                     >
                       {uploadingImage ? "Uploading..." : "Upload"}
                     </button>
@@ -243,7 +243,7 @@ export function EditCandidate() {
                     <img
                       src={imagePreview}
                       alt="Preview"
-                      className="w-full h-full object-cover rounded-lg border border-[#234848]"
+                      className="w-full h-full object-cover  border border-[#234848]"
                     />
                     <button
                       type="button"
@@ -253,7 +253,7 @@ export function EditCandidate() {
                         setFormData((prev) => ({ ...prev, image: "" }));
                         setUseProfilePic(false);
                       }}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                      className="absolute -top-2 -right-2 bg-red-500 text-white  p-1"
                     >
                       <MdClose className="w-4 h-4" />
                     </button>
@@ -264,7 +264,7 @@ export function EditCandidate() {
                     <img
                       src={formData.image}
                       alt="Current"
-                      className="w-full h-full object-cover rounded-lg border border-[#234848]"
+                      className="w-full h-full object-cover  border border-[#234848]"
                     />
                     <button
                       type="button"
@@ -272,7 +272,7 @@ export function EditCandidate() {
                         setFormData((prev) => ({ ...prev, image: "" }));
                         setUseProfilePic(false);
                       }}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                      className="absolute -top-2 -right-2 bg-red-500 text-white  p-1"
                     >
                       <MdClose className="w-4 h-4" />
                     </button>
@@ -289,7 +289,7 @@ export function EditCandidate() {
                       setImagePreview(null);
                     }
                   }}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  className={`px-4 py-2  font-medium transition-colors ${
                     useProfilePic
                       ? "bg-[#13ecec] text-[#112222]"
                       : "bg-[#234848] text-white hover:bg-[#2a5555]"
@@ -307,14 +307,14 @@ export function EditCandidate() {
               <button
                 type="button"
                 onClick={() => navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}`)}
-                className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white rounded-lg transition-all"
+                className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white  transition-all"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={updateCandidate.isPending || uploadingImage}
-                className="flex-1 px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <MdSave className="w-4 h-4" />
                 {updateCandidate.isPending ? "Saving..." : "Save Changes"}

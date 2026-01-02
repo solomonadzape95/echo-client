@@ -157,7 +157,7 @@ export function AddCandidate() {
         </div>
 
         {/* Form */}
-        <div className="bg-[#142828] border border-[#234848] rounded-lg p-8">
+        <div className="bg-[#142828] border border-[#234848]  p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Voter Search */}
             <div ref={searchRef} className="relative">
@@ -186,7 +186,7 @@ export function AddCandidate() {
                     }
                   }}
                   placeholder="Type at least 3 characters to search..."
-                  className="w-full pl-12 pr-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
+                  className="w-full pl-12 pr-4 py-3 bg-[#102222] border border-[#234848]  text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
                 />
                 {selectedVoter && (
                   <button
@@ -207,7 +207,7 @@ export function AddCandidate() {
 
               {/* Search Results Dropdown */}
               {showResults && searchQuery.length >= 3 && (
-                <div className="absolute z-50 w-full mt-2 bg-[#102222] border border-[#234848] rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                <div className="absolute z-50 w-full mt-2 bg-[#102222] border border-[#234848]  shadow-lg max-h-64 overflow-y-auto">
                   {isSearching ? (
                     <div className="p-4 text-center text-[#568888]">Searching...</div>
                   ) : voters.length === 0 ? (
@@ -241,13 +241,13 @@ export function AddCandidate() {
             </div>
 
             {selectedVoter && (
-              <div className="bg-[#102222] border border-[#13ecec]/30 rounded-lg p-4">
+              <div className="bg-[#102222] border border-[#13ecec]/30 p-4">
                 <div className="flex items-center gap-3">
                   {selectedVoter.profilePicture ? (
                     <img
                       src={selectedVoter.profilePicture}
                       alt={selectedVoter.name || selectedVoter.username}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-[#13ecec]"
+                      className="w-12 h-12 object-cover border-2 border-[#13ecec]"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
@@ -257,7 +257,7 @@ export function AddCandidate() {
                     />
                   ) : null}
                   <div
-                    className={`w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center ${selectedVoter.profilePicture ? 'hidden' : ''}`}
+                    className={`w-12 h-12 bg-[#13ecec]/20  flex items-center justify-center ${selectedVoter.profilePicture ? 'hidden' : ''}`}
                   >
                     <MdPerson className="w-6 h-6 text-[#13ecec]" />
                   </div>
@@ -279,7 +279,7 @@ export function AddCandidate() {
                 onChange={(e) => setFormData({ ...formData, quote: e.target.value })}
                 placeholder="e.g. Vote for change!"
                 maxLength={200}
-                className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
+                className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
               />
               <div className="text-right text-sm text-[#568888] mt-1">
                 {formData.quote.length}/200 characters
@@ -295,7 +295,7 @@ export function AddCandidate() {
                 onChange={(e) => setFormData({ ...formData, manifesto: e.target.value })}
                 placeholder="Enter the candidate's manifesto or campaign promises..."
                 rows={8}
-                className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec] resize-none"
+                className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec] resize-none"
               />
             </div>
 
@@ -305,13 +305,13 @@ export function AddCandidate() {
               </label>
               <div className="space-y-4">
                 {selectedVoter?.profilePicture && (
-                  <div className="flex items-center gap-4 p-4 bg-[#102222] border border-[#234848] rounded-lg">
+                  <div className="flex items-center gap-4 p-4 bg-[#102222] border border-[#234848]">
                     <div className="flex items-center gap-3 flex-1">
                       {selectedVoter.profilePicture && (
                         <img
                           src={selectedVoter.profilePicture}
                           alt={selectedVoter.name || selectedVoter.username}
-                          className="w-16 h-16 rounded-full object-cover border-2 border-[#13ecec]"
+                          className="w-16 h-16 object-cover border-2 border-[#13ecec]"
                         />
                       )}
                       <div className="flex-1">
@@ -334,7 +334,7 @@ export function AddCandidate() {
                           setImagePreview(null);
                         }
                       }}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      className={`px-4 py-2 font-medium transition-colors ${
                         formData.image === selectedVoter.profilePicture
                           ? "bg-[#13ecec] text-[#112222]"
                           : "bg-[#234848] text-white hover:bg-[#2a5555]"
@@ -352,7 +352,7 @@ export function AddCandidate() {
                       onChange={handleImageChange}
                       className="hidden"
                     />
-                    <div className="px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white hover:border-[#13ecec] transition-colors flex items-center justify-center gap-2">
+                    <div className="px-4 py-3 bg-[#102222] border border-[#234848]  text-white hover:border-[#13ecec] transition-colors flex items-center justify-center gap-2">
                       <MdImage className="w-5 h-5" />
                       <span>{imageFile ? imageFile.name : "Upload Custom Image"}</span>
                     </div>
@@ -362,7 +362,7 @@ export function AddCandidate() {
                       type="button"
                       onClick={handleUploadImage}
                       disabled={uploadingImage}
-                      className="px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg disabled:opacity-50"
+                      className="px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  disabled:opacity-50"
                     >
                       {uploadingImage ? "Uploading..." : "Upload"}
                     </button>
@@ -373,7 +373,7 @@ export function AddCandidate() {
                     <img
                       src={imagePreview}
                       alt="Preview"
-                      className="w-full h-full object-cover rounded-lg border border-[#234848]"
+                      className="w-full h-full object-cover  border border-[#234848]"
                     />
                     <button
                       type="button"
@@ -382,7 +382,7 @@ export function AddCandidate() {
                         setImagePreview(null);
                         setFormData((prev) => ({ ...prev, image: "" }));
                       }}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                      className="absolute -top-2 -right-2 bg-red-500 text-white  p-1"
                     >
                       <MdClose className="w-4 h-4" />
                     </button>
@@ -405,14 +405,14 @@ export function AddCandidate() {
               <button
                 type="button"
                 onClick={() => navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}`)}
-                className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white rounded-lg transition-all"
+                className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white  transition-all"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={createCandidate.isPending || !selectedVoter || uploadingImage}
-                className="flex-1 px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <MdAdd className="w-4 h-4" />
                 {createCandidate.isPending ? "Adding..." : "Add Candidate"}

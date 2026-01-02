@@ -36,7 +36,7 @@ export function Dashboard() {
     return (
       <div className="h-screen bg-[#102222] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="loader mx-auto mb-4"></div>
           <p className="text-white text-lg">Loading dashboard...</p>
         </div>
       </div>
@@ -52,7 +52,7 @@ export function Dashboard() {
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-[#13ecec] text-[#112222] rounded font-medium"
+            className="px-4 py-2 bg-[#13ecec] text-[#112222]  font-medium"
           >
             Retry
           </button>
@@ -99,7 +99,7 @@ export function Dashboard() {
           <button
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="px-4 py-2 bg-[#234848] hover:bg-[#2a5050] text-white rounded font-medium uppercase tracking-wide flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-[#234848] hover:bg-[#2a5050] text-white  font-medium uppercase tracking-wide flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <MdLogout className="w-5 h-5" />
             <span>{isLoggingOut ? "LOGGING OUT..." : "LOGOUT"}</span>
@@ -142,7 +142,7 @@ export function Dashboard() {
               {/* Total Elections */}
               <div className="bg-[#102222] border border-[#234848] p-6">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-[#234848] flex items-center justify-center">
+                  <div className="w-10 h-10  bg-[#234848] flex items-center justify-center">
                     <MdHowToVote className="w-5 h-5 text-[#13ecec]" />
                   </div>
                   <div>
@@ -156,7 +156,7 @@ export function Dashboard() {
               {/* Eligible Elections */}
               <div className="bg-[#102222] border border-[#234848] p-6">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-[#234848] flex items-center justify-center">
+                  <div className="w-10 h-10  bg-[#234848] flex items-center justify-center">
                     <MdCheckCircle className="w-5 h-5 text-[#13ecec]" />
                   </div>
                   <div>
@@ -170,7 +170,7 @@ export function Dashboard() {
               {/* Elections Voted In */}
               <div className="bg-[#102222] border border-[#234848] p-6">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-[#234848] flex items-center justify-center">
+                  <div className="w-10 h-10  bg-[#234848] flex items-center justify-center">
                     <MdPerson className="w-5 h-5 text-[#13ecec]" />
                   </div>
                   <div>
@@ -184,7 +184,7 @@ export function Dashboard() {
               {/* Votes Cast */}
               <div className="bg-[#102222] border border-[#234848] p-6">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-[#234848] flex items-center justify-center">
+                  <div className="w-10 h-10  bg-[#234848] flex items-center justify-center">
                     <MdBarChart className="w-5 h-5 text-[#13ecec]" />
                   </div>
                   <div>
@@ -205,7 +205,7 @@ export function Dashboard() {
                     {Math.round((dashboardData.stats.electionsVotedIn / dashboardData.stats.eligibleElections) * 100)}%
                   </span>
                 </div>
-                <div className="w-full bg-[#102222] rounded-full h-3 overflow-hidden">
+                <div className="w-full bg-[#102222]  h-3 overflow-hidden">
                   <div
                     className="bg-[#13ecec] h-full transition-all duration-500"
                     style={{

@@ -27,6 +27,55 @@ import { useConfirm } from "../hooks/useConfirm";
 
 type ElectionTab = "all" | "pending" | "active" | "completed";
 
+// Timer hook for admin election detail
+function useElectionTimer(startDate: string, endDate: string) {
+  const [timeRemaining, setTimeRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [timeUntilStart, setTimeUntilStart] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [status, setStatus] = useState<"upcoming" | "active" | "completed">("upcoming");
+
+  useEffect(() => {
+    if (!startDate || !endDate) return;
+
+    const updateTimer = () => {
+      const now = new Date();
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      if (now < start) {
+        // Upcoming
+        setStatus("upcoming");
+        const diff = start.getTime() - now.getTime();
+        setTimeUntilStart({
+          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((diff % (1000 * 60)) / 1000),
+        });
+      } else if (now >= start && now <= end) {
+        // Active
+        setStatus("active");
+        const diff = end.getTime() - now.getTime();
+        setTimeRemaining({
+          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((diff % (1000 * 60)) / 1000),
+        });
+      } else {
+        // Completed
+        setStatus("completed");
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, [startDate, endDate]);
+
+  return { timeRemaining, timeUntilStart, status };
+}
+
 export function AdminElections() {
   const navigate = useNavigate();
   const { showToast, ToastContainer } = useToast();
@@ -81,7 +130,7 @@ export function AdminElections() {
           </div>
           <button
             onClick={() => navigate("/admin/elections/create")}
-            className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg flex items-center gap-2 transition-all"
+            className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  flex items-center gap-2 transition-all"
           >
             <MdAdd className="w-5 h-5" />
             <span>New Election</span>
@@ -108,10 +157,10 @@ export function AdminElections() {
         {/* Elections List */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin"></div>
+            <div className="loader"></div>
           </div>
         ) : elections.length === 0 ? (
-          <div className="bg-[#142828] border border-[#234848] rounded-lg p-12 text-center">
+          <div className="bg-[#142828] border border-[#234848]  p-12 text-center">
             <MdSchedule className="w-16 h-16 text-[#568888] mx-auto mb-4" />
             <p className="text-[#92c9c9] text-lg mb-2">No elections found</p>
             <p className="text-[#568888] text-sm mb-4">
@@ -120,7 +169,7 @@ export function AdminElections() {
             {activeTab === "all" && (
               <button
                 onClick={() => navigate("/admin/elections/create")}
-                className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg"
+                className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold "
               >
                 Create Election
               </button>
@@ -132,7 +181,7 @@ export function AdminElections() {
               {paginatedElections.map((election) => (
               <div
                 key={election.id}
-                className="bg-[#142828] border border-[#234848] rounded-lg p-6 hover:border-[#13ecec] transition-all cursor-pointer"
+                className="bg-[#142828] border border-[#234848]  p-6 hover:border-[#13ecec] transition-all cursor-pointer flex flex-col justify-between"
                 onClick={() => navigate(`/admin/elections/${election.slug || election.id}`)}
               >
                 <div className="flex items-start justify-between mb-4">
@@ -141,7 +190,7 @@ export function AdminElections() {
                     <p className="text-[#92c9c9] text-sm line-clamp-2">{election.description || "No description"}</p>
                   </div>
                   <span
-                    className={`px-2 py-1 rounded text-xs font-medium ${
+                    className={`px-2 py-1  text-xs font-medium ${
                       election.status === "active"
                         ? "bg-[#13ecec]/20 text-[#13ecec]"
                         : election.status === "completed"
@@ -152,6 +201,8 @@ export function AdminElections() {
                     {election.status.toUpperCase()}
                   </span>
                 </div>
+                <section>
+
                 <div className="flex items-center gap-4 text-sm text-[#568888] mb-4">
                   <div className="flex items-center gap-1">
                     <MdSchedule className="w-4 h-4" />
@@ -163,14 +214,14 @@ export function AdminElections() {
                     <span>{new Date(election.endDate).toLocaleDateString()}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 ">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/admin/elections/${election.slug || election.id}`);
                     }}
-                    className="flex-1 px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded text-sm transition-all"
-                  >
+                    className="flex-1 px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  text-sm transition-all"
+                    >
                     View Details
                   </button>
                   <button
@@ -178,11 +229,12 @@ export function AdminElections() {
                       e.stopPropagation();
                       navigate(`/admin/elections/${election.slug || election.id}/results`);
                     }}
-                    className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded text-sm transition-all"
-                  >
+                    className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white  text-sm transition-all"
+                    >
                     <MdBarChart className="w-4 h-4" />
                   </button>
                 </div>
+              </section>
               </div>
             ))}
           </div>
@@ -196,7 +248,7 @@ export function AdminElections() {
                   <button
                     onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 bg-[#142828] border border-[#234848] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
+                    className="px-4 py-2 bg-[#142828] border border-[#234848] text-white  disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
                   >
                     Previous
                   </button>
@@ -205,7 +257,7 @@ export function AdminElections() {
                       <button
                         key={page}
                         onClick={() => setCurrentPage(page)}
-                        className={`px-3 py-2 rounded ${
+                        className={`px-3 py-2  ${
                           currentPage === page
                             ? "bg-[#13ecec] text-[#112222] font-bold"
                             : "bg-[#142828] border border-[#234848] text-white hover:border-[#13ecec]"
@@ -218,7 +270,7 @@ export function AdminElections() {
                   <button
                     onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 bg-[#142828] border border-[#234848] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
+                    className="px-4 py-2 bg-[#142828] border border-[#234848] text-white  disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
                   >
                     Next
                   </button>
@@ -234,6 +286,8 @@ export function AdminElections() {
 
 export function AdminElectionDetail() {
   const navigate = useNavigate();
+  const { showToast, ToastContainer } = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirm();
   const { slug: electionSlug } = useParams<{ slug: string }>();
   const { data: electionResponse, isLoading: isLoadingElection } = useAdminElection(electionSlug);
   const { data: statsResponse, isLoading: isLoadingStats } = useAdminElectionStats(electionResponse?.success ? electionResponse.data.id : undefined);
@@ -245,12 +299,18 @@ export function AdminElectionDetail() {
   const stats = statsResponse?.success ? statsResponse.data : null;
   const offices = officesResponse?.success ? officesResponse.data : [];
   const currentElectionSlug = election?.slug || electionSlug;
+  
+  // Timer for election
+  const { timeRemaining, timeUntilStart, status } = useElectionTimer(
+    election?.startDate || "",
+    election?.endDate || ""
+  );
 
   if (isLoadingElection) {
     return (
       <AdminLayout>
         <div className="p-8 flex items-center justify-center min-h-[calc(100vh-8rem)]">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin"></div>
+          <div className="loader"></div>
         </div>
       </AdminLayout>
     );
@@ -260,11 +320,11 @@ export function AdminElectionDetail() {
     return (
       <AdminLayout>
         <div className="p-8">
-          <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 rounded-lg">
+          <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 ">
             <p className="font-medium">Election not found</p>
             <button
               onClick={() => navigate("/admin/elections")}
-              className="mt-4 px-4 py-2 bg-[#234848] text-white rounded hover:bg-[#2a5555] transition-colors"
+              className="mt-4 px-4 py-2 bg-[#234848] text-white  hover:bg-[#2a5555] transition-colors"
             >
               Back to Elections
             </button>
@@ -289,10 +349,11 @@ export function AdminElectionDetail() {
         {/* Header */}
         <div className="mb-8 flex items-start justify-between">
           <div>
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex flex-col items-start gap-3 mb-2">
               <h1 className="text-4xl font-bold text-white">{election.name}</h1>
-              <span
-                className={`px-3 py-1 rounded text-sm font-medium ${
+            <p className="text-[#92c9c9]">{election.description || "No description"}</p>
+            <span
+                className={`px-3 py-1  text-sm font-medium ${
                   election.status === "active"
                     ? "bg-[#13ecec]/20 text-[#13ecec]"
                     : election.status === "completed"
@@ -303,7 +364,6 @@ export function AdminElectionDetail() {
                 {election.status.toUpperCase()}
               </span>
             </div>
-            <p className="text-[#92c9c9]">{election.description || "No description"}</p>
             <div className="mt-4 space-y-2">
               <div className="text-sm text-[#568888]">
                 <span className="font-medium text-[#92c9c9]">Start:</span>{" "}
@@ -328,18 +388,76 @@ export function AdminElectionDetail() {
                 })}
               </div>
             </div>
+            {/* Timer */}
+            {status === "active" && (
+              <div className="mt-4 bg-[#13ecec]/10 border border-[#13ecec]/30  p-4">
+                <div className="text-sm text-[#92c9c9] mb-2 font-medium">Time Remaining</div>
+                <div className="flex gap-4 text-2xl font-bold text-[#13ecec]">
+                  <div>
+                    <div className="text-3xl">{String(timeRemaining.days).padStart(2, "0")}</div>
+                    <div className="text-xs text-[#568888] uppercase">Days</div>
+                  </div>
+                  <div>:</div>
+                  <div>
+                    <div className="text-3xl">{String(timeRemaining.hours).padStart(2, "0")}</div>
+                    <div className="text-xs text-[#568888] uppercase">Hours</div>
+                  </div>
+                  <div>:</div>
+                  <div>
+                    <div className="text-3xl">{String(timeRemaining.minutes).padStart(2, "0")}</div>
+                    <div className="text-xs text-[#568888] uppercase">Minutes</div>
+                  </div>
+                  <div>:</div>
+                  <div>
+                    <div className="text-3xl">{String(timeRemaining.seconds).padStart(2, "0")}</div>
+                    <div className="text-xs text-[#568888] uppercase">Seconds</div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {status === "upcoming" && (
+              <div className="mt-4 bg-orange-500/10 border border-orange-500/30 p-4">
+                <div className="text-sm text-[#92c9c9] mb-2 font-medium">Starts In</div>
+                <div className="flex gap-4 text-2xl font-bold text-orange-400">
+                  <div>
+                    <div className="text-3xl">{String(timeUntilStart.days).padStart(2, "0")}</div>
+                    <div className="text-xs text-[#568888] uppercase">Days</div>
+                  </div>
+                  <div>:</div>
+                  <div>
+                    <div className="text-3xl">{String(timeUntilStart.hours).padStart(2, "0")}</div>
+                    <div className="text-xs text-[#568888] uppercase">Hours</div>
+                  </div>
+                  <div>:</div>
+                  <div>
+                    <div className="text-3xl">{String(timeUntilStart.minutes).padStart(2, "0")}</div>
+                    <div className="text-xs text-[#568888] uppercase">Minutes</div>
+                  </div>
+                  <div>:</div>
+                  <div>
+                    <div className="text-3xl">{String(timeUntilStart.seconds).padStart(2, "0")}</div>
+                    <div className="text-xs text-[#568888] uppercase">Seconds</div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {status === "completed" && (
+              <div className="mt-4 bg-green-500/10 border border-green-500/30 p-4">
+                <div className="text-sm text-green-400 font-medium">Election Completed</div>
+              </div>
+            )}
           </div>
           <div className="flex gap-2">
             <button
               onClick={() => navigate(`/admin/elections/${electionSlug}/edit`)}
-              className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded flex items-center gap-2"
+              className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white  flex items-center gap-2"
             >
               <MdEdit className="w-4 h-4" />
               <span>Edit</span>
             </button>
             <button
               onClick={() => navigate(`/admin/elections/${electionSlug}/results`)}
-              className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded flex items-center gap-2"
+              className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  flex items-center gap-2"
             >
               <MdBarChart className="w-4 h-4" />
               <span>Results</span>
@@ -350,21 +468,21 @@ export function AdminElectionDetail() {
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-[#142828] border border-[#234848] rounded-lg p-6">
+            <div className="bg-[#142828] border border-[#234848]  p-6">
               <div className="text-[#568888] text-sm uppercase tracking-wider mb-2">Eligible Voters</div>
               <div className="text-3xl font-bold text-white">{stats.turnout?.eligibleVoters || 0}</div>
             </div>
-            <div className="bg-[#142828] border border-[#234848] rounded-lg p-6">
+            <div className="bg-[#142828] border border-[#234848]  p-6">
               <div className="text-[#568888] text-sm uppercase tracking-wider mb-2">Votes Cast</div>
               <div className="text-3xl font-bold text-white">{stats.turnout?.votesCast || 0}</div>
             </div>
-            <div className="bg-[#142828] border border-[#234848] rounded-lg p-6">
+            <div className="bg-[#142828] border border-[#234848]  p-6">
               <div className="text-[#568888] text-sm uppercase tracking-wider mb-2">Turnout</div>
               <div className="text-3xl font-bold text-white">
                 {stats.turnout?.turnoutPercentage?.toFixed(1) || 0}%
               </div>
             </div>
-            <div className="bg-[#142828] border border-[#234848] rounded-lg p-6">
+            <div className="bg-[#142828] border border-[#234848]  p-6">
               <div className="text-[#568888] text-sm uppercase tracking-wider mb-2">Tokens Used</div>
               <div className="text-3xl font-bold text-white">
                 {stats.tokens?.used || 0} / {stats.tokens?.issued || 0}
@@ -374,12 +492,12 @@ export function AdminElectionDetail() {
         )}
 
         {/* Offices */}
-        <div className="bg-[#142828] border border-[#234848] rounded-lg p-6 mb-6">
+        <div className="bg-[#142828] border border-[#234848]  p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-white">Offices</h2>
             <button
               onClick={() => navigate(`/admin/elections/${currentElectionSlug}/offices/create`)}
-              className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded flex items-center gap-2"
+              className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  flex items-center gap-2"
             >
               <MdAdd className="w-4 h-4" />
               <span>New Office</span>
@@ -394,12 +512,12 @@ export function AdminElectionDetail() {
               {offices.map((office) => (
                 <div
                   key={office.id}
-                  className="bg-[#102222] border border-[#234848] rounded-lg p-4 hover:border-[#13ecec] transition-all cursor-pointer"
+                  className="bg-[#102222] border border-[#234848]  p-4 hover:border-[#13ecec] transition-all cursor-pointer"
                   onClick={() => navigate(`/admin/elections/${currentElectionSlug}/offices/${office.slug || office.id}`)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-[#13ecec]/20 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 bg-[#13ecec]/20  flex items-center justify-center">
                         <MdPerson className="w-5 h-5 text-[#13ecec]" />
                       </div>
                       <div>
@@ -412,7 +530,7 @@ export function AdminElectionDetail() {
                         e.stopPropagation();
                         navigate(`/admin/elections/${currentElectionSlug}/offices/${office.slug || office.id}`);
                       }}
-                      className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded text-sm"
+                      className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white  text-sm"
                     >
                       Manage
                     </button>
@@ -425,7 +543,7 @@ export function AdminElectionDetail() {
 
         {/* Actions */}
         {election.status === "active" && (
-          <div className="bg-[#142828] border border-[#234848] rounded-lg p-6">
+          <div className="bg-[#142828] border border-[#234848]  p-6">
             <h2 className="text-xl font-bold text-white mb-4">Election Actions</h2>
             <div className="flex gap-4">
               <button
@@ -445,7 +563,7 @@ export function AdminElectionDetail() {
                   }
                 }}
                 disabled={calculateResults.isPending}
-                className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded disabled:opacity-50"
+                className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  disabled:opacity-50"
               >
                 {calculateResults.isPending ? "Calculating..." : "Calculate Results"}
               </button>
@@ -468,7 +586,7 @@ export function AdminElectionDetail() {
                   }
                 }}
                 disabled={deleteElection.isPending}
-                className="px-6 py-3 bg-red-900/20 hover:bg-red-900/30 text-red-400 border border-red-500/50 rounded disabled:opacity-50"
+                className="px-6 py-3 bg-red-900/20 hover:bg-red-900/30 text-red-400 border border-red-500/50  disabled:opacity-50"
               >
                 <MdDelete className="w-4 h-4 inline mr-2" />
                 Delete Election
@@ -480,4 +598,3 @@ export function AdminElectionDetail() {
     </AdminLayout>
   );
 }
-

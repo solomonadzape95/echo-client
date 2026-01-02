@@ -112,9 +112,9 @@ export function RegisterForm() {
           step === "regNumber" ? "translate-x-0" : "-translate-x-full opacity-0 absolute inset-0"
         }`}
       >
-        <form onSubmit={handleRegNumberSubmit} className="bg-[#142828] rounded-lg p-6 md:p-8 border border-[#234848] shadow-2xl w-full relative overflow-hidden group">
+        <form onSubmit={handleRegNumberSubmit} className="bg-[#142828]  p-6 md:p-8 border border-[#234848] shadow-2xl w-full relative overflow-hidden group">
           {error && (
-            <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 text-red-400 text-sm rounded">
+            <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 text-red-400 text-sm ">
               {error}
             </div>
           )}
@@ -136,7 +136,7 @@ export function RegisterForm() {
                   setError(null);
                 }}
                 placeholder="2021/123456"
-                className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0 rounded font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
+                className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0  font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
                 required
                 disabled={isSubmitting}
               />
@@ -147,7 +147,7 @@ export function RegisterForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="mt-4 w-full h-14 bg-[#13ecec] hover:bg-[#0fd6d6] active:translate-y-[1px] text-[#112222] rounded font-bold text-lg uppercase tracking-wide flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-4 w-full h-14 bg-[#13ecec] hover:bg-[#0fd6d6] active:translate-y-[1px] text-[#112222]  font-bold text-lg uppercase tracking-wide flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span>VERIFY REGISTRATION</span>
             <MdArrowForward className="w-5 h-5" />
@@ -157,9 +157,9 @@ export function RegisterForm() {
 
       {/* Verifying State */}
       {step === "verifying" && (
-        <div className="bg-[#142828] rounded-lg p-6 md:p-8 border border-[#234848] shadow-2xl w-full">
+        <div className="bg-[#142828]  p-6 md:p-8 border border-[#234848] shadow-2xl w-full">
           <div className="flex flex-col items-center justify-center py-8">
-            <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mb-4"></div>
+            <div className="loader mx-auto mb-4"></div>
             <p className="text-white text-lg font-medium">Verifying registration number...</p>
             <p className="text-[#92c9c9] text-sm mt-2">Please wait while we check the masterlist</p>
           </div>
@@ -168,7 +168,7 @@ export function RegisterForm() {
 
       {/* Confirmation Container - slides in from right */}
       {step === "confirm" && masterlistRecord && (
-        <div className="bg-[#142828] rounded-lg p-6 md:p-8 border border-[#234848] shadow-2xl w-full animate-in slide-in-from-right">
+        <div className="bg-[#142828]  p-6 md:p-8 border border-[#234848] shadow-2xl w-full animate-in slide-in-from-right">
           <div className="space-y-6">
             <div className="text-center">
               <h3 className="text-white text-xl font-bold uppercase tracking-wider mb-2">
@@ -183,7 +183,7 @@ export function RegisterForm() {
 
             {/* Account Exists Warning */}
             {accountExists && (
-              <div className="bg-orange-900/20 border border-orange-500/50 p-4 rounded-lg">
+              <div className="bg-orange-900/20 border border-orange-500/50 p-4 ">
                 <p className="text-orange-400 text-sm font-medium mb-2">
                   This registration number is already registered.
                 </p>
@@ -193,9 +193,9 @@ export function RegisterForm() {
               </div>
             )}
 
-            <div className="bg-[#102222] border border-[#234848] p-6 rounded-lg space-y-4">
+            <div className="bg-[#102222] border border-[#234848] p-6  space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-[#234848] flex items-center justify-center">
+                <div className="w-12 h-12  bg-[#234848] flex items-center justify-center">
                   <MdPerson className="w-6 h-6 text-[#13ecec]" />
                 </div>
                 <div className="flex-1">
@@ -243,14 +243,14 @@ export function RegisterForm() {
                 <>
                   <button
                     onClick={handleReject}
-                    className="flex-1 h-12 bg-[#234848] hover:bg-[#2a5050] text-white rounded font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
+                    className="flex-1 h-12 bg-[#234848] hover:bg-[#2a5050] text-white  font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
                   >
                     <MdClose className="w-5 h-5" />
                     <span>Edit Reg. Number</span>
                   </button>
                   <button
                     onClick={() => navigate("/login")}
-                    className="flex-1 h-12 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] rounded font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
+                    className="flex-1 h-12 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222]  font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
                   >
                     <MdCheckCircle className="w-5 h-5" />
                     <span>Go to Login</span>
@@ -260,14 +260,14 @@ export function RegisterForm() {
                 <>
                   <button
                     onClick={handleReject}
-                    className="flex-1 h-12 bg-[#234848] hover:bg-[#2a5050] text-white rounded font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
+                    className="flex-1 h-12 bg-[#234848] hover:bg-[#2a5050] text-white  font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
                   >
                     <MdClose className="w-5 h-5" />
                     <span>No, Try Again</span>
                   </button>
                   <button
                     onClick={handleConfirm}
-                    className="flex-1 h-12 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] rounded font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
+                    className="flex-1 h-12 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222]  font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-all"
                   >
                     <MdCheckCircle className="w-5 h-5" />
                     <span>Yes, Continue</span>
@@ -281,10 +281,10 @@ export function RegisterForm() {
 
       {/* Password Form - slides in from right */}
       {step === "password" && (
-        <div className="bg-[#142828] rounded-lg p-6 md:p-8 border border-[#234848] shadow-2xl w-full animate-in slide-in-from-right">
+        <div className="bg-[#142828]  p-6 md:p-8 border border-[#234848] shadow-2xl w-full animate-in slide-in-from-right">
           <form onSubmit={handlePasswordSubmit}>
             {error && (
-              <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 text-red-400 text-sm rounded">
+              <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 text-red-400 text-sm ">
                 {error}
               </div>
             )}
@@ -306,7 +306,7 @@ export function RegisterForm() {
                     setError(null);
                   }}
                   placeholder={regNumber}
-                  className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0 rounded font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
+                  className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0  font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
                   required
                   disabled={isSubmitting}
                 />
@@ -330,7 +330,7 @@ export function RegisterForm() {
                     setError(null);
                   }}
                   placeholder="••••••"
-                  className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0 rounded font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
+                  className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0  font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
                   required
                   disabled={isSubmitting}
                 />
@@ -354,7 +354,7 @@ export function RegisterForm() {
                     setError(null);
                   }}
                   placeholder="••••••"
-                  className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0 rounded font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
+                  className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0  font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
                   required
                   disabled={isSubmitting}
                 />
@@ -365,7 +365,7 @@ export function RegisterForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-4 w-full h-14 bg-[#13ecec] hover:bg-[#0fd6d6] active:translate-y-[1px] text-[#112222] rounded font-bold text-lg uppercase tracking-wide flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mt-4 w-full h-14 bg-[#13ecec] hover:bg-[#0fd6d6] active:translate-y-[1px] text-[#112222]  font-bold text-lg uppercase tracking-wide flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>{isSubmitting ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}</span>
               <MdArrowForward className="w-5 h-5" />

@@ -11,8 +11,8 @@ function getApiBaseUrl(): string {
   } catch (error) {
     console.warn("Could not read BUN_PUBLIC_API_URL from environment:", error);
   }
-  // return "http://localhost:3001";
-  return "https://echo-fmir.onrender.com";
+  return "http://localhost:3001";
+  // return "https://echo-fmir.onrender.com";
 }
 
 const API_BASE_URL = getApiBaseUrl();

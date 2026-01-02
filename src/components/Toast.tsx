@@ -36,7 +36,7 @@ export function Toast({ message, type = "info", duration = 5000, onClose }: Toas
 
   return (
     <div
-      className={`fixed top-4 right-4 z-50 flex items-center gap-3 p-4 rounded-lg border shadow-lg min-w-[300px] max-w-md animate-in slide-in-from-right ${colors[type]}`}
+      className={`fixed top-4 right-4 z-50 flex items-center gap-3 p-4  border shadow-lg min-w-[300px] max-w-md animate-in slide-in-from-right ${colors[type]}`}
     >
       <Icon className="w-5 h-5 flex-shrink-0" />
       <p className="flex-1 text-sm font-medium">{message}</p>

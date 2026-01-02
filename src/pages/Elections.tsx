@@ -77,7 +77,7 @@ export function Elections() {
     return (
       <div className="min-h-screen bg-[#102222] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="loader mx-auto mb-4"></div>
           <p className="text-white text-lg">Loading elections...</p>
         </div>
       </div>
@@ -93,7 +93,7 @@ export function Elections() {
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-[#13ecec] text-[#112222] rounded font-medium"
+            className="px-4 py-2 bg-[#13ecec] text-[#112222]  font-medium"
           >
             Retry
           </button>
@@ -237,7 +237,7 @@ export function Elections() {
                     <button
                       onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                       disabled={currentPage === 1}
-                      className="px-4 py-2 bg-[#142828] border border-[#234848] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
+                      className="px-4 py-2 bg-[#142828] border border-[#234848] text-white  disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
                     >
                       Previous
                     </button>
@@ -246,7 +246,7 @@ export function Elections() {
                         <button
                           key={page}
                           onClick={() => setCurrentPage(page)}
-                          className={`px-3 py-2 rounded ${
+                          className={`px-3 py-2  ${
                             currentPage === page
                               ? "bg-[#13ecec] text-[#112222] font-bold"
                               : "bg-[#142828] border border-[#234848] text-white hover:border-[#13ecec]"
@@ -259,7 +259,7 @@ export function Elections() {
                     <button
                       onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                       disabled={currentPage === totalPages}
-                      className="px-4 py-2 bg-[#142828] border border-[#234848] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
+                      className="px-4 py-2 bg-[#142828] border border-[#234848] text-white  disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
                     >
                       Next
                     </button>

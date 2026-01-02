@@ -154,7 +154,7 @@ export function AdminManagement() {
           </div>
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg flex items-center gap-2 transition-all"
+            className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  flex items-center gap-2 transition-all"
           >
             <MdAdd className="w-5 h-5" />
             <span>New Admin</span>
@@ -164,16 +164,16 @@ export function AdminManagement() {
         {/* Admins List */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin"></div>
+            <div className="loader"></div>
           </div>
         ) : admins.length === 0 ? (
-          <div className="bg-[#142828] border border-[#234848] rounded-lg p-12 text-center">
+          <div className="bg-[#142828] border border-[#234848]  p-12 text-center">
             <MdPerson className="w-16 h-16 text-[#568888] mx-auto mb-4" />
             <p className="text-[#92c9c9] text-lg mb-2">No admins found</p>
             <p className="text-[#568888] text-sm">Create your first admin account</p>
           </div>
         ) : (
-          <div className="bg-[#142828] border border-[#234848] rounded-lg overflow-hidden">
+          <div className="bg-[#142828] border border-[#234848]  overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -203,7 +203,7 @@ export function AdminManagement() {
                     >
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-[#13ecec] rounded-full flex items-center justify-center text-[#112222] font-bold">
+                          <div className="w-10 h-10 bg-[#13ecec]  flex items-center justify-center text-[#112222] font-bold">
                             {admin.username.substring(0, 2).toUpperCase()}
                           </div>
                           <div>
@@ -217,7 +217,7 @@ export function AdminManagement() {
                       <td className="py-4 px-6 text-[#92c9c9]">{admin.email}</td>
                       <td className="py-4 px-6">
                         <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${getRoleColor(admin.role)}`}
+                          className={`px-2 py-1  text-xs font-medium ${getRoleColor(admin.role)}`}
                         >
                           {admin.role.toUpperCase().replace("_", " ")}
                         </span>
@@ -229,7 +229,7 @@ export function AdminManagement() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => openEditModal(admin)}
-                            className="p-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded transition-all"
+                            className="p-2 bg-[#234848] hover:bg-[#2a5555] text-white  transition-all"
                             title="Edit"
                           >
                             <MdEdit className="w-4 h-4" />
@@ -237,7 +237,7 @@ export function AdminManagement() {
                           <button
                             onClick={() => handleDelete(admin.id)}
                             disabled={deleteAdmin.isPending}
-                            className="p-2 bg-red-900/20 hover:bg-red-900/30 text-red-400 border border-red-500/50 rounded transition-all disabled:opacity-50"
+                            className="p-2 bg-red-900/20 hover:bg-red-900/30 text-red-400 border border-red-500/50  transition-all disabled:opacity-50"
                             title="Delete"
                           >
                             <MdDelete className="w-4 h-4" />
@@ -262,7 +262,7 @@ export function AdminManagement() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 bg-[#142828] border border-[#234848] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
+                className="px-4 py-2 bg-[#142828] border border-[#234848] text-white  disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
               >
                 Previous
               </button>
@@ -271,7 +271,7 @@ export function AdminManagement() {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-2 rounded ${
+                    className={`px-3 py-2  ${
                       currentPage === page
                         ? "bg-[#13ecec] text-[#112222] font-bold"
                         : "bg-[#142828] border border-[#234848] text-white hover:border-[#13ecec]"
@@ -284,7 +284,7 @@ export function AdminManagement() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-[#142828] border border-[#234848] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
+                className="px-4 py-2 bg-[#142828] border border-[#234848] text-white  disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
               >
                 Next
               </button>
@@ -295,12 +295,12 @@ export function AdminManagement() {
         {/* Create Modal */}
         {isCreateModalOpen && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#142828] border border-[#234848] rounded-lg w-full max-w-md p-6">
+            <div className="bg-[#142828] border border-[#234848]  w-full max-w-md p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-white">Create New Admin</h2>
                 <button
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="p-2 text-[#92c9c9] hover:text-white hover:bg-[#1a3333] rounded-lg transition-all"
+                  className="p-2 text-[#92c9c9] hover:text-white hover:bg-[#1a3333]  transition-all"
                 >
                   <MdClose className="w-5 h-5" />
                 </button>
@@ -315,7 +315,7 @@ export function AdminManagement() {
                     required
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   />
                 </div>
                 <div>
@@ -327,7 +327,7 @@ export function AdminManagement() {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   />
                 </div>
                 <div>
@@ -340,7 +340,7 @@ export function AdminManagement() {
                     minLength={8}
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   />
                 </div>
                 <div>
@@ -355,7 +355,7 @@ export function AdminManagement() {
                         role: e.target.value as "super_admin" | "admin" | "moderator",
                       })
                     }
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   >
                     <option value="admin">Admin</option>
                     <option value="super_admin">Super Admin</option>
@@ -370,21 +370,21 @@ export function AdminManagement() {
                     type="text"
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   />
                 </div>
                 <div className="flex gap-4 pt-4">
                   <button
                     type="button"
                     onClick={() => setIsCreateModalOpen(false)}
-                    className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white rounded-lg transition-all"
+                    className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white  transition-all"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={createAdmin.isPending}
-                    className="flex-1 px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg disabled:opacity-50"
+                    className="flex-1 px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  disabled:opacity-50"
                   >
                     {createAdmin.isPending ? "Creating..." : "Create Admin"}
                   </button>
@@ -397,7 +397,7 @@ export function AdminManagement() {
         {/* Edit Modal */}
         {editingAdmin && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#142828] border border-[#234848] rounded-lg w-full max-w-md p-6">
+            <div className="bg-[#142828] border border-[#234848]  w-full max-w-md p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-white">Edit Admin</h2>
                 <button
@@ -411,7 +411,7 @@ export function AdminManagement() {
                       fullName: "",
                     });
                   }}
-                  className="p-2 text-[#92c9c9] hover:text-white hover:bg-[#1a3333] rounded-lg transition-all"
+                  className="p-2 text-[#92c9c9] hover:text-white hover:bg-[#1a3333]  transition-all"
                 >
                   <MdClose className="w-5 h-5" />
                 </button>
@@ -425,7 +425,7 @@ export function AdminManagement() {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   />
                 </div>
                 <div>
@@ -437,7 +437,7 @@ export function AdminManagement() {
                     minLength={8}
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   />
                 </div>
                 <div>
@@ -452,7 +452,7 @@ export function AdminManagement() {
                         role: e.target.value as "super_admin" | "admin" | "moderator",
                       })
                     }
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   >
                     <option value="admin">Admin</option>
                     <option value="super_admin">Super Admin</option>
@@ -467,7 +467,7 @@ export function AdminManagement() {
                     type="text"
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   />
                 </div>
                 <div className="flex gap-4 pt-4">
@@ -483,14 +483,14 @@ export function AdminManagement() {
                         fullName: "",
                       });
                     }}
-                    className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white rounded-lg transition-all"
+                    className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white  transition-all"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={updateAdmin.isPending}
-                    className="flex-1 px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg disabled:opacity-50"
+                    className="flex-1 px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  disabled:opacity-50"
                   >
                     {updateAdmin.isPending ? "Updating..." : "Update Admin"}
                   </button>

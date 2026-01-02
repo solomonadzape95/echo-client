@@ -43,7 +43,7 @@ export function HelpModal({ isOpen, onClose, steps, title = "Help Guide" }: Help
       >
         {/* Modal */}
         <div
-          className="bg-[#142828] border border-[#234848] rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col animate-in zoom-in-95 mx-4"
+          className="bg-[#142828] border border-[#234848]  shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col animate-in mx-4"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -54,7 +54,7 @@ export function HelpModal({ isOpen, onClose, steps, title = "Help Guide" }: Help
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-[#92c9c9] hover:text-white hover:bg-[#1a3333] rounded-lg transition-all"
+              className="p-2 text-[#92c9c9] hover:text-white hover:bg-[#1a3333]  transition-all"
               aria-label="Close"
             >
               <MdClose className="w-5 h-5" />
@@ -85,7 +85,7 @@ export function HelpModal({ isOpen, onClose, steps, title = "Help Guide" }: Help
             <button
               onClick={handlePrev}
               disabled={currentStep === 0}
-              className="flex items-center gap-2 px-3 py-2 sm:px-4 bg-[#234848] hover:bg-[#2a5050] text-white rounded font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+              className="flex items-center gap-2 px-3 py-2 sm:px-4 bg-[#234848] hover:bg-[#2a5050] text-white  font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               <MdArrowBack className="w-4 h-4" />
               <span className="hidden sm:inline">Previous</span>
@@ -96,7 +96,7 @@ export function HelpModal({ isOpen, onClose, steps, title = "Help Guide" }: Help
               {steps.map((_, index) => (
                 <div
                   key={index}
-                  className={`w-2 h-2 rounded-full transition-all ${
+                  className={`w-2 h-2  transition-all ${
                     index === currentStep
                       ? "bg-[#13ecec] w-6"
                       : "bg-[#234848]"
@@ -107,7 +107,7 @@ export function HelpModal({ isOpen, onClose, steps, title = "Help Guide" }: Help
 
             <button
               onClick={handleNext}
-              className="flex items-center gap-2 px-3 py-2 sm:px-4 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] rounded font-medium transition-all text-sm sm:text-base"
+              className="flex items-center gap-2 px-3 py-2 sm:px-4 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222]  font-medium transition-all text-sm sm:text-base"
             >
               <span>{currentStep === steps.length - 1 ? "Got it!" : "Next"}</span>
               {currentStep < steps.length - 1 && <MdArrowForward className="w-4 h-4" />}

@@ -5,6 +5,7 @@ function getApiBaseUrl(): string {
   try {
     if (import.meta.env && typeof import.meta.env === "object") {
       const envUrl = (import.meta.env as Record<string, unknown>).BUN_PUBLIC_API_URL;
+      console.log("envUrl", envUrl);
       if (typeof envUrl === "string" && envUrl.trim()) {
         return envUrl.trim();
       }
@@ -12,8 +13,8 @@ function getApiBaseUrl(): string {
   } catch (error) {
     console.warn("Could not read BUN_PUBLIC_API_URL from environment:", error);
   }
-  // return "http://localhost:3001";
-  return "https://echo-fmir.onrender.com";  
+  return "http://localhost:3001";
+  // return "https://echo-fmir.onrender.com";  
 }
 
 const API_BASE_URL = getApiBaseUrl();

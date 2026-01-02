@@ -31,9 +31,9 @@ export function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-[#142828] rounded-lg p-6 md:p-8 border border-[#234848] shadow-2xl w-full relative overflow-hidden group">
+    <form onSubmit={handleSubmit} className="bg-[#142828]  p-6 md:p-8 border border-[#234848] shadow-2xl w-full relative overflow-hidden group">
       {error && (
-        <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 text-red-400 text-sm rounded">
+        <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 text-red-400 text-sm ">
           {error}
         </div>
       )}
@@ -55,7 +55,7 @@ export function LoginForm() {
               setError(null);
             }}
             placeholder="2021/123456"
-            className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0 rounded font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
+            className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0  font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
             required
             disabled={isSubmitting}
           />
@@ -91,7 +91,7 @@ export function LoginForm() {
               setError(null);
             }}
             placeholder="••••••"
-            className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0 rounded font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
+            className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0  font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
             required
             disabled={isSubmitting}
           />
@@ -102,7 +102,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-4 w-full h-14 bg-[#13ecec] hover:bg-[#0fd6d6] active:translate-y-[1px] text-[#112222] rounded font-bold text-lg uppercase tracking-wide flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-4 w-full h-14 bg-[#13ecec] hover:bg-[#0fd6d6] active:translate-y-[1px] text-[#112222]  font-bold text-lg uppercase tracking-wide flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span>{isSubmitting ? "LOGGING IN..." : "LOGIN"}</span>
         <MdArrowForward className="w-5 h-5" />

@@ -67,8 +67,8 @@ export function ResetPassword() {
       <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4 relative">
         <ToastContainer />
         <div className="w-full max-w-md">
-          <div className="bg-[#142828] rounded-lg p-6 md:p-8 border border-[#234848] shadow-2xl text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-900/20 border border-green-500/50 mb-4">
+          <div className="bg-[#142828]  p-6 md:p-8 border border-[#234848] shadow-2xl text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16  bg-green-900/20 border border-green-500/50 mb-4">
               <MdCheckCircle className="w-8 h-8 text-green-400" />
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">Password Reset Successful!</h2>
@@ -93,9 +93,9 @@ export function ResetPassword() {
     <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4">
       <ToastContainer />
       <div className="w-full max-w-md">
-        <div className="bg-[#142828] rounded-lg p-6 md:p-8 border border-[#234848] shadow-2xl">
+        <div className="bg-[#142828]  p-6 md:p-8 border border-[#234848] shadow-2xl">
           <div className="mb-6 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#234848] mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16  bg-[#234848] mb-4">
               <MdLock className="w-8 h-8 text-[#13ecec]" />
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">Reset Password</h2>
@@ -115,7 +115,7 @@ export function ResetPassword() {
                   value={token}
                   onChange={(e) => setToken(e.target.value)}
                   placeholder="Enter reset token"
-                  className="w-full h-14 px-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0 rounded font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
+                  className="w-full h-14 px-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0  font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
                   required
                   disabled={isSubmitting}
                 />
@@ -135,7 +135,7 @@ export function ResetPassword() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••"
-                  className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0 rounded font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
+                  className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0  font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
                   required
                   disabled={isSubmitting}
                 />
@@ -155,7 +155,7 @@ export function ResetPassword() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••"
-                  className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0 rounded font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
+                  className="w-full h-14 pl-12 pr-4 bg-[#102222] text-white border-2 border-[#234848] focus:border-[#13ecec] focus:ring-0  font-medium text-lg transition-all shadow-inner placeholder:text-[#3a5c5c]"
                   required
                   disabled={isSubmitting}
                 />
@@ -165,7 +165,7 @@ export function ResetPassword() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-14 bg-[#13ecec] hover:bg-[#0fd6d6] active:translate-y-[1px] text-[#112222] rounded font-bold text-lg uppercase tracking-wide flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-14 bg-[#13ecec] hover:bg-[#0fd6d6] active:translate-y-[1px] text-[#112222]  font-bold text-lg uppercase tracking-wide flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_-5px_rgba(19,236,236,0.3)] hover:shadow-[0_0_25px_-5px_rgba(19,236,236,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>{isSubmitting ? "RESETTING..." : "RESET PASSWORD"}</span>
               <MdArrowForward className="w-5 h-5" />

@@ -16,12 +16,26 @@ export function ProfileCard() {
       onMouseLeave={() => setIsHovered(false)}
       className="bg-[#142828] border border-[#234848] cursor-pointer relative group overflow-hidden flex flex-col items-center justify-center lg:min-h-[300px]"
     >
-      {/* Icon - large, moves up and shrinks on hover */}
+      {/* Profile Picture or Icon - large, moves up and shrinks on hover */}
       <div 
         className="flex items-center justify-center transition-all duration-400 ease scale-110 group-hover:scale-100"
       >
+        {profile?.profilePicture ? (
+          <img
+            src={profile.profilePicture}
+            alt={profile.name || "Profile"}
+            className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32  object-cover border-2 border-[#13ecec] transition-all duration-300 group-hover:scale-110 group-hover:translate-y-[-10%]"
+            onError={(e) => {
+              // Fallback to icon if image fails to load
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const fallback = target.nextElementSibling as HTMLElement;
+              if (fallback) fallback.style.display = 'block';
+            }}
+          />
+        ) : null}
         <MdPerson 
-          className="text-[#13ecec] transition-all duration-300 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 group-hover:text-[#13ecec] group-hover:scale-110 group-hover:translate-y-[-10%]" 
+          className={`text-[#13ecec] transition-all duration-300 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 group-hover:text-[#13ecec] group-hover:scale-110 group-hover:translate-y-[-10%] ${profile?.profilePicture ? 'hidden' : ''}`}
         />
       </div>
 

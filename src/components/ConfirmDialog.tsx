@@ -54,7 +54,7 @@ export function ConfirmDialog({
       >
         {/* Dialog */}
         <div
-          className="bg-[#142828] border border-[#234848] rounded-lg shadow-xl max-w-md w-full p-6 animate-in zoom-in-95"
+          className="bg-[#142828] border border-[#234848]  shadow-xl max-w-md w-full p-6 animate-in"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Icon and Title */}
@@ -70,13 +70,13 @@ export function ConfirmDialog({
           <div className="flex gap-3 justify-end">
             <button
               onClick={onCancel}
-              className="px-4 py-2 bg-[#234848] hover:bg-[#2a5050] text-white rounded font-medium transition-all"
+              className="px-4 py-2 bg-[#234848] hover:bg-[#2a5050] text-white  font-medium transition-all"
             >
               {cancelText}
             </button>
             <button
               onClick={onConfirm}
-              className={`px-4 py-2 text-white rounded font-medium transition-all ${buttonColors[type]}`}
+              className={`px-4 py-2 text-white  font-medium transition-all ${buttonColors[type]}`}
             >
               {confirmText}
             </button>

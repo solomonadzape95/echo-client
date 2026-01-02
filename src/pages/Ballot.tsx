@@ -159,7 +159,7 @@ export function Ballot() {
     return (
       <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4 relative">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="loader mx-auto mb-4"></div>
           <p className="text-white text-lg font-medium mb-2">Loading Your Ballot</p>
           <p className="text-[#92c9c9] text-sm">Getting your ballot ready...</p>
         </div>
@@ -179,7 +179,7 @@ export function Ballot() {
         <div className="text-center max-w-md">
           {hasVoted ? (
             <>
-              <div className="w-16 h-16 bg-[#13ecec]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-[#13ecec]/20  flex items-center justify-center mx-auto mb-4">
                 <MdVerified className="w-8 h-8 text-[#13ecec]" />
               </div>
               <p className="text-[#13ecec] text-lg font-medium mb-2">Already Voted</p>
@@ -189,13 +189,13 @@ export function Ballot() {
               <div className="flex gap-4 justify-center">
                 <button
                   onClick={() => navigate(`/elections/${electionSlug}`)}
-                  className="px-4 py-2 bg-[#234848] text-white rounded font-medium"
+                  className="px-4 py-2 bg-[#234848] text-white  font-medium"
                 >
                   View Election
                 </button>
                 <button
                   onClick={() => navigate(`/vote-verification?electionId=${electionId}`)}
-                  className="px-4 py-2 bg-[#13ecec] text-[#112222] rounded font-medium flex items-center gap-2"
+                  className="px-4 py-2 bg-[#13ecec] text-[#112222]  font-medium flex items-center gap-2"
                 >
                   <MdVerified className="w-4 h-4" />
                   Verify Receipt
@@ -204,7 +204,7 @@ export function Ballot() {
             </>
           ) : (
             <>
-              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-red-500/20  flex items-center justify-center mx-auto mb-4">
                 <MdErrorOutline className="w-8 h-8 text-red-400" />
               </div>
               <p className="text-red-400 text-lg font-medium mb-2">Error Loading Ballot</p>
@@ -212,13 +212,13 @@ export function Ballot() {
               <div className="flex gap-4 justify-center">
                 <button
                   onClick={() => navigate(-1)}
-                  className="px-4 py-2 bg-[#234848] text-white rounded font-medium"
+                  className="px-4 py-2 bg-[#234848] text-white  font-medium"
                 >
                   Go Back
                 </button>
                 <button
                   onClick={() => window.location.reload()}
-                  className="px-4 py-2 bg-[#13ecec] text-[#112222] rounded font-medium"
+                  className="px-4 py-2 bg-[#13ecec] text-[#112222]  font-medium"
                 >
                   Retry
                 </button>
@@ -240,11 +240,11 @@ export function Ballot() {
     return (
       <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4 relative">
         <div className="text-center max-w-md">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="loader mx-auto mb-4"></div>
           <p className="text-white text-lg font-medium mb-2">Checking Eligibility</p>
           <p className="text-[#92c9c9] text-sm">Verifying you can vote in this election...</p>
-          <div className="mt-6 w-full bg-[#234848] rounded-full h-2">
-            <div className="bg-[#13ecec] h-2 rounded-full animate-pulse" style={{ width: "60%" }}></div>
+          <div className="mt-6 w-full bg-[#234848]  h-2">
+            <div className="bg-[#13ecec] h-2  animate-pulse" style={{ width: "60%" }}></div>
           </div>
         </div>
         <FloatingMenu
@@ -261,12 +261,12 @@ export function Ballot() {
     return (
       <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4 relative">
         <div className="text-center max-w-md">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="loader mx-auto mb-4"></div>
           <p className="text-white text-lg font-medium mb-2">Submitting Your Vote</p>
           <p className="text-[#92c9c9] text-sm mb-4">Please wait while we securely save your vote...</p>
           <div className="space-y-2">
-            <div className="w-full bg-[#234848] rounded-full h-2">
-              <div className="bg-[#13ecec] h-2 rounded-full transition-all duration-500" style={{ width: "80%" }}></div>
+            <div className="w-full bg-[#234848]  h-2">
+              <div className="bg-[#13ecec] h-2  transition-all duration-500" style={{ width: "80%" }}></div>
             </div>
             <p className="text-[#568888] text-xs">Securing and saving your vote</p>
           </div>
@@ -285,7 +285,7 @@ export function Ballot() {
     return (
       <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4 relative">
         <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-[#13ecec]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 bg-[#13ecec]/20  flex items-center justify-center mx-auto mb-6">
             <MdCheckCircle className="w-12 h-12 text-[#13ecec]" />
           </div>
           <h2 className="text-3xl font-bold text-white mb-4">Vote Submitted Successfully!</h2>
@@ -293,7 +293,7 @@ export function Ballot() {
             Your vote has been securely saved and recorded.
           </p>
           {receiptCode && (
-            <div className="bg-[#142828] border border-[#234848] p-6 rounded-lg mb-6">
+            <div className="bg-[#142828] border border-[#234848] p-6  mb-6">
               <p className="text-[#568888] text-xs uppercase tracking-wider mb-2">Receipt Code</p>
               <div className="flex items-center justify-center gap-3 mb-4">
                 <p className="text-2xl font-bold text-[#13ecec] font-mono">{receiptCode}</p>
@@ -302,7 +302,7 @@ export function Ballot() {
                     navigator.clipboard.writeText(receiptCode);
                     // You could add a toast notification here if you have useToast available
                   }}
-                  className="p-2 bg-[#234848] hover:bg-[#2a5555] text-[#13ecec] rounded transition-colors"
+                  className="p-2 bg-[#234848] hover:bg-[#2a5555] text-[#13ecec]  transition-colors"
                   title="Copy receipt code"
                 >
                   <MdContentCopy className="w-5 h-5" />
@@ -322,7 +322,7 @@ export function Ballot() {
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                   }}
-                  className="p-2 bg-[#234848] hover:bg-[#2a5555] text-[#13ecec] rounded transition-colors"
+                  className="p-2 bg-[#234848] hover:bg-[#2a5555] text-[#13ecec]  transition-colors"
                   title="Download receipt"
                 >
                   <MdDownload className="w-5 h-5" />
@@ -334,13 +334,13 @@ export function Ballot() {
           <div className="flex gap-4 justify-center">
             <button
               onClick={() => navigate("/dashboard")}
-              className="px-6 py-3 bg-[#13ecec] text-[#112222] rounded font-bold uppercase"
+              className="px-6 py-3 bg-[#13ecec] text-[#112222]  font-bold uppercase"
             >
               Return to Dashboard
             </button>
             <button
               onClick={() => navigate(`/elections/${electionId}`)}
-              className="px-6 py-3 bg-[#234848] text-white rounded font-bold uppercase"
+              className="px-6 py-3 bg-[#234848] text-white  font-bold uppercase"
             >
               View Election
             </button>
@@ -395,7 +395,7 @@ export function Ballot() {
           </div>
 
           {/* Progress Bar */}
-          <div className="w-full h-2 bg-[#234848] rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-[#234848]  overflow-hidden">
             <div
               className="h-full bg-[#13ecec] transition-all duration-300"
               style={{ width: `${progressPercentage}%` }}
@@ -408,7 +408,7 @@ export function Ballot() {
 
         {/* Error Message */}
         {errorMessage && votingStep === "error" && (
-          <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 text-red-400 rounded">
+          <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 text-red-400 ">
             <p className="font-medium mb-1">Error</p>
             <p className="text-sm">{errorMessage}</p>
             <button

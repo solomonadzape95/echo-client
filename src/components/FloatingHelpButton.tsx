@@ -25,7 +25,7 @@ export function FloatingHelpButton({
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className={`${positionClasses} w-12 h-12 sm:w-14 sm:h-14 bg-[#234848] hover:bg-[#2a5050] text-[#13ecec] rounded-full shadow-lg flex items-center justify-center z-40 transition-all hover:scale-110 active:scale-95 ${
+        className={`${positionClasses} w-12 h-12 sm:w-14 sm:h-14 bg-[#234848] hover:bg-[#2a5050] text-[#13ecec]  shadow-lg flex items-center justify-center z-40 transition-all hover:scale-110 active:scale-95 ${
           position === "auth" ? "animate-pulse" : ""
         }`}
         aria-label="Open help guide"

@@ -172,7 +172,7 @@ export function Profile() {
     return (
       <div className="min-h-screen bg-[#102222] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="loader mx-auto mb-4"></div>
           <p className="text-white text-lg">Loading profile...</p>
         </div>
       </div>
@@ -188,7 +188,7 @@ export function Profile() {
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-[#13ecec] text-[#112222] rounded font-medium"
+            className="px-4 py-2 bg-[#13ecec] text-[#112222]  font-medium"
           >
             Retry
           </button>
@@ -294,7 +294,7 @@ export function Profile() {
                   )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
                     {isUploadingImage ? (
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="loader" style={{ width: '24px', height: '24px' }}></div>
                     ) : (
                       <MdCameraAlt className="w-6 h-6 sm:w-8 sm:h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                     )}

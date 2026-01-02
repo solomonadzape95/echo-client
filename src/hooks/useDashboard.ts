@@ -8,6 +8,7 @@ export interface DashboardData {
     username: string;
     regNumber: string;
     name: string;
+    profilePicture: string | null;
     class?: {
       id: string;
       name: string;

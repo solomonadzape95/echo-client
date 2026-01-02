@@ -147,7 +147,7 @@ export function ElectionResults() {
     const content = (
       <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="loader mx-auto mb-4"></div>
           <p className="text-white text-lg">
             {calculateResults.isPending ? "Counting votes..." : "Loading results..."}
           </p>
@@ -180,7 +180,7 @@ export function ElectionResults() {
           <span>Back</span>
         </button>
 
-        <div className="bg-[#142828] border border-[#234848] rounded-lg p-8 text-center">
+        <div className="bg-[#142828] border border-[#234848]  p-8 text-center">
           <MdBarChart className="w-16 h-16 text-[#92c9c9] mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-white mb-2">Results Not Available</h2>
           <p className="text-[#92c9c9] mb-6">
@@ -190,7 +190,7 @@ export function ElectionResults() {
             <button
               onClick={handleCalculateResults}
               disabled={calculateResults.isPending}
-              className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg disabled:opacity-50 flex items-center gap-2 mx-auto"
+              className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  disabled:opacity-50 flex items-center gap-2 mx-auto"
             >
               <MdRefresh className="w-5 h-5" />
               {calculateResults.isPending ? "Calculating..." : "Calculate Results"}
@@ -225,7 +225,7 @@ export function ElectionResults() {
           <span>Back</span>
         </button>
 
-        <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 rounded-lg">
+        <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-4 ">
           <p className="font-medium">Error loading results</p>
           <p className="text-sm mt-2">{resultsResponse.message}</p>
         </div>
@@ -288,7 +288,7 @@ export function ElectionResults() {
                 <button
                   onClick={handleCalculateResults}
                   disabled={calculateResults.isPending}
-                  className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded text-sm transition-all flex items-center gap-2 disabled:opacity-50"
+                  className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white  text-sm transition-all flex items-center gap-2 disabled:opacity-50"
                 >
                   <MdRefresh className="w-4 h-4" />
                   {calculateResults.isPending ? "Recalculating..." : "Recalculate"}
@@ -300,7 +300,7 @@ export function ElectionResults() {
           {/* Summary Statistics */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             {/* Total Votes */}
-            <div className="bg-[#1a2a2a] border border-[#234848] p-6 rounded">
+            <div className="bg-[#1a2a2a] border border-[#234848] p-6 ">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-white text-xs uppercase tracking-wider font-medium">TOTAL VOTES</div>
                 <MdBarChart className="w-5 h-5 text-[#13ecec]" />
@@ -310,7 +310,7 @@ export function ElectionResults() {
             </div>
 
             {/* Offices */}
-            <div className="bg-[#1a2a2a] border border-[#234848] p-6 rounded">
+            <div className="bg-[#1a2a2a] border border-[#234848] p-6 ">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-white text-xs uppercase tracking-wider font-medium">OFFICES</div>
                 <MdHowToVote className="w-5 h-5 text-[#13ecec]" />
@@ -320,7 +320,7 @@ export function ElectionResults() {
             </div>
 
             {/* Candidates */}
-            <div className="bg-[#1a2a2a] border border-[#234848] p-6 rounded">
+            <div className="bg-[#1a2a2a] border border-[#234848] p-6 ">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-white text-xs uppercase tracking-wider font-medium">CANDIDATES</div>
                 <MdPerson className="w-5 h-5 text-[#13ecec]" />
@@ -368,7 +368,7 @@ export function ElectionResults() {
             const isTie = tiedCandidates.length > 1;
 
             return (
-                <div key={officeResult.officeId} className="bg-[#142828] border border-[#234848] p-6 rounded-lg">
+                <div key={officeResult.officeId} className="bg-[#142828] border border-[#234848] p-6 ">
                 {/* Office Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div>
@@ -382,7 +382,7 @@ export function ElectionResults() {
                         <p className="text-[#13ecec] text-sm font-bold mt-2">⚠️ TIE - Multiple candidates tied for first place</p>
                       )}
                     </div>
-                    <div className="bg-[#234848] text-[#92c9c9] text-xs font-bold px-3 py-1 uppercase tracking-wider rounded">
+                    <div className="bg-[#234848] text-[#92c9c9] text-xs font-bold px-3 py-1 uppercase tracking-wider ">
                       {officeResult.totalVotes} TOTAL VOTES
                     </div>
                 </div>
@@ -395,7 +395,7 @@ export function ElectionResults() {
                     return (
                       <div
                           key={candidate.candidateId}
-                          className={`bg-[#1a2a2a] border p-4 rounded ${
+                          className={`bg-[#1a2a2a] border p-4  ${
                             isTied ? "border-yellow-500" : isLeading ? "border-[#13ecec]" : "border-[#234848]"
                           }`}
                       >
@@ -405,12 +405,12 @@ export function ElectionResults() {
                               <div className="flex items-center gap-2 mb-1">
                                 <h3 className="text-xl font-bold text-white">{candidate.candidateName}</h3>
                                 {isTied && (
-                                  <span className="px-2 py-0.5 bg-yellow-500 text-[#112222] text-xs font-bold rounded">
+                                  <span className="px-2 py-0.5 bg-yellow-500 text-[#112222] text-xs font-bold ">
                                     TIE
                                   </span>
                                 )}
                                 {candidate.isWinner && !isTied && (
-                                  <span className="px-2 py-0.5 bg-[#13ecec] text-[#112222] text-xs font-bold rounded">
+                                  <span className="px-2 py-0.5 bg-[#13ecec] text-[#112222] text-xs font-bold ">
                                     WINNER
                                   </span>
                                 )}

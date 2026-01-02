@@ -139,7 +139,7 @@ export function AdminClasses() {
           </div>
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg flex items-center gap-2 transition-all"
+            className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  flex items-center gap-2 transition-all"
           >
             <MdAdd className="w-5 h-5" />
             <span>New Class</span>
@@ -149,16 +149,16 @@ export function AdminClasses() {
         {/* Classes List */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="w-16 h-16 border-4 border-[#13ecec] border-t-transparent rounded-full animate-spin"></div>
+            <div className="loader"></div>
           </div>
         ) : classes.length === 0 ? (
-          <div className="bg-[#142828] border border-[#234848] rounded-lg p-12 text-center">
+          <div className="bg-[#142828] border border-[#234848]  p-12 text-center">
             <MdSchool className="w-16 h-16 text-[#568888] mx-auto mb-4" />
             <p className="text-[#92c9c9] text-lg mb-2">No classes found</p>
             <p className="text-[#568888] text-sm">Create your first class to get started</p>
           </div>
         ) : (
-          <div className="bg-[#142828] border border-[#234848] rounded-lg overflow-hidden">
+          <div className="bg-[#142828] border border-[#234848]  overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -196,7 +196,7 @@ export function AdminClasses() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => openEditModal(cls)}
-                            className="p-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded transition-all"
+                            className="p-2 bg-[#234848] hover:bg-[#2a5555] text-white  transition-all"
                             title="Edit"
                           >
                             <MdEdit className="w-4 h-4" />
@@ -204,7 +204,7 @@ export function AdminClasses() {
                           <button
                             onClick={() => handleDelete(cls.id)}
                             disabled={deleteClass.isPending}
-                            className="p-2 bg-red-900/20 hover:bg-red-900/30 text-red-400 border border-red-500/50 rounded transition-all disabled:opacity-50"
+                            className="p-2 bg-red-900/20 hover:bg-red-900/30 text-red-400 border border-red-500/50  transition-all disabled:opacity-50"
                             title="Delete"
                           >
                             <MdDelete className="w-4 h-4" />
@@ -229,7 +229,7 @@ export function AdminClasses() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 bg-[#142828] border border-[#234848] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
+                className="px-4 py-2 bg-[#142828] border border-[#234848] text-white  disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
               >
                 Previous
               </button>
@@ -238,7 +238,7 @@ export function AdminClasses() {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-2 rounded ${
+                    className={`px-3 py-2  ${
                       currentPage === page
                         ? "bg-[#13ecec] text-[#112222] font-bold"
                         : "bg-[#142828] border border-[#234848] text-white hover:border-[#13ecec]"
@@ -251,7 +251,7 @@ export function AdminClasses() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-[#142828] border border-[#234848] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
+                className="px-4 py-2 bg-[#142828] border border-[#234848] text-white  disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#13ecec] transition-all"
               >
                 Next
               </button>
@@ -262,7 +262,7 @@ export function AdminClasses() {
         {/* Create Modal */}
         {isCreateModalOpen && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#142828] border border-[#234848] rounded-lg w-full max-w-md p-6">
+            <div className="bg-[#142828] border border-[#234848]  w-full max-w-md p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-white">Create New Class</h2>
                 <button
@@ -270,7 +270,7 @@ export function AdminClasses() {
                     setIsCreateModalOpen(false);
                     setFormData({ level: "", faculty: "", department: "" });
                   }}
-                  className="p-2 text-[#92c9c9] hover:text-white hover:bg-[#1a3333] rounded-lg transition-all"
+                  className="p-2 text-[#92c9c9] hover:text-white hover:bg-[#1a3333]  transition-all"
                 >
                   <MdClose className="w-5 h-5" />
                 </button>
@@ -286,7 +286,7 @@ export function AdminClasses() {
                     value={formData.level}
                     onChange={(e) => setFormData({ ...formData, level: e.target.value })}
                     placeholder="e.g. 400 Level"
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
                   />
                 </div>
                 <div>
@@ -299,7 +299,7 @@ export function AdminClasses() {
                     onChange={(e) => {
                       setFormData({ ...formData, faculty: e.target.value, department: "" });
                     }}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   >
                     <option value="">Select a faculty</option>
                     {faculties.map((faculty) => (
@@ -318,7 +318,7 @@ export function AdminClasses() {
                     disabled={!formData.faculty}
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <option value="">{formData.faculty ? "Select a department" : "Select faculty first"}</option>
                     {departments.map((dept) => (
@@ -335,14 +335,14 @@ export function AdminClasses() {
                       setIsCreateModalOpen(false);
                       setFormData({ level: "", faculty: "", department: "" });
                     }}
-                    className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white rounded-lg transition-all"
+                    className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white  transition-all"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={createClass.isPending}
-                    className="flex-1 px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg disabled:opacity-50"
+                    className="flex-1 px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  disabled:opacity-50"
                   >
                     {createClass.isPending ? "Creating..." : "Create Class"}
                   </button>
@@ -355,7 +355,7 @@ export function AdminClasses() {
         {/* Edit Modal */}
         {editingClass && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#142828] border border-[#234848] rounded-lg w-full max-w-md p-6">
+            <div className="bg-[#142828] border border-[#234848]  w-full max-w-md p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-white">Edit Class</h2>
                 <button
@@ -363,7 +363,7 @@ export function AdminClasses() {
                     setEditingClass(null);
                     setFormData({ level: "", faculty: "", department: "" });
                   }}
-                  className="p-2 text-[#92c9c9] hover:text-white hover:bg-[#1a3333] rounded-lg transition-all"
+                  className="p-2 text-[#92c9c9] hover:text-white hover:bg-[#1a3333]  transition-all"
                 >
                   <MdClose className="w-5 h-5" />
                 </button>
@@ -378,7 +378,7 @@ export function AdminClasses() {
                     value={formData.level}
                     onChange={(e) => setFormData({ ...formData, level: e.target.value })}
                     placeholder="e.g. 400 Level"
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec]"
                   />
                 </div>
                 <div>
@@ -390,7 +390,7 @@ export function AdminClasses() {
                     onChange={(e) => {
                       setFormData({ ...formData, faculty: e.target.value, department: "" });
                     }}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec]"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
                   >
                     <option value="">Select a faculty</option>
                     {faculties.map((faculty) => (
@@ -408,7 +408,7 @@ export function AdminClasses() {
                     disabled={!formData.faculty}
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white focus:outline-none focus:border-[#13ecec] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <option value="">{formData.faculty ? "Select a department" : "Select faculty first"}</option>
                     {departments.map((dept) => (
@@ -425,14 +425,14 @@ export function AdminClasses() {
                       setEditingClass(null);
                       setFormData({ level: "", faculty: "", department: "" });
                     }}
-                    className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white rounded-lg transition-all"
+                    className="flex-1 px-4 py-3 bg-[#234848] hover:bg-[#2a5555] text-white  transition-all"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={updateClass.isPending}
-                    className="flex-1 px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold rounded-lg disabled:opacity-50"
+                    className="flex-1 px-4 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  disabled:opacity-50"
                   >
                     {updateClass.isPending ? "Updating..." : "Update Class"}
                   </button>
