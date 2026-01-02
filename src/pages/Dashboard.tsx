@@ -93,7 +93,7 @@ export function Dashboard() {
           {dashboardData.profile && (
             <div className="text-[#92c9c9] text-sm sm:text-base md:text-lg">
               <span>Logged in as </span>
-              <span className="font-bold text-white uppercase break-words">{dashboardData.profile.name}</span>
+              <span className="font-bold text-white uppercase break-words">{dashboardData.profile.name.split(' ')[1] || '?'}</span>
             </div>
           )}
           <button
