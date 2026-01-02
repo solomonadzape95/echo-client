@@ -469,7 +469,7 @@ export function ElectionResults() {
                                   <img
                                     src={candidate.image}
                                     alt={candidate.candidateName}
-                                    className="w-16 h-16 rounded-full object-cover border-2 border-[#234848]"
+                                    className="w-16 h-16 object-cover border-2 border-[#234848]"
                                     onError={(e) => {
                                       // Hide image on error
                                       const target = e.target as HTMLImageElement;
@@ -477,7 +477,7 @@ export function ElectionResults() {
                                     }}
                                   />
                                   {/* Fallback initials (hidden by default, shown if image fails) */}
-                                  <div className="w-16 h-16 rounded-full bg-[#234848] flex items-center justify-center text-white font-bold text-lg absolute top-0 left-0 hidden image-fallback">
+                                  <div className="w-16 h-16  bg-[#234848] flex items-center justify-center text-white font-bold text-lg absolute top-0 left-0 hidden image-fallback">
                                     {candidate.candidateName
                                       .split(' ')
                                       .map(n => n?.[0])
@@ -488,7 +488,7 @@ export function ElectionResults() {
                                   </div>
                                 </>
                               ) : (
-                                <div className="w-16 h-16 rounded-full bg-[#234848] flex items-center justify-center text-white font-bold text-lg">
+                                <div className="w-16 h-16  bg-[#234848] flex items-center justify-center text-white font-bold text-lg">
                                   {candidate.candidateName
                                     .split(' ')
                                     .map(n => n?.[0])
