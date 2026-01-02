@@ -7,6 +7,7 @@ import { FloatingHelpButton } from "../components/FloatingHelpButton";
 import { Footer } from "../components/Footer";
 import { authService } from "../lib/auth";
 import { dashboardHelpSteps } from "../constants/helpContent";
+import { formatDateShortGMT1 } from "../lib/dateUtils";
 
 type ElectionStatus = "all" | "upcoming" | "ongoing" | "completed";
 
@@ -213,14 +214,14 @@ export function Elections() {
                     )}
                     <div className="space-y-1">
                       <p className="text-[#568888] text-xs">
-                        Starts: {new Date(election.startDate).toLocaleDateString()}
+                        Starts: {formatDateShortGMT1(election.startDate)}
                       </p>
                       <p className="text-[#568888] text-xs">
                         {election.status === "ongoing"
-                          ? `Ends: ${new Date(election.endDate).toLocaleDateString()}`
+                          ? `Ends: ${formatDateShortGMT1(election.endDate)}`
                           : election.status === "completed"
-                          ? `Ended: ${new Date(election.endDate).toLocaleDateString()}`
-                          : `Ends: ${new Date(election.endDate).toLocaleDateString()}`}
+                          ? `Ended: ${formatDateShortGMT1(election.endDate)}`
+                          : `Ends: ${formatDateShortGMT1(election.endDate)}`}
                       </p>
                     </div>
                   </div>

@@ -12,6 +12,7 @@ import { useToast } from "../hooks/useToast";
 import { dashboardHelpSteps } from "../constants/helpContent";
 import { api } from "../lib/api";
 import type { ApiResponse } from "../lib/api";
+import { formatDateTimeGMT1 } from "../lib/dateUtils";
 
 type OfficeFilter = "all" | string;
 
@@ -139,7 +140,7 @@ export function ElectionResults() {
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleString();
+    return formatDateTimeGMT1(dateString);
   };
 
   // Loading state

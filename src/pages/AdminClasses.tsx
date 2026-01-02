@@ -18,6 +18,7 @@ import {
 } from "react-icons/md";
 import { useToast } from "../hooks/useToast";
 import { useConfirm } from "../hooks/useConfirm";
+import { formatDateShortGMT1 } from "../lib/dateUtils";
 
 export function AdminClasses() {
   const navigate = useNavigate();
@@ -190,7 +191,7 @@ export function AdminClasses() {
                       <td className="py-4 px-6 text-[#92c9c9]">{cls.department}</td>
                       <td className="py-4 px-6 text-[#92c9c9]">{cls.faculty}</td>
                       <td className="py-4 px-6 text-[#92c9c9] text-sm">
-                        {new Date(cls.createdAt).toLocaleDateString()}
+                        {formatDateShortGMT1(cls.createdAt)}
                       </td>
                       <td className="py-4 px-6">
                         <div className="flex gap-2">

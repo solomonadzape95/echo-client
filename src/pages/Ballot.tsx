@@ -12,6 +12,7 @@ import { authService } from "../lib/auth";
 import { dashboardHelpSteps } from "../constants/helpContent";
 import { api } from "../lib/api";
 import type { ApiResponse } from "../lib/api";
+import { formatDateTimeGMT1 } from "../lib/dateUtils";
 
 type VotingStep = "loading" | "ballot" | "verifying" | "submitting" | "success" | "error";
 
@@ -311,7 +312,7 @@ export function Ballot() {
                   onClick={() => {
                     const ballotData = ballotResponse?.success ? ballotResponse.data : null;
                     const election = ballotData?.election;
-                    const receiptText = `Echo Platform - Vote Receipt\n\nReceipt Code: ${receiptCode}\nElection: ${election?.name || 'N/A'}\nDate: ${new Date().toLocaleString()}\n\nKeep this receipt for your records.`;
+                    const receiptText = `Echo Platform - Vote Receipt\n\nReceipt Code: ${receiptCode}\nElection: ${election?.name || 'N/A'}\nDate: ${formatDateTimeGMT1(new Date())}\n\nKeep this receipt for your records.`;
                     const blob = new Blob([receiptText], { type: 'text/plain' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
@@ -339,7 +340,7 @@ export function Ballot() {
               Return to Dashboard
             </button>
             <button
-              onClick={() => navigate(`/elections/${electionId}`)}
+              onClick={() => navigate(`/elections/${electionSlug}`)}
               className="px-6 py-3 bg-[#234848] text-white  font-bold uppercase"
             >
               View Election

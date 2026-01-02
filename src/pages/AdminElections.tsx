@@ -22,6 +22,7 @@ import {
   MdArrowBack,
   MdPerson,
 } from "react-icons/md";
+import { formatDateTimeGMT1, formatDateShortGMT1 } from "../lib/dateUtils";
 import { useToast } from "../hooks/useToast";
 import { useConfirm } from "../hooks/useConfirm";
 
@@ -206,12 +207,12 @@ export function AdminElections() {
                 <div className="flex items-center gap-4 text-sm text-[#568888] mb-4">
                   <div className="flex items-center gap-1">
                     <MdSchedule className="w-4 h-4" />
-                    <span>{new Date(election.startDate).toLocaleDateString()}</span>
+                    <span>{formatDateShortGMT1(election.startDate)}</span>
                   </div>
                   <span>→</span>
                   <div className="flex items-center gap-1">
                     <MdCheckCircle className="w-4 h-4" />
-                    <span>{new Date(election.endDate).toLocaleDateString()}</span>
+                    <span>{formatDateShortGMT1(election.endDate)}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 ">
@@ -224,15 +225,18 @@ export function AdminElections() {
                     >
                     View Details
                   </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/admin/elections/${election.slug || election.id}/results`);
-                    }}
-                    className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white  text-sm transition-all"
+                  {/* Only show Results button if election is not active */}
+                  {election.status !== "active" && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/admin/elections/${election.slug || election.id}/results`);
+                      }}
+                      className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white  text-sm transition-all"
                     >
-                    <MdBarChart className="w-4 h-4" />
-                  </button>
+                      <MdBarChart className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </section>
               </div>
@@ -336,6 +340,8 @@ export function AdminElectionDetail() {
 
   return (
     <AdminLayout>
+      <ToastContainer />
+      {ConfirmDialogComponent}
       <div className="p-8">
         {/* Back Button */}
         <button
@@ -367,25 +373,11 @@ export function AdminElectionDetail() {
             <div className="mt-4 space-y-2">
               <div className="text-sm text-[#568888]">
                 <span className="font-medium text-[#92c9c9]">Start:</span>{" "}
-                {new Date(election.startDate).toLocaleString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
+                {formatDateTimeGMT1(election.startDate)}
               </div>
               <div className="text-sm text-[#568888]">
                 <span className="font-medium text-[#92c9c9]">End:</span>{" "}
-                {new Date(election.endDate).toLocaleString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
+                {formatDateTimeGMT1(election.endDate)}
               </div>
             </div>
             {/* Timer */}
@@ -447,22 +439,25 @@ export function AdminElectionDetail() {
               </div>
             )}
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => navigate(`/admin/elections/${electionSlug}/edit`)}
-              className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white  flex items-center gap-2"
-            >
-              <MdEdit className="w-4 h-4" />
-              <span>Edit</span>
-            </button>
-            <button
-              onClick={() => navigate(`/admin/elections/${electionSlug}/results`)}
-              className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  flex items-center gap-2"
-            >
-              <MdBarChart className="w-4 h-4" />
-              <span>Results</span>
-            </button>
-          </div>
+          {/* Only show Edit and Results buttons if election is not active */}
+          {election.status !== "active" && (
+            <div className="flex gap-2">
+               {election.status !== "completed" && (<button
+                onClick={() => navigate(`/admin/elections/${electionSlug}/edit`)}
+                className="px-4 py-2 bg-[#234848] hover:bg-[#2a5555] text-white  flex items-center gap-2"
+              >
+                <MdEdit className="w-4 h-4" />
+                <span>Edit</span>
+              </button>)}
+              {election.status !== "pending" && ( <button
+                onClick={() => navigate(`/admin/elections/${electionSlug}/results`)}
+                className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  flex items-center gap-2"
+              >
+                <MdBarChart className="w-4 h-4" />
+                <span>Results</span>
+              </button>)}
+            </div>
+          )}
         </div>
 
         {/* Stats Cards */}
@@ -495,13 +490,16 @@ export function AdminElectionDetail() {
         <div className="bg-[#142828] border border-[#234848]  p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-white">Offices</h2>
-            <button
-              onClick={() => navigate(`/admin/elections/${currentElectionSlug}/offices/create`)}
-              className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  flex items-center gap-2"
-            >
-              <MdAdd className="w-4 h-4" />
-              <span>New Office</span>
-            </button>
+            {/* Only show New Office button if election is not active */}
+            {election.status !== "active" && (
+              <button
+                onClick={() => navigate(`/admin/elections/${currentElectionSlug}/offices/create`)}
+                className="px-4 py-2 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  flex items-center gap-2"
+              >
+                <MdAdd className="w-4 h-4" />
+                <span>New Office</span>
+              </button>
+            )}
           </div>
           {offices.length === 0 ? (
             <div className="text-center py-8 text-[#568888]">
@@ -541,32 +539,34 @@ export function AdminElectionDetail() {
           )}
         </div>
 
-        {/* Actions */}
-        {election.status === "active" && (
+        {/* Actions - Only show for non-active elections */}
+        {election.status !== "active" && (
           <div className="bg-[#142828] border border-[#234848]  p-6">
             <h2 className="text-xl font-bold text-white mb-4">Election Actions</h2>
             <div className="flex gap-4">
-              <button
-                onClick={async () => {
-                  const confirmed = await confirm({
-                    title: "Calculate Results",
-                    message: "Are you sure you want to calculate results? This will end the election.",
-                    type: "warning",
-                  });
-                  if (confirmed) {
-                    try {
-                      await calculateResults.mutateAsync(election!.id);
-                      showToast("Results calculated successfully!", "success");
-                    } catch (error) {
-                      showToast("Failed to calculate results", "error");
+              {election.status === "completed" && (
+                <button
+                  onClick={async () => {
+                    const confirmed = await confirm({
+                      title: "Calculate Results",
+                      message: "Are you sure you want to calculate results? This will end the election.",
+                      type: "warning",
+                    });
+                    if (confirmed) {
+                      try {
+                        await calculateResults.mutateAsync(election!.id);
+                        showToast("Results calculated successfully!", "success");
+                      } catch (error) {
+                        showToast("Failed to calculate results", "error");
+                      }
                     }
-                  }
-                }}
-                disabled={calculateResults.isPending}
-                className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  disabled:opacity-50"
-              >
-                {calculateResults.isPending ? "Calculating..." : "Calculate Results"}
-              </button>
+                  }}
+                  disabled={calculateResults.isPending}
+                  className="px-6 py-3 bg-[#13ecec] hover:bg-[#0fd6d6] text-[#112222] font-bold  disabled:opacity-50"
+                >
+                  {calculateResults.isPending ? "Calculating..." : "Calculate Results"}
+                </button>
+              )}
               <button
                 onClick={async () => {
                   const confirmed = await confirm({

@@ -9,6 +9,7 @@ import { authService } from "../lib/auth";
 import { useToast } from "../hooks/useToast";
 import { dashboardHelpSteps } from "../constants/helpContent";
 import { API_BASE_URL } from "../lib/api";
+import { formatDateLongGMT1, formatTimeGMT1 } from "../lib/dateUtils";
 
 export function Profile() {
   const navigate = useNavigate();
@@ -215,21 +216,11 @@ export function Profile() {
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
+    return formatDateLongGMT1(dateString);
   };
 
   const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
+    return formatTimeGMT1(dateString);
   };
 
   return (

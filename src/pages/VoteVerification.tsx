@@ -7,6 +7,7 @@ import { FloatingHelpButton } from "../components/FloatingHelpButton";
 import { Footer } from "../components/Footer";
 import { authService } from "../lib/auth";
 import { dashboardHelpSteps } from "../constants/helpContent";
+import { formatDateTimeGMT1 } from "../lib/dateUtils";
 
 export function VoteVerification() {
   const navigate = useNavigate();
@@ -217,17 +218,9 @@ export function VoteVerification() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <div>
-                        <div className="text-[#568888] text-xs uppercase tracking-wider mb-1">TIMESTAMP (UTC)</div>
+                        <div className="text-[#568888] text-xs uppercase tracking-wider mb-1">TIMESTAMP (GMT+1)</div>
                         <div className="text-white text-lg font-bold">
-                          {new Date(verificationData.vote.createdAt).toLocaleString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
-                            timeZone: "UTC",
-                          })}
+                          {formatDateTimeGMT1(verificationData.vote.createdAt)}
                         </div>
                       </div>
                     </div>
@@ -238,7 +231,7 @@ export function VoteVerification() {
                     <div className="text-[#568888] text-xs uppercase tracking-wider mb-2">RECEIPT CODE</div>
                     <div className="text-white text-lg font-mono font-bold">{verificationData.receipt.code}</div>
                     <div className="text-[#92c9c9] text-xs mt-1">
-                      Created: {new Date(verificationData.receipt.createdAt).toLocaleString()}
+                      Created: {formatDateTimeGMT1(verificationData.receipt.createdAt)}
                     </div>
                   </div>
 

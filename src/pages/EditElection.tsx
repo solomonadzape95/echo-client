@@ -15,9 +15,26 @@ export function EditElection() {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
+    startDate: "",
+    startTime: "",
+    endDate: "",
+    endTime: "",
   });
+  const [dateError, setDateError] = useState<string | null>(null);
 
   const election = electionResponse?.success ? electionResponse.data : null;
+
+  // Helper function to format date for input[type="date"]
+  const formatDateForInput = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  };
+
+  // Helper function to format time for input[type="time"]
+  const formatTimeForInput = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toTimeString().slice(0, 5); // HH:MM format
+  };
 
   // Populate form when election data loads
   useEffect(() => {
@@ -25,20 +42,59 @@ export function EditElection() {
       setFormData({
         name: election.name || "",
         description: election.description || "",
+        startDate: formatDateForInput(election.startDate),
+        startTime: formatTimeForInput(election.startDate),
+        endDate: formatDateForInput(election.endDate),
+        endTime: formatTimeForInput(election.endDate),
       });
     }
   }, [election]);
+
+  // Validate dates
+  useEffect(() => {
+    if (formData.startDate && formData.startTime && formData.endDate && formData.endTime) {
+      const startDateTime = new Date(`${formData.startDate}T${formData.startTime}`);
+      const endDateTime = new Date(`${formData.endDate}T${formData.endTime}`);
+      
+      if (endDateTime <= startDateTime) {
+        setDateError("End date and time must be after start date and time");
+      } else {
+        setDateError(null);
+      }
+    } else {
+      setDateError(null);
+    }
+  }, [formData.startDate, formData.startTime, formData.endDate, formData.endTime]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!election) return;
 
+    // Validate dates
+    if (dateError) {
+      showToast(dateError, "error");
+      return;
+    }
+
+    const startDateTime = new Date(`${formData.startDate}T${formData.startTime}`);
+    const endDateTime = new Date(`${formData.endDate}T${formData.endTime}`);
+    
+    if (endDateTime <= startDateTime) {
+      showToast("End date and time must be after start date and time", "error");
+      return;
+    }
+
     try {
+      const startISO = startDateTime.toISOString();
+      const endISO = endDateTime.toISOString();
+
       await updateElection.mutateAsync({
         id: election.id,
         data: {
           name: formData.name,
           description: formData.description || undefined,
+          startDate: startISO,
+          endDate: endISO,
         },
       });
 
@@ -83,7 +139,7 @@ export function EditElection() {
       <div className="p-8">
         {/* Back Button */}
         <button
-          onClick={() => navigate(`/admin/elections/${electionId}`)}
+          onClick={() => navigate(`/admin/elections/${electionSlug}`)}
           className="mb-6 text-[#92c9c9] hover:text-white flex items-center gap-2 transition-colors"
         >
           <MdArrowBack className="w-5 h-5" />
@@ -94,7 +150,7 @@ export function EditElection() {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Edit Election</h1>
           <p className="text-[#92c9c9]">
-            Update the election name and description.
+            Update the election details, including name, description, and timing.
           </p>
         </div>
 
@@ -127,6 +183,72 @@ export function EditElection() {
                 className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white placeholder:text-[#568888] focus:outline-none focus:border-[#13ecec] resize-none"
               />
             </div>
+
+            {/* Date and Time Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Start Date and Time */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[#568888] text-sm uppercase tracking-wider mb-2">
+                    Start Date *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.startDate}
+                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#568888] text-sm uppercase tracking-wider mb-2">
+                    Start Time *
+                  </label>
+                  <input
+                    type="time"
+                    required
+                    value={formData.startTime}
+                    onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
+                  />
+                </div>
+              </div>
+
+              {/* End Date and Time */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[#568888] text-sm uppercase tracking-wider mb-2">
+                    End Date *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.endDate}
+                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#568888] text-sm uppercase tracking-wider mb-2">
+                    End Time *
+                  </label>
+                  <input
+                    type="time"
+                    required
+                    value={formData.endTime}
+                    onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+                    className="w-full px-4 py-3 bg-[#102222] border border-[#234848]  text-white focus:outline-none focus:border-[#13ecec]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Date Error Message */}
+            {dateError && (
+              <div className="bg-red-900/20 border border-red-500/50 text-red-400 p-3 text-sm">
+                {dateError}
+              </div>
+            )}
 
             <div className="flex gap-4 pt-4">
               <button

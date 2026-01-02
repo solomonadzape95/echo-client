@@ -1,4 +1,5 @@
 import { MdCalendarToday, MdArrowForward } from "react-icons/md";
+import { formatDateShortGMT1, formatTimeGMT1 } from "../lib/dateUtils";
 
 interface UpcomingElectionCardProps {
   title: string;
@@ -9,11 +10,7 @@ interface UpcomingElectionCardProps {
 
 export function UpcomingElectionCard({ title, description, startDate, onView }: UpcomingElectionCardProps) {
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    return formatDateShortGMT1(date);
   };
 
   return (
@@ -60,7 +57,7 @@ export function UpcomingElectionCard({ title, description, startDate, onView }: 
             <div className="text-[#568888] text-xs uppercase tracking-wider mb-2">STARTS ON</div>
             <div className="text-2xl font-bold text-white mb-1">{formatDate(startDate)}</div>
             <div className="text-sm text-[#92c9c9]">
-              {startDate.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
+              {formatTimeGMT1(startDate)}
             </div>
           </div>
         </div>

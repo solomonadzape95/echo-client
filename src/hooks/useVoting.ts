@@ -123,11 +123,17 @@ export function useVoting() {
 
   const submitVoteMutation = useMutation({
     mutationFn: (data: VoteSubmissionData) => votingService.submitVote(data),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({ queryKey: ["elections"] });
+      // Invalidate vote status for this specific election - critical for hiding "Cast Your Vote" button
+      queryClient.invalidateQueries({ queryKey: ["voteStatus", variables.electionId] });
+      // Invalidate ballot data for this election
+      queryClient.invalidateQueries({ queryKey: ["ballot", variables.electionId] });
+      // Invalidate election data (in case it has vote count updates)
+      queryClient.invalidateQueries({ queryKey: ["election"] });
     },
   });
 

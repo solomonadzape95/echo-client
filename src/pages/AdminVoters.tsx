@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "../lib/api";
 import type { ApiResponse } from "../lib/api";
 import { MdSearch, MdPerson, MdSchool, MdCalendarToday, MdHowToVote } from "react-icons/md";
+import { formatDateShortGMT1, formatDateLongGMT1 } from "../lib/dateUtils";
 
 export function AdminVoters() {
   const navigate = useNavigate();
@@ -140,7 +141,7 @@ export function AdminVoters() {
                       <td className="py-4 px-6 text-[#92c9c9] font-mono text-sm">{voter.regNumber}</td>
                       <td className="py-4 px-6 text-[#92c9c9]">{voter.class || "N/A"}</td>
                       <td className="py-4 px-6 text-[#92c9c9] text-sm">
-                        {new Date(voter.createdAt).toLocaleDateString()}
+                        {formatDateShortGMT1(voter.createdAt)}
                       </td>
                       <td className="py-4 px-6">
                         <button
@@ -343,11 +344,7 @@ export function AdminVoterDetail() {
             <div>
               <div className="text-[#568888] text-sm uppercase tracking-wider mb-2">Registered</div>
               <div className="text-white">
-                {new Date(voter.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                {formatDateLongGMT1(voter.createdAt)}
               </div>
             </div>
           </div>
