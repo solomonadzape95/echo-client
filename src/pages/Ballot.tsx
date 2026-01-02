@@ -64,7 +64,18 @@ export function Ballot() {
       setErrorMessage("You have already voted in this election. You cannot vote again.");
     } else if (ballotError || !ballotResponse?.success) {
       setVotingStep("error");
-      setErrorMessage(ballotError instanceof Error ? ballotError.message : "Failed to load ballot");
+      const errorMsg = ballotError instanceof Error 
+        ? ballotError.message 
+        : ballotResponse?.message || "Failed to load ballot";
+      // Check if it's an eligibility error
+      if (errorMsg.toLowerCase().includes('not eligible') || 
+          errorMsg.toLowerCase().includes('different class') ||
+          errorMsg.toLowerCase().includes('different department') ||
+          errorMsg.toLowerCase().includes('different faculty')) {
+        setErrorMessage("You are not eligible to vote in this election. This election is for a different class, department, or faculty than yours.");
+      } else {
+        setErrorMessage(errorMsg);
+      }
     } else {
       setVotingStep("ballot");
     }

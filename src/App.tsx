@@ -27,6 +27,7 @@ import { CreateOffice } from "./pages/CreateOffice";
 import { EditOffice } from "./pages/EditOffice";
 import { OfficeDetail } from "./pages/OfficeDetail";
 import { AddCandidate } from "./pages/AddCandidate";
+import { EditCandidate } from "./pages/EditCandidate";
 import { queryClient } from "./lib/queryClient";
 import { setupTokenRefresh } from "./lib/tokenRefresh";
 import "./index.css";
@@ -99,7 +100,8 @@ export function App() {
           <Route path="/admin/elections" element={<AdminElections />} />
           <Route path="/admin/elections/create" element={<CreateElection />} />
           {/* More specific routes must come before less specific ones */}
-          <Route path="/admin/elections/:slug/offices/:officeSlug/candidates/create" element={<AddCandidate />} />
+                <Route path="/admin/elections/:slug/offices/:officeSlug/candidates/create" element={<AddCandidate />} />
+                <Route path="/admin/elections/:slug/offices/:officeSlug/candidates/:candidateId/edit" element={<EditCandidate />} />
           <Route path="/admin/elections/:slug/offices/:officeSlug/edit" element={<EditOffice />} />
           <Route path="/admin/elections/:slug/offices/:officeSlug" element={<OfficeDetail />} />
           <Route path="/admin/elections/:slug/offices/create" element={<CreateOffice />} />

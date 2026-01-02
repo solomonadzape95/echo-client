@@ -86,6 +86,7 @@ export interface AdminCandidate {
   quote: string;
   manifesto: string;
   image: string;
+  voterProfilePicture?: string | null;
 }
 
 export interface CreateElectionData {
@@ -191,6 +192,7 @@ export interface VoterSearchResult {
   id: string;
   username: string;
   regNumber: string;
+  profilePicture: string | null;
   name: string;
   class: string;
   classLevel: string;
@@ -506,6 +508,38 @@ export function useCreateCandidate() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "candidates"] });
+    },
+  });
+}
+
+export interface UpdateCandidateData {
+  quote?: string;
+  manifesto?: string;
+  image?: string;
+}
+
+export function useAdminCandidate(candidateId: string | undefined) {
+  return useQuery({
+    queryKey: ["admin", "candidate", candidateId],
+    queryFn: async () => {
+      if (!candidateId) throw new Error("Candidate ID is required");
+      const response = await api.get<ApiResponse<AdminCandidate>>(`/admin/candidate/${candidateId}`);
+      return response;
+    },
+    enabled: !!candidateId,
+  });
+}
+
+export function useUpdateCandidate() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: UpdateCandidateData }) => {
+      const response = await api.put<ApiResponse<AdminCandidate>>(`/admin/candidate/${id}`, data);
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "candidates"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "candidate"] });
     },
   });
 }

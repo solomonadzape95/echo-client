@@ -167,7 +167,7 @@ export function OfficeDetail() {
                   className="bg-[#102222] border border-[#234848] rounded-lg p-4 hover:border-[#13ecec] transition-all"
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center overflow-hidden">
                       {candidate.image ? (
                         <img
                           src={candidate.image}
@@ -186,6 +186,16 @@ export function OfficeDetail() {
                         ID: {candidate.voterId.substring(0, 8)}...
                       </p>
                     </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/admin/elections/${electionSlug}/offices/${officeSlug}/candidates/${candidate.id}/edit`);
+                      }}
+                      className="p-2 bg-[#234848] hover:bg-[#2a5555] text-white rounded transition-colors"
+                      title="Edit Candidate"
+                    >
+                      <MdEdit className="w-4 h-4" />
+                    </button>
                   </div>
                   {candidate.quote && (
                     <p className="text-[#92c9c9] text-sm italic mb-2">"{candidate.quote}"</p>

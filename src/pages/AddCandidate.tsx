@@ -114,12 +114,15 @@ export function AddCandidate() {
     }
 
     try {
+      // Use profile picture if selected, otherwise use uploaded image
+      const imageToUse = formData.image || undefined;
+      
       await createCandidate.mutateAsync({
         officeId: officeResponse.data.id,
         voterId: selectedVoter.id,
         quote: formData.quote || undefined,
         manifesto: formData.manifesto || undefined,
-        image: formData.image || undefined,
+        image: imageToUse,
       });
 
       showToast("Candidate added successfully", "success");
@@ -240,7 +243,22 @@ export function AddCandidate() {
             {selectedVoter && (
               <div className="bg-[#102222] border border-[#13ecec]/30 rounded-lg p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center">
+                  {selectedVoter.profilePicture ? (
+                    <img
+                      src={selectedVoter.profilePicture}
+                      alt={selectedVoter.name || selectedVoter.username}
+                      className="w-12 h-12 rounded-full object-cover border-2 border-[#13ecec]"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const fallback = target.nextElementSibling as HTMLElement;
+                        if (fallback) fallback.style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
+                  <div
+                    className={`w-12 h-12 bg-[#13ecec]/20 rounded-lg flex items-center justify-center ${selectedVoter.profilePicture ? 'hidden' : ''}`}
+                  >
                     <MdPerson className="w-6 h-6 text-[#13ecec]" />
                   </div>
                   <div>
@@ -286,6 +304,46 @@ export function AddCandidate() {
                 Profile Image (Optional)
               </label>
               <div className="space-y-4">
+                {selectedVoter?.profilePicture && (
+                  <div className="flex items-center gap-4 p-4 bg-[#102222] border border-[#234848] rounded-lg">
+                    <div className="flex items-center gap-3 flex-1">
+                      {selectedVoter.profilePicture && (
+                        <img
+                          src={selectedVoter.profilePicture}
+                          alt={selectedVoter.name || selectedVoter.username}
+                          className="w-16 h-16 rounded-full object-cover border-2 border-[#13ecec]"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <div className="text-white font-medium">Use Candidate's Profile Picture</div>
+                        <div className="text-sm text-[#92c9c9]">Use the voter's existing profile picture</div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (formData.image === selectedVoter.profilePicture) {
+                          // Deselect - clear image
+                          setFormData((prev) => ({ ...prev, image: "" }));
+                          setImageFile(null);
+                          setImagePreview(null);
+                        } else {
+                          // Select - use profile picture
+                          setFormData((prev) => ({ ...prev, image: selectedVoter.profilePicture || "" }));
+                          setImageFile(null);
+                          setImagePreview(null);
+                        }
+                      }}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                        formData.image === selectedVoter.profilePicture
+                          ? "bg-[#13ecec] text-[#112222]"
+                          : "bg-[#234848] text-white hover:bg-[#2a5555]"
+                      }`}
+                    >
+                      {formData.image === selectedVoter.profilePicture ? "Selected" : "Use This"}
+                    </button>
+                  </div>
+                )}
                 <div className="flex items-center gap-4">
                   <label className="flex-1 cursor-pointer">
                     <input
@@ -296,7 +354,7 @@ export function AddCandidate() {
                     />
                     <div className="px-4 py-3 bg-[#102222] border border-[#234848] rounded-lg text-white hover:border-[#13ecec] transition-colors flex items-center justify-center gap-2">
                       <MdImage className="w-5 h-5" />
-                      <span>{imageFile ? imageFile.name : "Choose Image"}</span>
+                      <span>{imageFile ? imageFile.name : "Upload Custom Image"}</span>
                     </div>
                   </label>
                   {imageFile && !formData.image && (
@@ -330,14 +388,16 @@ export function AddCandidate() {
                     </button>
                   </div>
                 )}
-                {formData.image && (
+                {formData.image && formData.image !== selectedVoter?.profilePicture && (
                   <div className="text-sm text-[#13ecec]">
                     ✓ Image uploaded: {formData.image.substring(0, 50)}...
                   </div>
                 )}
               </div>
               <p className="mt-2 text-sm text-[#568888]">
-                Upload a profile image for the candidate (max 5MB, JPG/PNG).
+                {selectedVoter?.profilePicture
+                  ? "Use the candidate's profile picture or upload a custom image (max 5MB, JPG/PNG)."
+                  : "Upload a profile image for the candidate (max 5MB, JPG/PNG)."}
               </p>
             </div>
 

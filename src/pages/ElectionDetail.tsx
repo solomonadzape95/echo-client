@@ -33,12 +33,35 @@ export function ElectionDetail() {
   const { slug: electionSlug } = useParams<{ slug: string }>();
   const hasInvalidatedOnTimerEnd = useRef(false);
   const hasInvalidatedOnTimerStart = useRef(false);
-  const { data: electionResponse } = useQuery({
+  const { data: electionResponse, error: electionError } = useQuery({
     queryKey: ["election", electionSlug],
     queryFn: async () => {
       if (!electionSlug) throw new Error("Election slug is required");
-      const response = await api.get<ApiResponse<any>>(`/election/${electionSlug}`);
-      return response;
+      try {
+        const response = await api.get<ApiResponse<any>>(`/election/${electionSlug}`);
+        if (!response.success) {
+          // Check if it's an eligibility error
+          if (response.message?.toLowerCase().includes('not eligible') || 
+              response.message?.toLowerCase().includes('different class') ||
+              response.message?.toLowerCase().includes('different department') ||
+              response.message?.toLowerCase().includes('different faculty')) {
+            throw new Error(response.message || "You are not eligible to view this election. This election is for a different class, department, or faculty.");
+          }
+          throw new Error(response.message || "Failed to load election");
+        }
+        return response;
+      } catch (error) {
+        // Re-throw with better error message if it's an eligibility error
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (errorMessage.toLowerCase().includes('not eligible') || 
+            errorMessage.toLowerCase().includes('different class') ||
+            errorMessage.toLowerCase().includes('different department') ||
+            errorMessage.toLowerCase().includes('different faculty') ||
+            errorMessage.includes('403')) {
+          throw new Error("You are not eligible to view this election. This election is for a different class, department, or faculty than yours.");
+        }
+        throw error;
+      }
     },
     enabled: !!electionSlug,
   });
@@ -402,25 +425,48 @@ export function ElectionDetail() {
     );
   }
 
-  // Error state
-  if (error || !ballotData || !election) {
+  // Error state - check both election and ballot errors
+  const hasError = electionError || error || !ballotData || !election;
+  const errorMessage = electionError instanceof Error 
+    ? electionError.message 
+    : error instanceof Error 
+    ? error.message 
+    : !electionResponse?.success && electionResponse?.message
+    ? electionResponse.message
+    : "Failed to load election data";
+  const isEligibilityError = errorMessage.toLowerCase().includes('not eligible') || 
+                             errorMessage.toLowerCase().includes('different class') ||
+                             errorMessage.toLowerCase().includes('different department') ||
+                             errorMessage.toLowerCase().includes('different faculty');
+
+  if (hasError) {
     return (
       <div className="min-h-screen bg-[#102222] flex items-center justify-center p-4">
         <div className="text-center max-w-md">
-          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+          <div className={`w-16 h-16 ${isEligibilityError ? 'bg-yellow-500/20' : 'bg-red-500/20'} rounded-full flex items-center justify-center mx-auto mb-4`}>
+            {isEligibilityError ? (
+              <svg className="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            ) : (
+              <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            )}
           </div>
-          <p className="text-red-400 text-lg font-medium mb-2">Error Loading Election</p>
+          <p className={`${isEligibilityError ? 'text-yellow-400' : 'text-red-400'} text-lg font-medium mb-2`}>
+            {isEligibilityError ? "Access Restricted" : "Error Loading Election"}
+          </p>
           <p className="text-[#92c9c9] text-sm mb-4">
-            {error instanceof Error ? error.message : "Failed to load election data"}
+            {isEligibilityError 
+              ? "You are not eligible to view this election. This election is for a different class, department, or faculty than yours."
+              : errorMessage}
           </p>
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/elections")}
             className="px-6 py-3 bg-[#13ecec] text-[#112222] rounded font-bold uppercase"
           >
-            Go Back
+            {isEligibilityError ? "View Eligible Elections" : "Go Back"}
           </button>
         </div>
       </div>
