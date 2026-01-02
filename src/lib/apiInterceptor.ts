@@ -5,7 +5,7 @@ function getApiBaseUrl(): string {
   try {
     if (import.meta.env && typeof import.meta.env === "object") {
       const envUrl = (import.meta.env as Record<string, unknown>).BUN_PUBLIC_API_URL;
-      console.log("envUrl", envUrl);
+      // console.log("envUrl", envUrl);
       if (typeof envUrl === "string" && envUrl.trim()) {
         return envUrl.trim();
       }
@@ -63,7 +63,7 @@ async function refreshAccessToken(): Promise<void> {
       if (!result.success) {
         throw new Error(result.message || "Token refresh failed");
       }
-      console.log("[API INTERCEPTOR] Token refreshed successfully");
+      // console.log("[API INTERCEPTOR] Token refreshed successfully");
     } catch (error) {
       console.error("[API INTERCEPTOR] Token refresh failed:", error);
       // Clear any stored auth state

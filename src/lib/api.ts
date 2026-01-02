@@ -16,7 +16,7 @@ function getApiBaseUrl(): string {
 }
 
 const API_BASE_URL = getApiBaseUrl();
-console.log(API_BASE_URL);
+// console.log(API_BASE_URL);
 
 // Export API_BASE_URL for use in file uploads
 export { API_BASE_URL };

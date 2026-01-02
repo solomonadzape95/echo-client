@@ -120,7 +120,7 @@ export function Profile() {
       formData.append('file', file);
       formData.append('folder', 'profile-images');
 
-      console.log('[PROFILE] Uploading image to:', `${API_BASE_URL}/storage/upload`);
+      // console.log('[PROFILE] Uploading image to:', `${API_BASE_URL}/storage/upload`);
       
       const response = await fetch(`${API_BASE_URL}/storage/upload`, {
         method: 'POST',
@@ -128,25 +128,25 @@ export function Profile() {
         credentials: 'include',
       });
 
-      console.log('[PROFILE] Upload response status:', response.status);
+      // console.log('[PROFILE] Upload response status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('[PROFILE] Upload error response:', errorText);
+        // console.error('[PROFILE] Upload error response:', errorText);
         throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
       }
 
       const result = await response.json();
-      console.log('[PROFILE] Upload result:', result);
+      // console.log('[PROFILE] Upload result:', result);
 
       if (!result.success || !result.data?.url) {
         throw new Error(result.message || 'Failed to upload image');
       }
 
       // Update profile picture in database
-      console.log('[PROFILE] Updating profile picture with URL:', result.data.url);
+      // console.log('[PROFILE] Updating profile picture with URL:', result.data.url);
       const updateResponse = await authService.updateProfilePicture(result.data.url);
-      console.log('[PROFILE] Update response:', updateResponse);
+      // console.log('[PROFILE] Update response:', updateResponse);
       
       if (updateResponse.success) {
         setProfileImage(result.data.url);
@@ -157,7 +157,7 @@ export function Profile() {
         throw new Error(updateResponse.message || 'Failed to update profile picture');
       }
     } catch (err) {
-      console.error('[PROFILE] Error uploading image:', err);
+      // console.error('[PROFILE] Error uploading image:', err);
       showToast(err instanceof Error ? err.message : "Failed to upload image", "error");
     } finally {
       setIsUploadingImage(false);

@@ -89,19 +89,19 @@ export function Dashboard() {
       
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Logout Button and User Info */}
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 md:mb-6">
           {dashboardData.profile && (
-            <div className="text-[#92c9c9] text-lg">
+            <div className="text-[#92c9c9] text-sm sm:text-base md:text-lg">
               <span>Logged in as </span>
-              <span className="font-bold text-white uppercase">{dashboardData.profile.name}</span>
+              <span className="font-bold text-white uppercase break-words">{dashboardData.profile.name}</span>
             </div>
           )}
           <button
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="px-4 py-2 bg-[#234848] hover:bg-[#2a5050] text-white  font-medium uppercase tracking-wide flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#234848] hover:bg-[#2a5050] text-white text-xs sm:text-sm font-medium uppercase tracking-wide flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <MdLogout className="w-5 h-5" />
+            <MdLogout className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>{isLoggingOut ? "LOGGING OUT..." : "LOGOUT"}</span>
           </button>
         </div>
@@ -132,67 +132,67 @@ export function Dashboard() {
             </div>
           )}
  {/* Election Stats Section */}
- <div className="bg-[#142828] border border-[#234848] p-6 md:p-8 ">
-            <div className="flex items-center gap-3 mb-6">
-              <MdBarChart className="w-6 h-6 text-[#13ecec]" />
-              <h2 className="text-2xl font-bold text-white">Election Statistics</h2>
+ <div className="bg-[#142828] border border-[#234848] p-4 sm:p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <MdBarChart className="w-5 h-5 sm:w-6 sm:h-6 text-[#13ecec]" />
+              <h2 className="text-xl sm:text-2xl font-bold text-white">Election Statistics</h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* Total Elections */}
-              <div className="bg-[#102222] border border-[#234848] p-6">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10  bg-[#234848] flex items-center justify-center">
-                    <MdHowToVote className="w-5 h-5 text-[#13ecec]" />
+              <div className="bg-[#102222] border border-[#234848] p-4 sm:p-6">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#234848] flex items-center justify-center flex-shrink-0">
+                    <MdHowToVote className="w-4 h-4 sm:w-5 sm:h-5 text-[#13ecec]" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[#568888] text-xs uppercase tracking-wider">Total Elections</p>
-                    <p className="text-2xl font-bold text-white">{dashboardData.stats.totalElections}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-white">{dashboardData.stats.totalElections}</p>
                   </div>
                 </div>
-                <p className="text-[#92c9c9] text-sm">All elections in the system</p>
+                <p className="text-[#92c9c9] text-xs sm:text-sm">All elections in the system</p>
               </div>
 
               {/* Eligible Elections */}
-              <div className="bg-[#102222] border border-[#234848] p-6">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10  bg-[#234848] flex items-center justify-center">
-                    <MdCheckCircle className="w-5 h-5 text-[#13ecec]" />
+              <div className="bg-[#102222] border border-[#234848] p-4 sm:p-6">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#234848] flex items-center justify-center flex-shrink-0">
+                    <MdCheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-[#13ecec]" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[#568888] text-xs uppercase tracking-wider">Eligible Elections</p>
-                    <p className="text-2xl font-bold text-white">{dashboardData.stats.eligibleElections}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-white">{dashboardData.stats.eligibleElections}</p>
                   </div>
                 </div>
-                <p className="text-[#92c9c9] text-sm">Elections you can vote in</p>
+                <p className="text-[#92c9c9] text-xs sm:text-sm">Elections you can vote in</p>
               </div>
 
               {/* Elections Voted In */}
-              <div className="bg-[#102222] border border-[#234848] p-6">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10  bg-[#234848] flex items-center justify-center">
-                    <MdPerson className="w-5 h-5 text-[#13ecec]" />
+              <div className="bg-[#102222] border border-[#234848] p-4 sm:p-6">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#234848] flex items-center justify-center flex-shrink-0">
+                    <MdPerson className="w-4 h-4 sm:w-5 sm:h-5 text-[#13ecec]" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[#568888] text-xs uppercase tracking-wider">Elections Voted</p>
-                    <p className="text-2xl font-bold text-white">{dashboardData.stats.electionsVotedIn}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-white">{dashboardData.stats.electionsVotedIn}</p>
                   </div>
                 </div>
-                <p className="text-[#92c9c9] text-sm">Elections you've participated in</p>
+                <p className="text-[#92c9c9] text-xs sm:text-sm">Elections you've participated in</p>
               </div>
 
               {/* Votes Cast */}
-              <div className="bg-[#102222] border border-[#234848] p-6">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10  bg-[#234848] flex items-center justify-center">
-                    <MdBarChart className="w-5 h-5 text-[#13ecec]" />
+              <div className="bg-[#102222] border border-[#234848] p-4 sm:p-6">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#234848] flex items-center justify-center flex-shrink-0">
+                    <MdBarChart className="w-4 h-4 sm:w-5 sm:h-5 text-[#13ecec]" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[#568888] text-xs uppercase tracking-wider">Votes Cast</p>
-                    <p className="text-2xl font-bold text-white">{dashboardData.stats.votesCast}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-white">{dashboardData.stats.votesCast}</p>
                   </div>
                 </div>
-                <p className="text-[#92c9c9] text-sm">Total votes you've cast</p>
+                <p className="text-[#92c9c9] text-xs sm:text-sm">Total votes you've cast</p>
               </div>
             </div>
 
@@ -217,7 +217,7 @@ export function Dashboard() {
             )}
           </div>
           {/* Smaller square cards - Profile, Stats, Elections */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 ">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
             <ProfileCard />
             <ElectionsCard />
           </div>

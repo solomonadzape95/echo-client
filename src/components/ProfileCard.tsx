@@ -14,17 +14,17 @@ export function ProfileCard() {
       onClick={() => navigate("/profile")}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-[#142828] border border-[#234848] cursor-pointer relative group overflow-hidden flex flex-col items-center justify-center lg:min-h-[300px]"
+      className="bg-[#142828] border border-[#234848] cursor-pointer relative group overflow-hidden flex flex-col items-center justify-center p-6 sm:p-8 min-h-[200px] sm:min-h-[250px] md:min-h-[280px] lg:min-h-[300px]"
     >
       {/* Profile Picture or Icon - large, moves up and shrinks on hover */}
       <div 
-        className="flex items-center justify-center transition-all duration-400 ease scale-110 group-hover:scale-100"
+        className="flex items-center justify-center mb-4 sm:mb-6 transition-all duration-400 ease scale-110 group-hover:scale-100"
       >
         {profile?.profilePicture ? (
           <img
             src={profile.profilePicture}
             alt={profile.name || "Profile"}
-            className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32  object-cover border-2 border-[#13ecec] transition-all duration-300 group-hover:scale-110 group-hover:translate-y-[-10%]"
+            className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 object-cover border-2 border-[#13ecec] transition-all duration-300 group-hover:scale-110 group-hover:translate-y-[-10%]"
             onError={(e) => {
               // Fallback to icon if image fails to load
               const target = e.target as HTMLImageElement;
@@ -35,23 +35,23 @@ export function ProfileCard() {
           />
         ) : null}
         <MdPerson 
-          className={`text-[#13ecec] transition-all duration-300 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 group-hover:text-[#13ecec] group-hover:scale-110 group-hover:translate-y-[-10%] ${profile?.profilePicture ? 'hidden' : ''}`}
+          className={`text-[#13ecec] transition-all duration-300 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 group-hover:text-[#13ecec] group-hover:scale-110 group-hover:translate-y-[-10%] ${profile?.profilePicture ? 'hidden' : ''}`}
         />
       </div>
 
       {/* Text content - appears below icon on hover (desktop) or always visible (mobile) */}
       <div 
-        className={`flex flex-col items-center justify-center transition-all duration-400 ease-out opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-5 ${
+        className={`flex flex-col items-center justify-center text-center transition-all duration-400 ease-out opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-5 ${
           isHovered ? "lg:opacity-100 lg:translate-y-0" : ""
         }`}
       >
-        <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Profile</h3>
+        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2">Profile</h3>
         {profile && (
-          <p className="text-[#92c9c9] text-xs sm:text-sm text-center mb-1">
+          <p className="text-[#92c9c9] text-xs sm:text-sm md:text-base text-center mb-1 px-2 break-words">
             {profile.name}
           </p>
         )}
-        <p className="text-[#92c9c9] text-xs sm:text-sm text-center">View and manage your account</p>
+        <p className="text-[#92c9c9] text-xs sm:text-sm text-center px-2">View and manage your account</p>
       </div>
     </div>
   );
