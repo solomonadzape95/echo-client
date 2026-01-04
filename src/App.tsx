@@ -28,6 +28,8 @@ import { EditOffice } from "./pages/EditOffice";
 import { OfficeDetail } from "./pages/OfficeDetail";
 import { AddCandidate } from "./pages/AddCandidate";
 import { EditCandidate } from "./pages/EditCandidate";
+import { PrivacyPolicy } from "./pages/PrivacyPolicy";
+import { Terms } from "./pages/Terms";
 import { queryClient } from "./lib/queryClient";
 import { setupTokenRefresh } from "./lib/tokenRefresh";
 import "./index.css";
@@ -81,6 +83,8 @@ export function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<Terms />} />
           
           {/* User routes */}
           <Route path="/dashboard" element={<Dashboard />} />

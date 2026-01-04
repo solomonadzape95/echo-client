@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { MdFingerprint } from "react-icons/md";
 import { LoginForm } from "./components/LoginForm";
 import { RegisterForm } from "./components/RegisterForm";
@@ -133,13 +133,13 @@ export function AuthPage() {
 
           {/* Footer Links */}
           <div className="flex justify-center items-center gap-6 pt-4">
-            <a href="#" className="text-[#568888] text-xs uppercase tracking-widest hover:text-[#13ecec] transition-colors">
+            <Link to="/privacy-policy" className="text-[#568888] text-xs uppercase tracking-widest hover:text-[#13ecec] transition-colors">
               PRIVACY POLICY
-            </a>
+            </Link>
             <span className="text-[#568888] text-xs">•</span>
-            <a href="#" className="text-[#568888] text-xs uppercase tracking-widest hover:text-[#13ecec] transition-colors">
+            <Link to="/terms" className="text-[#568888] text-xs uppercase tracking-widest hover:text-[#13ecec] transition-colors">
               TERMS
-            </a>
+            </Link>
           </div>
         </div>
       </main>
